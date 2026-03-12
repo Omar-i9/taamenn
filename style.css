@@ -264,7 +264,7 @@
 	                    position: fixed;
 	                    top: -20px; width: 100%;
 	                    display: flex; justify-content: space-evenly;
-	                    z-index: 5; pointer-events: none;
+	                    z-index: 5; pointer-events: all !important;
 	                }
 
 	                .hanging-lantern {
@@ -1027,3 +1027,4 @@
 	                }
 
 	              
+
