@@ -601,39 +601,36 @@
 	            }
 	         }
 
-	                // ==========================================
-	                // [MAIN] EXECUTION
-	                // ==========================================
 // ==========================================
-	        // [MAIN] EXECUTION
-	        // ==========================================
+// [MAIN] EXECUTION - التعديل الجديد
 // ==========================================
-	        // [MAIN] EXECUTION
-	        // ==========================================
-	        window.onload = () => {
-                // 1. إظهار شاشة الترحيب فوراً
-                const welcomeScreen = document.getElementById('welcome-screen');
-                if (welcomeScreen) {
-                    welcomeScreen.style.display = 'flex';
-                    welcomeScreen.style.opacity = '1';
-                    welcomeScreen.style.visibility = 'visible';
-                }
-				 
-	            // 2. تشغيل محركات وأنظمة الموقع
-	            new FutsalTacticalEngine();
-	            initShootingStars();
-	            initTilt();
-	            initPrayersSystem(); 
-	            fetchWeather();
-	            renderStats();
-	            renderMatches();
-	            
-	            setInterval(updateBookingTimer, 1000);
-	            updateBookingTimer();
-	            setInterval(rotateDhikr, 10000);
-	            
-	            console.log("Omar System: Welcome Screen Ready!");
-	        };
+window.onload = () => {
+    // 1. إظهار شاشة الترحيب فوراً ونقل المستخدم لأعلى الصفحة
+    const welcomeScreen = document.getElementById('welcome-screen');
+    if (welcomeScreen) {
+        welcomeScreen.style.display = 'flex';
+        welcomeScreen.style.opacity = '1';
+        welcomeScreen.style.visibility = 'visible';
+    }
+    window.scrollTo(0, 0);
+
+    // 2. تشغيل محركات وأنظمة الموقع
+    new FutsalTacticalEngine();
+    initShootingStars();
+    initTilt();
+    initPrayersSystem(); 
+    fetchWeather();
+    renderStats();
+    renderMatches();
+    
+    // 3. تحديث العدادات والأذكار
+    setInterval(updateBookingTimer, 1000);
+    updateBookingTimer();
+    setInterval(rotateDhikr, 10000);
+    
+    console.log("Omar System: Welcome Screen Ready & Engine Started!");
+};
+
 // وظيفة تحميل صورة التكتيك باستخدام مكتبة html2canvas
 function downloadTacticImage() {
     const pitchElement = document.getElementById('tactical-pitch-wrapper');
@@ -669,6 +666,7 @@ function downloadTactic() {
         link.click();
     });
 }
+
 
 
 
