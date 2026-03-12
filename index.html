@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="تأمين 2026 - المنصة الرياضية الرمضانية الشاملة">
+    <meta name="theme-color" content="#050a1f">
+    <title>تأمين 2026 | الإصدار الرمضاني البلاتيني (GDMi)</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&family=Tajawal:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================================================================
+           [1] المتغيرات العامة (CSS VARIABLES) - الأصلية والمضافة
+           ================================================================
+        */
+        :root {
+            --night-blue: #050a1f;
+            --deep-purple: #0f0c29;
+            --ramadan-gold: #ffd700;
+            --gold-glow: #ffcc33;
+            --metallic-gold: #d4af37;
+            --accent-cyan: #00f2ff;
+            --danger-red: #ff4d4d;
+            --success-green: #2ecc71;
+            
+            /* ألوان دوري الأبطال الجديدة */
+            --cl-blue: #001432;
+            --cl-silver: #e0e5ec;
+            --cl-dark-silver: #8b9bb4;
+            --cl-highlight: #ffffff;
+            
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-thick: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 215, 0, 0.15);
+            --border-gold: rgba(255, 215, 0, 0.3);
+            --main-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --neon-glow: 0 0 10px rgba(255, 215, 0, 0.3);
+            --transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* ================================================================
+           [2] التنسيقات الأساسية (RESET & BASE)
+           ================================================================
+        */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            cursor: none; /* الماوس المخصص */
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--night-blue);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--night-blue); }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--ramadan-gold); }
+
+        /* ================================================================
+           [3] المؤشر المخصص (CUSTOM CURSOR)
+           ================================================================
+        */
+        .cursor-dot {
+            position: fixed;
+            top: 0; left: 0;
+            width: 8px; height: 8px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            z-index: 10000;
+            pointer-events: none;
+            box-shadow: 0 0 15px var(--accent-cyan);
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            width: 45px; height: 45px;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
+        }
+
+        body:has(a:hover, button:hover, .nav-item:hover, .action-card:hover, .clickable:hover) .cursor-outline {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 215, 0, 0.05);
+            border-color: var(--accent-cyan);
+            border-width: 2px;
+        }
+
+        /* ================================================================
+           [4] شاشة الترحيب (WELCOME SCREEN)
+           ================================================================
+        */
+        #welcome-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0a102e 0%, #000000 100%);
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        }
+
+        .welcome-content { text-align: center; position: relative; }
+
+        .welcome-title {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: transparent;
+            background: linear-gradient(to bottom, var(--ramadan-gold), #fff, var(--metallic-gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: textReveal 1.5s ease forwards 0.5s;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: #888;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards 1.5s;
+            letter-spacing: 2px;
+        }
+
+        .enter-btn {
+            margin-top: 50px;
+            padding: 15px 50px;
+            background: transparent;
+            border: 1px solid var(--ramadan-gold);
+            color: var(--ramadan-gold);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            opacity: 0;
+            animation: fadeIn 1s ease forwards 2s;
+        }
+
+        .enter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .enter-btn:hover {
+            background: var(--ramadan-gold);
+            color: #000;
+            box-shadow: 0 0 30px var(--ramadan-gold);
+            transform: scale(1.05);
+        }
+        
+        .enter-btn:hover::before { left: 100%; }
+
+        .signature {
+            position: absolute;
+            bottom: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 5px;
+            animation: pulseText 3s infinite;
+        }
+
+        @keyframes textReveal { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* ================================================================
+           [5] خلفية السماء والبيئة (ATMOSPHERE)
+           ================================================================
+        */
+        #sky-background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -10;
+            background: linear-gradient(180deg, #02040a 0%, #050a1f 40%, #11112b 100%);
+        }
+
+        .stars-container {
+            position: fixed;
+            width: 100%; height: 100%;
+            z-index: -9;
+            perspective: 500px;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.8;
+            box-shadow: 0 0 5px #fff;
+            animation: twinkle var(--d) infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .shooting-star {
+            position: absolute;
+            top: 50%; left: 50%;
+            height: 2px;
+            background: linear-gradient(-45deg, rgba(255,255,255,1), rgba(0,0,255,0));
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+            width: 0;
+            opacity: 0;
+            z-index: -8;
+        }
+        
+        @keyframes shoot {
+            0% { width: 0; transform: translateX(0); opacity: 1; }
+            15% { width: 100px; }
+            100% { width: 0; transform: translateX(300px); opacity: 0; }
+        }
+
+        .moon-container {
+            position: fixed;
+            top: 40px; left: 40px;
+            width: 100px; height: 100px;
+            z-index: -5;
+            transition: transform 0.5s ease;
+        }
+
+        .moon {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 30%, #fff, var(--ramadan-gold));
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.4), inset -10px -10px 20px rgba(0,0,0,0.2);
+            position: relative;
+            animation: moonPulse 4s infinite alternate;
+        }
+        
+        .moon::after {
+            content: '';
+            position: absolute;
+            top: -5px; right: -5px;
+            width: 100%; height: 100%;
+            background: var(--night-blue);
+            border-radius: 50%;
+            transform: scale(0.85) translate(15px, -10px);
+            filter: blur(2px);
+        }
+
+        @keyframes moonPulse {
+            0% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.3); }
+            100% { box-shadow: 0 0 90px rgba(255, 215, 0, 0.6); }
+        }
+
+        .lantern-wire {
+            position: fixed;
+            top: -20px; width: 100%;
+            display: flex; justify-content: space-evenly;
+            z-index: 5; pointer-events: none;
+        }
+
+        .hanging-lantern {
+            font-size: 2.8rem;
+            transform-origin: top center;
+            animation: swingLantern 4s infinite ease-in-out;
+            filter: drop-shadow(0 10px 20px rgba(255, 165, 0, 0.5));
+            position: relative;
+        }
+        
+        .hanging-lantern::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: 50%;
+            width: 1px; height: 120px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes swingLantern {
+            0%, 100% { transform: rotate(5deg); }
+            50% { transform: rotate(-5deg); }
+        }
+
+        /* ================================================================
+           [6] شريط التنقل (NAVIGATION)
+           ================================================================
+        */
+        .main-nav {
+            position: fixed;
+            bottom: 25px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 12, 41, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 40px;
+            display: flex; gap: 10px;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            transition: var(--transition);
+        }
+
+        .nav-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 1.2rem;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--night-blue);
+            background: var(--ramadan-gold);
+            transform: translateY(-8px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .nav-item::after {
+            content: attr(title);
+            position: absolute;
+            top: -40px; left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+
+        .nav-item:hover::after {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+
+        /* ================================================================
+           [7] حاوية الصفحات (PAGE LAYOUT)
+           ================================================================
+        */
+        .page {
+            display: none;
+            padding: 100px 20px 120px;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 3rem;
+            color: var(--ramadan-gold);
+            margin-bottom: 50px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            position: relative;
+            display: inline-block;
+            left: 50%; transform: translateX(-50%);
+            width: 100%;
+        }
+        
+        .section-title::after {
+            content: '⬥ ⬥ ⬥';
+            display: block;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.3);
+            margin-top: 10px;
+            letter-spacing: 5px;
+        }
+
+        /* ================================================================
+           [8] البطاقات التفاعلية (CARDS & TILT)
+           ================================================================
+        */
+        .tilt-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s;
+        }
+        
+        .tilt-card:hover {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 215, 0, 0.05);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        .booking-active {
+            border-color: var(--success-green) !important;
+            box-shadow: 0 0 30px var(--success-green), inset 0 0 20px rgba(46, 204, 113, 0.2) !important;
+            animation: pulseGreen 1.5s infinite alternate;
+        }
+
+        @keyframes pulseGreen {
+            0% { box-shadow: 0 0 20px var(--success-green); }
+            100% { box-shadow: 0 0 40px var(--success-green); }
+        }
+
+        .booking-open-text {
+            font-size: 2rem;
+            color: var(--success-green);
+            font-weight: bold;
+            animation: blink 1s infinite;
+            font-family: 'Reem Kufi', sans-serif;
+        }
+      
+        
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        /* ================================================================
+           [9] الصفحة الرئيسية (HOME)
+           ================================================================
+        */
+        .hero-section { text-align: center; margin-bottom: 60px; }
+
+        .hero-title {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 5rem;
+            background: linear-gradient(180deg, var(--ramadan-gold), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.3));
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 8px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .menu-card { text-align: center; cursor: pointer; }
+
+        .menu-card i {
+            font-size: 3.5rem;
+            color: var(--ramadan-gold);
+            margin-bottom: 20px;
+            display: block;
+            transform: translateZ(30px);
+        }
+
+        .menu-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            transform: translateZ(20px);
+        }
+
+        .menu-card p {
+            color: #aaa;
+            font-size: 0.9rem;
+            transform: translateZ(10px);
+        }
+
+        /* ================================================================
+           [10] صفحة الرادار (RADAR & PITCH)
+           ================================================================
+        */
+        .radar-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .radar-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-gold);
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+            display: flex;
+            align-items: center; gap: 8px;
+        }
+
+        .radar-btn.active, .radar-btn:hover {
+            background: var(--ramadan-gold);
+            color: #000;
+            box-shadow: 0 0 15px var(--ramadan-gold);
+        }
+
+/* متغيرات الملعب التكتيكي الجديد (يمكن وضعها هنا أو في :root) */
+:root {
+    --pitch-color: #14532d;
+    --pitch-line-color: rgba(255, 255, 255, 0.8);
+    --gold-glow-pitch: 0 0 20px rgba(250, 204, 21, 0.6);
+}
+
+/* حاوية الملعب الجديد */
+#tactical-pitch-wrapper {
+    position: relative;
+    width: 100%;
+    height: 650px;
+    perspective: 1500px;
+    margin-bottom: 50px;
+}
+
+#tactical-futsal-pitch {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: var(--pitch-color);
+    border: 5px solid var(--pitch-line-color);
+    border-radius: 4px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    overflow: hidden;
+    transform: rotateX(20deg); /* الوضع الافتراضي 3D */
+}
+
+#tactical-futsal-pitch.is-2d { transform: rotateX(0deg); }
+
+/* خطوط الملعب الخماسي */
+.tp-midline { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--pitch-line-color); transform: translateX(-50%); }
+.tp-center-circle { position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; border: 4px solid var(--pitch-line-color); border-radius: 50%; transform: translate(-50%, -50%); }
+.tp-penalty-arc { position: absolute; width: 140px; height: 240px; border: 4px solid var(--pitch-line-color); top: 50%; transform: translateY(-50%); }
+.tp-penalty-arc.home { left: -70px; border-radius: 0 120px 120px 0; }
+.tp-penalty-arc.away { right: -70px; border-radius: 120px 0 0 120px; }
+
+/* الأيقونات التكتيكية للاعبين */
+.player-node {
+    position: absolute; width: 50px; height: 50px; border-radius: 50%; cursor: grab; z-index: 50;
+    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;
+    color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.5); touch-action: none;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+    font-family: 'Orbitron', sans-serif;
+}
+.player-node:active { cursor: grabbing; transform: scale(1.2); box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 100 !important; }
+.player-node:hover { transform: scale(1.1); z-index: 60; }
+
+.team-red { background: radial-gradient(circle, var(--accent-cyan), #004d40); border: 2px solid #fff; } /* لون النخبة الأصلي */
+.team-blue { background: radial-gradient(circle, var(--danger-red), #b71c1c); border: 2px solid #fff; } /* لون التحدي الأصلي */
+
+/* تفاصيل اللاعب (الاسم والمركز) */
+.name-tag { position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); white-space: nowrap; text-align: center; pointer-events: none; }
+.player-name { display: block; font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 5px; margin-bottom: 2px; font-family: 'Tajawal', sans-serif; }
+.role-badge { display: inline-block; font-size: 11px; background: var(--ramadan-gold); color: #000; padding: 2px 8px; border-radius: 10px; font-weight: 900; transition: all 0.3s ease; font-family: 'Tajawal', sans-serif; }
+.role-glow { box-shadow: var(--gold-glow-pitch); animation: pulse-role 1.5s infinite; }
+
+@keyframes pulse-role { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+
+/* فقاعة الإحداثيات */
+#live-coord {
+    position: absolute; top: 10px; right: 10px; background: rgba(15, 23, 42, 0.9);
+    border-right: 4px solid var(--ramadan-gold); padding: 10px 20px; border-radius: 4px; font-size: 14px;
+    z-index: 1000; display: none; backdrop-filter: blur(5px); color: var(--ramadan-gold); font-weight: bold;
+}
+        #stats-view { display: none; animation: fadeIn 0.5s; }
+        
+        .stats-table-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow-x: auto;
+        }
+        
+        .stats-table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        .stats-table th { padding: 15px; color: var(--ramadan-gold); border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
+        .stats-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .stats-table tr:last-child td { border-bottom: none; }
+        .stats-table tr:hover td { background: rgba(255,255,255,0.05); }
+
+        /* ================================================================
+           [11] المدفع والتوقيت (CANNON) - التحديث الجديد للصلوات
+           ================================================================
+        */
+        .cannon-section {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(0, 242, 255, 0.05));
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .cannon-section.maghrib-active {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(212, 175, 55, 0.1));
+            border-color: var(--ramadan-gold);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+        }
+
+        .next-prayer-label {
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            font-family: 'Reem Kufi', sans-serif;
+            transition: color 0.3s;
+        }
+
+        .cannon-section.maghrib-active .next-prayer-label {
+            color: var(--ramadan-gold);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-size: 1.8rem;
+        }
+
+        .countdown-main {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            margin: 20px 0;
+            direction: ltr;
+            transition: all 0.3s;
+        }
+        
+        .cannon-section.maghrib-active .countdown-main {
+            color: var(--ramadan-gold);
+            text-shadow: 0 0 30px var(--ramadan-gold);
+            transform: scale(1.05);
+        }
+        
+        .date-display { font-size: 1.2rem; color: #ccc; margin-bottom: 30px; }
+
+        .prayers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .prayer-unit {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition);
+        }
+        
+        .prayer-unit.active-next {
+            background: rgba(0, 242, 255, 0.15);
+            border-color: var(--accent-cyan);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+        
+        .prayer-unit.active-maghrib {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--ramadan-gold);
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        /* ================================================================
+           [12] الطقس (WEATHER) - تحسينات العرض المربوط بالخليل
+           ================================================================
+        */
+        .weather-card-hero {
+            background: linear-gradient(135deg, #1a2a6c, #11294b, #2b5876);
+            display: flex; flex-wrap: wrap;
+            justify-content: space-between; align-items: center;
+            padding: 40px; border-radius: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .weather-card-hero::before {
+            content: '\f0c2'; /* أيقونة سحابة من فاونت اوسم */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            font-size: 15rem;
+            color: rgba(255,255,255,0.03);
+            pointer-events: none;
+        }
+
+        .weather-main-info {
+            z-index: 2;
+        }
+
+        .weather-main-info h2 { 
+            font-size: 5rem; 
+            margin: 0; 
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(to bottom, #fff, #a0d8ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .weather-details { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; z-index: 2; }
+        
+        .w-item { 
+            display: flex; flex-direction: column; align-items: center; 
+            background: rgba(0,0,0,0.3);
+            padding: 15px 25px; border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .w-item:hover {
+            transform: translateY(-5px);
+            background: rgba(0,0,0,0.5);
+            border-color: var(--accent-cyan);
+        }
+
+        .w-item i {
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+
+        /* ================================================================
+           [13] أرشيف الأمجاد - كأس دوري الأبطال (CHAMPIONS LEAGUE 3D CSS)
+           ================================================================
+        */
+        .cl-theme-container {
+            background: radial-gradient(circle at center, #001f4d 0%, #000a1a 100%);
+            border-radius: 30px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 40px;
+        }
+        
+        /* نجوم دوري الأبطال في الخلفية */
+        .cl-bg-stars {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(#ffffff 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.05;
+            z-index: 1;
+        }
+
+        .cl-trophy-wrapper {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        /* الحاوية الرئيسية للكأس */
+        .cl-trophy {
+            position: relative;
+            width: 160px;
+            height: 280px;
+            animation: floatTrophy 4s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes floatTrophy {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-15px) rotateY(10deg); }
+        }
+
+        /* القاعدة (Base) */
+        .trophy-base {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 30px;
+            background: linear-gradient(to right, #4a5568, #a0aec0, #cbd5e0, #a0aec0, #4a5568);
+            border-radius: 10px 10px 5px 5px;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.6);
+            z-index: 2;
+        }
+        
+        .trophy-base::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 10px;
+            background: linear-gradient(to right, #718096, #e2e8f0, #718096);
+            border-radius: 5px 5px 0 0;
+        }
+
+        /* الجذع (Stem) */
+        .trophy-stem {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 50px;
+            background: linear-gradient(to right, #718096 0%, #ffffff 50%, #718096 100%);
+            z-index: 2;
+            border-radius: 5px;
+        }
+
+        /* الوعاء الرئيسي (The Bowl) */
+        .trophy-bowl {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 140px;
+            background: linear-gradient(135deg, #a0aec0 0%, #ffffff 40%, #e2e8f0 60%, #718096 100%);
+            border-radius: 10px 10px 60px 60px;
+            z-index: 3;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2), inset 10px 10px 20px rgba(255,255,255,0.8);
+            overflow: hidden;
+        }
+
+        /* الخطوط الفضية على الوعاء */
+        .trophy-bowl::before {
+            content: '';
+            position: absolute;
+            top: 20px; left: 10%; width: 80%; height: 2px;
+            background: rgba(255,255,255,0.6);
+            box-shadow: 0 40px 0 rgba(255,255,255,0.4), 0 80px 0 rgba(255,255,255,0.3);
+        }
+
+        /* الفتحة العلوية للكأس */
+        .trophy-top {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 30px;
+            background: linear-gradient(to bottom, #e2e8f0, #718096);
+            border-radius: 50%;
+            z-index: 4;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.3);
+        }
+        
+        .trophy-top::after {
+            content: '';
+            position: absolute;
+            top: 5px; left: 50%; transform: translateX(-50%);
+            width: 120px; height: 15px;
+            background: #2d3748; /* التجويف الداخلي المظلم */
+            border-radius: 50%;
+        }
+
+        /* الأذنين المميزتين (The Big Ears) */
+        .trophy-handle {
+            position: absolute;
+            top: 70px;
+            width: 60px;
+            height: 110px;
+            border: 12px solid #cbd5e0;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            z-index: 1;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.4);
+        }
+
+        .handle-left {
+            left: -30px;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            transform: rotate(-15deg);
+        }
+        
+        /* تأثير اللمعان على المقبض الأيسر */
+        .handle-left::after {
+            content: ''; position: absolute; top: 10px; left: -5px; width: 5px; height: 40px; background: rgba(255,255,255,0.8); border-radius: 5px; transform: rotate(10deg);
+        }
+
+        .handle-right {
+            right: -30px;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+            transform: rotate(15deg);
+        }
+
+        /* توهج خلف الكأس */
+        .trophy-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(0, 195, 255, 0.4) 0%, transparent 70%);
+            z-index: 0;
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .cl-title {
+            text-align: center;
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 0 15px var(--accent-cyan);
+            z-index: 5;
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .cl-subtitle {
+            text-align: center;
+            color: var(--cl-dark-silver);
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            z-index: 5;
+            position: relative;
+        }
+
+        /* ================================================================
+           [14] نظام الإشعارات (NOTIFICATIONS)
+           ================================================================
+        */
+        #notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100000;
+            pointer-events: none;
+            width: 320px;
+        }
+
+        .toast-notification {
+            background: rgba(15, 12, 41, 0.95);
+            border-right: 4px solid var(--ramadan-gold);
+            color: #fff;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .toast-notification.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            color: var(--ramadan-gold);
+            font-size: 1.2rem;
+        }
+
+        /* ================================================================
+           [15] استجابة الشاشات (RESPONSIVE)
+           ================================================================
+        */
+        @media (max-width: 768px) {
+            .section-title { font-size: 2rem; }
+            .hero-title { font-size: 3rem; }
+            
+            .pitch-wrapper { 
+                height: 500px;
+                transform: none; 
+                border-width: 2px;
+            }
+            .pitch-wrapper:hover { transform: none; }
+            
+            .countdown-main { font-size: 2.5rem; }
+            .main-nav { width: 90%; padding: 10px; bottom: 15px; gap: 5px; }
+            .nav-item { width: 40px; height: 40px; font-size: 1rem; }
+            
+            .welcome-title { font-size: 3.5rem; }
+            
+            .player-token { width: 45px; height: 45px; }
+            .player-token .p-name { display: none; }
+            
+            .cursor-dot, .cursor-outline { display: none; }
+            
+            .grid-menu { grid-template-columns: 1fr; }
+            
+            .tilt-card .w-item span { font-size: 1.5rem !important; }
+
+            #notification-container {
+                right: 50%;
+                transform: translateX(50%);
+                top: 10px;
+                width: 90%;
+            }
+            
+            .weather-main-info h2 { font-size: 3.5rem; }
+            .cl-trophy-wrapper { transform: scale(0.8); height: 250px; }
+        }
+
+      
+      /* حاوية اللودر - بتغطي الشاشة كاملة بالأسود */
+#master-truck-preloader {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: #808080; /* أسود فخم */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999999; /* عشان يغطي شاشة الترحيب تاعت الموقع */
+    transition: opacity 0.6s ease, visibility 0.6s;
+}
+
+/* كودك إنت بالحرف بدون أي تعديل */
+.loader {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.truckWrapper {
+  width: 200px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: center;
+  justify-content: flex-end;
+  overflow-x: hidden;
+}
+.truckBody {
+  width: 130px;
+  height: fit-content;
+  margin-bottom: 6px;
+  animation: motion 1s linear infinite;
+}
+@keyframes motion {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(3px); }
+  100% { transform: translateY(0px); }
+}
+.truckTires {
+  width: 130px;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 10px 0px 15px;
+  position: absolute;
+  bottom: 0;
+}
+.truckTires svg { width: 24px; }
+.road {
+  width: 100%;
+  height: 1.5px;
+  background-color: #282828;
+  position: relative;
+  bottom: 0;
+  align-self: flex-end;
+  border-radius: 3px;
+}
+.road::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 100%;
+  background-color: #282828;
+  right: -50%;
+  border-radius: 3px;
+  animation: roadAnimation 1.4s linear infinite;
+  border-left: 10px solid white;
+}
+.road::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 100%;
+  background-color: #282828;
+  right: -65%;
+  border-radius: 3px;
+  animation: roadAnimation 1.4s linear infinite;
+  border-left: 4px solid white;
+}
+.lampPost {
+  position: absolute;
+  bottom: 0;
+  right: -90%;
+  height: 90px;
+  animation: roadAnimation 1.4s linear infinite;
+}
+@keyframes roadAnimation {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(-350px); }
+}
+
+/* جملة التحميل */
+.loading-text-style {
+    margin-top: 25px;
+    color: #ffffff;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+}
+      
+    </style>
+</head>
+<body>
+  
+  <div id="master-truck-preloader">
+    <div class="loader">
+      <div class="truckWrapper">
+        <div class="truckBody">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 198 93" class="trucksvg">
+            <path stroke-width="3" stroke="#282828" fill="#F83D3D" d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z"></path>
+            <path stroke-width="3" stroke="#282828" fill="#7D7C7C" d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z"></path>
+            <path stroke-width="2" stroke="#282828" fill="#282828" d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z"></path>
+            <rect stroke-width="2" stroke="#282828" fill="#FFFCAB" rx="1" height="7" width="5" y="63" x="187"></rect>
+            <rect stroke-width="2" stroke="#282828" fill="#282828" rx="1" height="11" width="4" y="81" x="193"></rect>
+            <rect stroke-width="3" stroke="#282828" fill="#DFDFDF" rx="2.5" height="90" width="121" y="1.5" x="6.5"></rect>
+            <rect stroke-width="2" stroke="#282828" fill="#DFDFDF" rx="2" height="4" width="6" y="84" x="1"></rect>
+          </svg>
+        </div>
+        <div class="truckTires">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 30" class="tiresvg">
+            <circle stroke-width="3" stroke="#282828" fill="#282828" r="13.5" cy="15" cx="15"></circle>
+            <circle fill="#DFDFDF" r="7" cy="15" cx="15"></circle>
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 30" class="tiresvg">
+            <circle stroke-width="3" stroke="#282828" fill="#282828" r="13.5" cy="15" cx="15"></circle>
+            <circle fill="#DFDFDF" r="7" cy="15" cx="15"></circle>
+          </svg>
+        </div>
+        <div class="road"></div>
+        <svg xml:space="preserve" viewBox="0 0 453.459 453.459" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1" fill="#000000" class="lampPost">
+          <path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0zM232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path>
+        </svg>
+      </div>
+    </div>
+    <div class="loading-text-style">جاري تحميل نظام تــأمين...</div>
+</div>
+
+    <div id="notification-container"></div>
+
+    <div id="welcome-screen">
+        <div class="welcome-content">
+            <h1 class="welcome-title">"تأمــين"  رمضـان</h1>
+            <p class="welcome-subtitle">حيث تلتقي الروحانية بالمنافسة</p>
+            <button class="enter-btn" onclick="enterSite()">دخول إلى الملعب</button>
+        </div>
+        <div class="signature">DESIGNED BY GDMi</div>
+    </div>
+
+    <div id="sky-background"></div>
+    <div class="stars-container" id="starsContainer"></div>
+
+    <div class="moon-container">
+        <div class="moon"></div>
+    </div>
+
+    <div class="lantern-wire">
+        <div class="hanging-lantern">🏮</div>
+        <div class="hanging-lantern">🏮</div>
+        <div class="hanging-lantern">🏮</div>
+        <div class="hanging-lantern">🏮</div>
+        <div class="hanging-lantern">🏮</div>
+    </div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <nav class="main-nav">
+        <div class="nav-item active" onclick="navigate('home', this)" title="ساحة البداية"><i class="fas fa-home"></i></div>
+        <div class="nav-item" onclick="navigate('cannon', this)" title="توقيت النخبة"><i class="fas fa-mosque"></i></div>
+        <div class="nav-item" onclick="navigate('booking', this)" title="غرفة العمليات"><i class="fas fa-clock"></i></div>
+        <div class="nav-item" onclick="navigate('radar', this)" title="التحليل الفني"><i class="fas fa-chart-pie"></i></div>
+        <div class="nav-item" onclick="navigate('matches', this)" title="أرشيف الأمجاد"><i class="fas fa-trophy"></i></div>
+        <div class="nav-item" onclick="navigate('weather', this)" title="الطقس والأجواء"><i class="fas fa-cloud-sun"></i></div>
+        <div class="nav-item" onclick="navigate('elite', this)" title="الصالة الملكية"><i class="fas fa-crown"></i></div>
+    </nav>
+
+    <div id="home" class="page active">
+        <div class="hero-section">
+            <h1 class="hero-title">تأمـين 2026</h1>
+            <div class="hero-subtitle">RAMADAN ELITE LEAGUE - النسخة البـلاتـيـنـية</div>
+        </div>
+
+        <div class="grid-menu">
+            <div class="menu-card tilt-card" onclick="navigate('cannon')">
+                <i class="fas fa-bullhorn"></i>
+                <h3>توقيت النخبة</h3>
+                <p>مواقيت الصلاة، الإمساك، وعداد الإفطار الدقيق.</p>
+            </div>
+            
+            <div class="menu-card tilt-card" onclick="navigate('booking')">
+                <i class="fas fa-stopwatch"></i>
+                <h3>غرفة العمليات</h3>
+                <p>موعد الحجز الرسمي، العد التنازلي، وحالة الملعب.</p>
+            </div>
+
+            <div class="menu-card tilt-card" onclick="navigate('radar')">
+                <i class="fas fa-users-viewfinder"></i>
+                <h3>التحليل الفني</h3>
+                <p>تشكيلات الفرق، إحصائيات اللاعبين، وتحليل الأداء.</p>
+            </div>
+        </div>
+
+        <div class="tilt-card" style="margin-top: 50px; text-align: center; border-color: var(--ramadan-gold);">
+            <h4 style="color: var(--ramadan-gold); margin-bottom: 15px; font-family:'Reem Kufi';">✨ نفحات رمضانية</h4>
+            <p id="dhikrDisplay" style="font-size: 1.3rem;">سبحان الله وبحمده، عدد خلقه، ورضا نفسه، وزنة عرشه، ومداد كلماته.</p>
+        </div>
+    </div>
+
+    <div id="cannon" class="page">
+        <h2 class="section-title">توقيت النخبة</h2>
+        
+        <div class="cannon-section tilt-card" id="dynamicTimerSection">
+            <div class="next-prayer-label" id="nextPrayerNameLabel">الوقت المتبقي للصلاة القادمة</div>
+            <div class="countdown-main" id="dynamicPrayerCounter">--:--:--</div>
+            <div class="date-display" id="hijriDate">جاري الاتصال بالقمر الصناعي...</div>
+        </div>
+
+        <div class="prayers-grid" id="prayersContainer">
+            <div style="grid-column: 1/-1; text-align: center; color: #888;">جاري جلب المواقيت وتحديد الصلاة القادمة...</div>
+        </div>
+    </div>
+
+    <div id="booking" class="page">
+        <h2 class="section-title">غرفة العمليات</h2>
+        
+        <div class="tilt-card" id="bookingTimerCard" style="text-align: center; margin-bottom: 30px; background: #000; border-color: var(--accent-cyan);">
+            <h3 id="bookingTitle" style="color: var(--accent-cyan); margin-bottom: 20px;">العد التنازلي للحجز (الجمعة 20:00 - 21:00)</h3>
+            <div id="timerContainer" style="display: flex; justify-content: center; gap: 15px; font-family: 'Orbitron';">
+                <div class="w-item"><span id="b-days" style="font-size: 2.5rem;">00</span><small>يوم</small></div>
+                <div class="w-item"><span id="b-hours" style="font-size: 2.5rem;">00</span><small>ساعة</small></div>
+                <div class="w-item"><span id="b-mins" style="font-size: 2.5rem;">00</span><small>دقيقة</small></div>
+                <div class="w-item"><span id="b-secs" style="font-size: 2.5rem;">00</span><small>ثانية</small></div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <div class="tilt-card" style="text-align: center;">
+                <i class="fas fa-crown" style="font-size: 2rem; color: var(--ramadan-gold);"></i>
+                <h4 style="margin: 10px 0;">الملك الحالي</h4>
+                <p>فريق كريم</p>
+            </div>
+            <div class="tilt-card" style="text-align: center;">
+                <i class="fas fa-fire" style="font-size: 2rem; color: var(--danger-red);"></i>
+                <h4 style="margin: 10px 0;">الهداف</h4>
+                <p>يوسف & خضر</p>
+            </div>
+            <div class="tilt-card" style="text-align: center;">
+                <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--success-green);"></i>
+                <h4 style="margin: 10px 0;">حالة الحجز</h4>
+                <p>طافية %0</p>
+            </div>
+        </div>
+    </div>
+
+<div id="radar" class="page">
+    <h2 class="section-title">التحليل الفني والتحركات</h2>
+    
+    <div class="radar-controls">
+        <button class="radar-btn active" onclick="toggleRadarMode('pitch', this)">
+            <i class="fas fa-futbol"></i> الملعب التفاعلي
+        </button>
+        <button class="radar-btn" onclick="toggleRadarMode('stats', this)">
+            <i class="fas fa-table"></i> الإحصائيات والأرقام
+        </button>
+        <button class="radar-btn" id="tactical-view-toggle"><i class="fas fa-cube"></i> المنظور</button>
+    </div>
+
+    <div id="pitch-view">
+        <div id="tactical-pitch-wrapper">
+            <div id="live-coord"><span id="coord-label"></span></div>
+            <div id="tactical-futsal-pitch">
+                <div class="tp-midline"></div>
+                <div class="tp-center-circle"></div>
+                <div class="tp-penalty-arc home"></div>
+                <div class="tp-penalty-arc away"></div>
+            </div>
+        </div>
+    </div>
+        <div id="stats-view">
+            <h3 style="color: var(--accent-cyan); margin-bottom: 15px;">📊 سجلات فريق النخبة</h3>
+            <div class="stats-table-container">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: right;">اللاعب</th>
+                            <th>الأهداف ⚽</th>
+                            <th>الأسيست 👟</th>
+                            <th>المساهمات 🔥</th>
+                            <th>التقييم ⭐</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eliteTableBody"></tbody>
+                </table>
+            </div>
+
+            <h3 style="color: var(--danger-red); margin-bottom: 15px;">📊 سجلات فريق التحدي</h3>
+            <div class="stats-table-container">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: right;">اللاعب</th>
+                            <th>الأهداف ⚽</th>
+                            <th>الأسيست 👟</th>
+                            <th>المساهمات 🔥</th>
+                            <th>التقييم ⭐</th>
+                        </tr>
+                    </thead>
+                    <tbody id="challengeTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="matches" class="page">
+        <h2 class="section-title">أرشيف الأمجاد</h2>
+        
+        <div class="cl-theme-container tilt-card">
+            <div class="cl-bg-stars"></div>
+            
+            <h3 class="cl-title">ليالي الأبطال</h3>
+            <p class="cl-subtitle">THE CHAMPIONS ELITE</p>
+            
+            <div class="cl-trophy-wrapper">
+                <div class="trophy-glow"></div>
+                <div class="cl-trophy">
+                    <div class="trophy-top"></div>
+                    <div class="trophy-bowl"></div>
+                    <div class="trophy-handle handle-left"></div>
+                    <div class="trophy-handle handle-right"></div>
+                    <div class="trophy-stem"></div>
+                    <div class="trophy-base"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="matchHistoryContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"></div>
+    </div>
+
+    <div id="weather" class="page">
+        <h2 class="section-title">أجواء الملعب</h2>
+        <div class="weather-card-hero tilt-card">
+            <div class="weather-main-info">
+                <div style="color: var(--gold-glow); font-size: 1.1rem;" id="w-date">...</div>
+                <h2 id="w-temp">--°C</h2>
+                <div style="font-size: 1.5rem; text-shadow: 0 2px 5px rgba(0,0,0,0.5);" id="w-desc">جاري التحميل...</div>
+                <div style="margin-top: 15px; font-size: 1rem; color: #a0d8ef; font-weight: bold; background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; display: inline-block;" id="location-text">
+                    <i class="fab fa-google" style="margin-left: 5px; color: #fff;"></i> الخليل، فلسطين (تحديث مباشر)
+                </div>
+            </div>
+            <div class="weather-details">
+                <div class="w-item"><i class="fas fa-wind"></i><span id="w-wind">--</span><small style="opacity:0.6; font-size:0.7rem;">سرعة الرياح</small></div>
+                <div class="w-item"><i class="fas fa-tint"></i><span id="w-hum">--</span><small style="opacity:0.6; font-size:0.7rem;">الرطوبة</small></div>
+                <div class="w-item"><i class="fas fa-eye"></i><span>ممتازة</span><small style="opacity:0.6; font-size:0.7rem;">الرؤية</small></div>
+            </div>
+        </div>
+        
+        <h3 style="margin: 30px 0; color: var(--accent-cyan); text-align: center;">توقعات الأسبوع للخليل</h3>
+        <div class="weather-details" id="forecast-container" style="justify-content: center;"></div>
+    </div>
+
+    <div id="elite" class="page">
+        <div class="tilt-card" style="text-align: center; border: 2px solid var(--ramadan-gold);">
+            <i class="fas fa-coffee" style="font-size: 4rem; color: #fff; margin-bottom: 20px;"></i>
+            <h2 style="font-family: 'Reem Kufi'; margin-bottom: 20px; color: var(--ramadan-gold);">الصالة الملكية</h2>
+            <p style="font-size: 1.2rem; line-height: 1.8; margin-bottom: 30px;">
+                "يا هلا بفرسان تأمين.. المكان مكانكم، والوقت وقتكم. رمضان بيجمعنا على الخير والمحبة والمنافسة الشريفة."
+            </p>
+            <a href="https://wa.me/972594054750" target="_blank" class="radar-btn active" style="display: inline-flex; text-decoration: none; justify-content: center;">
+                <i class="fab fa-whatsapp"></i> تواصل مع الإدارة
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // [1] DATABASE OF NOTIFICATIONS (رسائل عشوائية)
+        // ==========================================
+        const pageMessages = {
+            'home': [
+                "أهلاً بعودتك أيها البطل! 🏆",
+                "هل أنت مستعد للمجد اليوم؟ 🔥",
+                "رمضان شهر العبادة.. والرياضة! 🌙",
+                "الملعب يشتاق لأقدام الأبطال ⚽",
+                "ركّز على هدفك، النصر قادم ✨"
+            ],
+            'cannon': [
+                "صم وافطر على خير 🍲",
+                "تقبل الله منا ومنكم صالح الأعمال 🤲",
+                "الوقت يمضي.. استغله في الطاعات ⏳",
+                "لا تنس الدعاء عند الإفطار 🌙",
+                "أذان المغرب هو أجمل لحظات اليوم ❤️"
+            ],
+            'booking': [
+                "لا تتأخر.. الحجز في موعده! ⏰",
+                "الجمعة تجمعنا على التحدي 🔥",
+                "تأكد من جاهزيتك البدنية 💪",
+                "المنافسة ستكون شرسة هذا الأسبوع! ⚔️",
+                "هل حذائك جاهز للمعركة؟ 👟"
+            ],
+            'radar': [
+                "الأرقام لا تكذب أبداً 📊",
+                "ادرس خصمك جيداً قبل المباراة 🧐",
+                "التمركز الصحيح هو مفتاح الفوز 🔑",
+                "هل أنت ضمن تشكيلة النخبة؟ ⭐",
+                "حلل أداءك لترتفع بمستواك 📈"
+            ],
+            'matches': [
+                "التاريخ يكتبه المنتصرون 📜",
+                "تعلم من الهزيمة لتصنع النصر 🛡️",
+                "سجلات المجد خالدة هنا 💎",
+                "راجع نتائجك وحسن أخطاءك 🔄",
+                "مباريات لا تنسى في الذاكرة 🧠"
+            ],
+            'weather': [
+                "الجو مناسب جداً للعب اليوم ☁️",
+                "لا أعذار.. العب في كل الظروف 🌧️",
+                "تحقق من الرياح لتضبط تسديداتك 💨",
+                "احذر من البرد، وسخن جيداً 🔥",
+                "السماء صافية والملعب جاهز ☀️"
+            ],
+            'elite': [
+                "مرحباً بك في مجلس الكبار 👑",
+                "استرح قليلاً وتناول القهوة ☕",
+                "مجتمع النخبة يرحب بك 🤝",
+                "تواصل معنا لأي اقتراحات 📩",
+                "الراحة جزء من التدريب 🛋️"
+            ]
+        };
+
+        // ==========================================
+        // [2] NOTIFICATION LOGIC
+        // ==========================================
+        function showNotification(pageId) {
+            const container = document.getElementById('notification-container');
+            const messages = pageMessages[pageId] || ["مرحباً بك في تأمين 2026"];
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `
+                <i class="fas fa-bell toast-icon"></i>
+                <span>${randomMsg}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => { toast.classList.add('show'); }, 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => { toast.remove(); }, 500); 
+            }, 4000);
+        }
+
+        // ==========================================
+        // [3] SYSTEM INIT & WELCOME SCREEN
+        // ==========================================
+        function enterSite() {
+            const screen = document.getElementById('welcome-screen');
+            screen.style.opacity = '0';
+            screen.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                screen.style.display = 'none';
+                navigate('home'); 
+            }, 1000);
+        }
+
+        // ==========================================
+        // [4] NAVIGATION SYSTEM (UPDATED WITH NOTIFICATIONS)
+        // ==========================================
+        function navigate(pageId, btnElement = null) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showNotification(pageId);
+            }
+
+            if (btnElement) {
+                btnElement.classList.add('active');
+            } else {
+                const correspondingBtn = document.querySelector(`.nav-item[onclick*="'${pageId}'"]`);
+                if (correspondingBtn) correspondingBtn.classList.add('active');
+            }
+        }
+
+        // ==========================================
+        // [5] CUSTOM CURSOR LOGIC
+        // ==========================================
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 200, fill: "forwards" });
+        });
+
+        // ==========================================
+        // [6] SHOOTING STARS GENERATOR
+        // ==========================================
+        function initShootingStars() {
+            const container = document.getElementById('starsContainer');
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3;
+                star.style.width = `${size}px`; star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.setProperty('--d', `${Math.random() * 3 + 2}s`);
+                container.appendChild(star);
+            }
+            setInterval(() => {
+                const meteor = document.createElement('div');
+                meteor.className = 'shooting-star';
+                meteor.style.top = `${Math.random() * 60}%`;
+                meteor.style.left = `${Math.random() * 80}%`;
+                meteor.style.animation = `shoot ${Math.random() * 2 + 1}s linear`;
+                container.appendChild(meteor);
+                setTimeout(() => meteor.remove(), 4000);
+            }, 3000);
+        }
+
+        // ==========================================
+        // [7] SMOOTH TILT EFFECT
+        // ==========================================
+        function initTilt() {
+            const cards = document.querySelectorAll('.tilt-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -3; 
+                    const rotateY = ((x - centerX) / centerX) * 3;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.01)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`;
+                });
+            });
+        }
+
+        // ==========================================
+        // [8] RADAR TOGGLE & DATA POPULATION
+        // ==========================================
+// نظام التبديل الذكي - لا يتأثر بعدد الأزرار المضافة
+function toggleRadarMode(mode, element) {
+    const pitchView = document.getElementById('pitch-view');
+    const statsView = document.getElementById('stats-view');
+    
+    // 1. التبديل بين الحاويات
+    if (mode === 'pitch') {
+        if(pitchView) pitchView.style.display = 'block';
+        if(statsView) statsView.style.display = 'none';
+    } else {
+        if(pitchView) pitchView.style.display = 'none';
+        if(statsView) statsView.style.display = 'block';
+    }
+
+    // 2. تحديث شكل الأزرار (إزالة active من الجميع وإضافته للمضغوط فقط)
+    // نطبق هذا فقط على أزرار التبديل وليس زر المنظور
+    const btns = document.querySelectorAll('.radar-controls .radar-btn');
+    btns.forEach(btn => btn.classList.remove('active'));
+    
+    if (element) {
+        element.classList.add('active');
+    }
+}        const statsElite = [
+            { name: "عمر", g: 1, a: 4, r: 9.7 },
+            { name: "يوسف", g: 5, a: 0, r: 10.0 },
+            { name: "ارقم", g: 0, a: 0, r: 7.9 },
+            { name: "مؤيد", g: 0, a: 0, r: 8.8 },
+            { name: "هاني", g: 0, a: 1, r: 8.9 }
+        ];
+        const statsChallenge = [
+            { name: "كريم", g: 2, a: 3, r: 9.8 },
+            { name: "سنقرط", g: 0, a: 1, r: 8.7 },
+            { name: "محمد", g: 0, a: 1, r: 8.0 },
+            { name: "خضر", g: 5, a: 2, r: 10.0 },
+            { name: "احمد", g: 0, a: 0, r: 8.1 }
+        ];
+        
+        function renderStats() {
+            const createRows = (data) => data.map(p => `
+                <tr>
+                    <td style="font-weight:bold; color:var(--ramadan-gold);">${p.name}</td>
+                    <td>${p.g}</td>
+                    <td>${p.a}</td>
+                    <td>${p.g + p.a}</td>
+                    <td><i class="fas fa-star" style="color:orange; font-size:0.7rem;"></i> ${p.r}</td>
+                </tr>
+            `).join('');
+            document.getElementById('eliteTableBody').innerHTML = createRows(statsElite);
+            document.getElementById('challengeTableBody').innerHTML = createRows(statsChallenge);
+        }
+
+        // ==========================================
+        // [9] DYNAMIC PRAYER TIMES SYSTEM (NEXT PRAYER LOGIC)
+        // ==========================================
+        let currentPrayerInterval = null;
+        let globalPrayerData = [];
+
+        async function initPrayersSystem() {
+            // تثبيت إحداثيات الخليل، فلسطين كما طلبت
+            const lat = 31.5326; 
+            const long = 35.0998;
+            
+            try {
+                const date = new Date();
+                const timestamp = Math.floor(date.getTime() / 1000);
+                // جلب المواقيت للخليل
+                const res = await fetch(`https://api.aladhan.com/v1/timings/${timestamp}?latitude=${lat}&longitude=${long}&method=1`);
+                const data = await res.json();
+                
+                const timings = data.data.timings;
+                const hijri = data.data.date.hijri;
+                document.getElementById('hijriDate').innerText = `${hijri.day} ${hijri.month.ar} ${hijri.year} هـ`;
+                
+                // تخزين أوقات الصلاة في مصفوفة مرتبة
+                globalPrayerData = [
+                    { id: 'Fajr', name: 'الفجر', time: timings.Fajr },
+                    { id: 'Sunrise', name: 'الشروق', time: timings.Sunrise }, // الشروق ليس صلاة لكنه وقت مهم
+                    { id: 'Dhuhr', name: 'الظهر', time: timings.Dhuhr },
+                    { id: 'Asr', name: 'العصر', time: timings.Asr },
+                    { id: 'Maghrib', name: 'المغرب', time: timings.Maghrib },
+                    { id: 'Isha', name: 'العشاء', time: timings.Isha }
+                ];
+
+                // رسم البطاقات
+                renderPrayerCards();
+                
+                // بدء دورة حساب الصلاة القادمة
+                startDynamicPrayerCountdown();
+
+            } catch (e) {
+                console.error("Prayer API Error", e);
+                document.getElementById('hijriDate').innerText = "خطأ في الاتصال بالخادم";
+            }
+        }
+
+        function renderPrayerCards(activeId = '') {
+            const container = document.getElementById('prayersContainer');
+            if(!container) return;
+            
+            container.innerHTML = globalPrayerData.map(p => {
+                let activeClass = '';
+                if (p.id === activeId) {
+                    activeClass = p.id === 'Maghrib' ? 'active-maghrib' : 'active-next';
+                }
+                
+                return `
+                    <div class="prayer-unit ${activeClass}" id="card-${p.id}">
+                        <div style="font-size:0.8rem; color:#888;">${p.name}</div>
+                        <div style="font-size:1.4rem; font-weight:bold; color:var(--ramadan-gold);">${p.time}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startDynamicPrayerCountdown() {
+            if (currentPrayerInterval) clearInterval(currentPrayerInterval);
+            
+            currentPrayerInterval = setInterval(() => {
+                const now = new Date();
+                let nextPrayer = null;
+                let targetDate = new Date();
+
+                // البحث عن أول صلاة لم يحن وقتها بعد اليوم
+                for (let i = 0; i < globalPrayerData.length; i++) {
+                    const p = globalPrayerData[i];
+                    const [h, m] = p.time.split(':');
+                    const pt = new Date();
+                    pt.setHours(h, m, 0, 0);
+                    
+                    if (now < pt) {
+                        nextPrayer = p;
+                        targetDate = pt;
+                        break;
+                    }
+                }
+
+                // إذا مرت العشاء، فالصلاة القادمة هي الفجر في اليوم التالي
+                if (!nextPrayer) {
+                    nextPrayer = globalPrayerData[0]; // الفجر
+                    const [h, m] = nextPrayer.time.split(':');
+                    targetDate.setDate(targetDate.getDate() + 1);
+                    targetDate.setHours(h, m, 0, 0);
+                }
+
+                // تحديث واجهة المستخدم
+                updateDynamicUI(nextPrayer, targetDate, now);
+                
+            }, 1000);
+        }
+
+        function updateDynamicUI(nextPrayer, targetDate, now) {
+            const diff = targetDate - now;
+            const hh = String(Math.floor(diff / 3600000)).padStart(2, '0');
+            const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+            const ss = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+            
+            const counterEl = document.getElementById('dynamicPrayerCounter');
+            const labelEl = document.getElementById('nextPrayerNameLabel');
+            const sectionEl = document.getElementById('dynamicTimerSection');
+            
+            if(counterEl) counterEl.innerText = `${hh}:${mm}:${ss}`;
+            
+            if(labelEl) {
+                if(nextPrayer.id === 'Maghrib') {
+                    labelEl.innerText = `الوقت المتبقي لرفع أذان المغرب (الإفطار)`;
+                    sectionEl.classList.add('maghrib-active');
+                } else {
+                    labelEl.innerText = `الوقت المتبقي لرفع أذان ${nextPrayer.name}`;
+                    sectionEl.classList.remove('maghrib-active');
+                }
+            }
+            
+            // تحديث إبراز البطاقة في الشبكة السفلية
+            renderPrayerCards(nextPrayer.id);
+        }
+
+        // ==========================================
+        // [10] BOOKING TIMER & DHIKR (UPDATED FOR 8-9 PM & ACTIVE STATE)
+        // ==========================================
+        function updateBookingTimer() {
+            const now = new Date();
+            const day = now.getDay(); 
+            const hour = now.getHours();
+            const bookingCard = document.getElementById('bookingTimerCard');
+            const title = document.getElementById('bookingTitle');
+            const timerContainer = document.getElementById('timerContainer');
+            
+            if (day === 5 && hour >= 20 && hour < 21) {
+                if (!bookingCard.classList.contains('booking-active')) {
+                    bookingCard.classList.add('booking-active');
+                    title.innerHTML = '<span style="font-size: 2rem;">🔥 الحجز مفتوح الآن!</span>';
+                    title.style.color = "var(--success-green)";
+                    timerContainer.innerHTML = '<div class="booking-open-text">سارع بحجز مكانك!</div>';
+                }
+                return;
+            }
+
+            if (bookingCard.classList.contains('booking-active')) {
+                bookingCard.classList.remove('booking-active');
+                title.innerText = "العد التنازلي للحجز (الجمعة 20:00 - 21:00)";
+                title.style.color = "var(--accent-cyan)";
+                timerContainer.innerHTML = `
+                    <div class="w-item"><span id="b-days" style="font-size: 2.5rem;">00</span><small>يوم</small></div>
+                    <div class="w-item"><span id="b-hours" style="font-size: 2.5rem;">00</span><small>ساعة</small></div>
+                    <div class="w-item"><span id="b-mins" style="font-size: 2.5rem;">00</span><small>دقيقة</small></div>
+                    <div class="w-item"><span id="b-secs" style="font-size: 2.5rem;">00</span><small>ثانية</small></div>
+                `;
+            }
+
+            let target = new Date();
+            target.setDate(now.getDate() + (5 + 7 - now.getDay()) % 7);
+            target.setHours(20, 0, 0, 0);
+            
+            if (now > target) {
+                 target.setDate(target.getDate() + 7);
+            }
+
+            const diff = target - now;
+            const dEl = document.getElementById('b-days');
+            if(dEl) {
+                dEl.innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById('b-hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('b-mins').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById('b-secs').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+            }
+        }
+
+        const dhikrs = [
+            "اللهم إنك عفو تحب العفو فاعف عنا",
+            "سبحان الله وبحمده، عدد خلقه ورضا نفسه",
+            "لا إله إلا الله وحده لا شريك له",
+            "أستغفر الله العظيم وأتوب إليه",
+            "اللهم صل وسلم على نبينا محمد"
+        ];
+        function rotateDhikr() {
+            document.getElementById('dhikrDisplay').innerText = dhikrs[Math.floor(Math.random() * dhikrs.length)];
+        }
+
+        // ==========================================
+        // [11] WEATHER API (HARDCODED TO HEBRON)
+        // ==========================================
+        async function fetchWeather() {
+            // تثبيت إحداثيات مدينة الخليل كما طلبت
+            const lat = 31.5326; 
+            const long = 35.0998;
+            
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max&timezone=auto`);
+                const data = await res.json();
+                
+                const curr = data.current;
+                document.getElementById('w-temp').innerText = `${Math.round(curr.temperature_2m)}°C`;
+                document.getElementById('w-wind').innerText = `${curr.wind_speed_10m} km/h`;
+                document.getElementById('w-hum').innerText = `${curr.relative_humidity_2m}%`;
+                
+                const code = curr.weather_code;
+                const desc = code < 3 ? "سماء صافية / غيوم متفرقة" : (code < 50 ? "ضباب خفيف" : "أجواء ماطرة / عاصفة");
+                document.getElementById('w-desc').innerText = desc;
+
+                const daily = data.daily;
+                let html = '';
+                for(let i=0; i<5; i++) {
+                    const d = new Date(daily.time[i]);
+                    const dayName = d.toLocaleDateString('ar-EG', {weekday:'short'});
+                    html += `
+                        <div class="w-item" style="min-width:70px;">
+                            <div style="font-size:0.8rem; opacity:0.7;">${dayName}</div>
+                            <div style="font-weight:bold; font-size:1.2rem; color:var(--ramadan-gold);">${Math.round(daily.temperature_2m_max[i])}°</div>
+                        </div>
+                    `;
+                }
+                document.getElementById('forecast-container').innerHTML = html;
+                document.getElementById('w-date').innerText = new Date().toLocaleDateString('ar-EG', {weekday:'long', day:'numeric', month:'long'});
+            } catch(e) { 
+                console.log("Weather error:", e);
+                document.getElementById('w-desc').innerText = "تعذر جلب بيانات الطقس";
+            }
+        }
+
+        // ==========================================
+        // [12] MATCH HISTORY
+        // ==========================================
+        function renderMatches() {
+            const matches = [
+                {t1: "كريم", t2: "عمر", s: "6 - 9", st: "انتهت", d: "الجمعه 16 يناير"},
+                {t1: "عمر", t2: "كريم", s: "7 - 10", st: "انتهت", d: "الجمعه 23 يناير"},
+                {t1: "كريم التميمي", t2: "عمر & كريم", s: "8 - 7", st: "انتهت", d: "الجمعه 30 يناير"},
+                {t1: "خضر", t2: "عمر & كريم", s: "4 - 5", st: "انتهت", d: "الجمعه 13 فبراير"},
+                {t1: "كريم", t2: "عمر", s: "3 - 3", st: "انتهت", d: "الجمعه 20 فبراير"},      
+                {t1: "عمر", t2: "كريم", s: "6 - 8", st: "انتهت", d: "الجمعه 27 فبراير"},
+                {t1: "خضر", t2: "كريم", s: "13 - 7", st: "انتهت", d: "الجمعه 6 مارس"},
+                              {t1: "عمر", t2: "كريم", s: "-  -", st: "محتملة", d: "الجمعه 13 مارس"},
+
+            ];
+            document.getElementById('matchHistoryContainer').innerHTML = matches.map(m => `
+                <div class="tilt-card" style="display:flex; justify-content:space-between; align-items:center; background: rgba(0, 10, 26, 0.7); border-color: rgba(255,255,255,0.1);">
+                    <div style="text-align:center;">
+                        <i class="fas fa-shield-alt" style="display:block; font-size:1.5rem; margin-bottom:5px; color:var(--cl-dark-silver);"></i>
+                        <span style="font-weight:bold;">${m.t1}</span>
+                    </div>
+                    <div style="text-align:center; padding: 0 15px;">
+                        <div style="font-family:'Orbitron'; font-size:1.8rem; color:var(--cl-highlight); text-shadow: 0 0 10px rgba(255,255,255,0.5);">${m.s}</div>
+                        <div style="font-size:0.8rem; color:${m.st === 'انتهت' ? 'var(--cl-dark-silver)' : 'var(--ramadan-gold)'}; margin-top:5px; font-weight:bold;">${m.st}</div>
+                        <div style="font-size:0.75rem; opacity:0.6; margin-top:2px;">${m.d}</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <i class="fas fa-tshirt" style="display:block; font-size:1.5rem; margin-bottom:5px; color:var(--cl-dark-silver);"></i>
+                        <span style="font-weight:bold;">${m.t2}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+// ==========================================
+// المحرك التكتيكي الجديد (FutsalTacticalEngine)
+// ==========================================
+class FutsalTacticalEngine {
+    constructor() {
+        this.pitch = document.getElementById('tactical-futsal-pitch');
+        this.viewToggle = document.getElementById('tactical-view-toggle');
+        this.coordBox = document.getElementById('live-coord');
+        this.coordLabel = document.getElementById('coord-label');
+        this.draggedElement = null;
+        this.is3D = true;
+        
+        if(this.pitch) this.init();
+    }
+
+    init() {
+        this.setupPlayers();
+        this.bindEvents();
+    }
+
+    setupPlayers() {
+        // يمكنك تعديل الأسماء والمراكز المبدئية هنا
+        const teamA = [
+            { id: 'R1', name: 'ارقم', x: 8, y: 50, color: 'team-red', team: 'home' },
+            { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
+            { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
+            { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
+            { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
+        ];
+        const teamB = [
+            { id: 'B1', name: 'محمد', x: 92, y: 50, color: 'team-blue', team: 'away' },
+            { id: 'B2', name: 'سنقرط', x: 75, y: 25, color: 'team-blue', team: 'away' },
+            { id: 'B3', name: 'احمد', x: 75, y: 75, color: 'team-blue', team: 'away' },
+            { id: 'B4', name: 'كريم', x: 60, y: 30, color: 'team-blue', team: 'away' },
+            { id: 'B5', name: 'خضر', x: 55, y: 70, color: 'team-blue', team: 'away' },
+        ];
+        [...teamA, ...teamB].forEach(p => this.createPlayer(p));
+    }
+
+    createPlayer(config) {
+        const node = document.createElement('div');
+        node.className = `player-node ${config.color}`;
+        node.id = config.id; node.dataset.team = config.team;
+        node.style.left = `${config.x}%`; node.style.top = `${config.y}%`;
+        node.innerHTML = `
+            ${config.id.charAt(0) === 'R' ? 'A' : 'B'}
+            <div class="name-tag"><span class="player-name">${config.name}</span><span class="role-badge" id="role-${config.id}">--</span></div>
+        `;
+        node.addEventListener('pointerdown', (e) => this.onStart(e, node));
+        this.pitch.appendChild(node);
+        this.updateTacticalRole(node, config.x, config.y);
+    }
+
+    bindEvents() {
+        window.addEventListener('pointermove', (e) => this.onMove(e));
+        window.addEventListener('pointerup', () => this.onEnd());
+        if(this.viewToggle) {
+            this.viewToggle.addEventListener('click', () => {
+                this.is3D = !this.is3D;
+                if(this.is3D) this.pitch.classList.remove('is-2d');
+                else this.pitch.classList.add('is-2d');
+            });
+        }
+    }
+
+    onStart(e, el) {
+        this.draggedElement = el;
+        el.setPointerCapture(e.pointerId);
+        this.coordBox.style.display = 'block';
+    }
+
+    onMove(e) {
+        if (!this.draggedElement) return;
+        const rect = this.pitch.getBoundingClientRect();
+        let x = ((e.clientX - rect.left) / rect.width) * 100;
+        let y = ((e.clientY - rect.top) / rect.height) * 100;
+        x = Math.max(2, Math.min(98, x)); y = Math.max(4, Math.min(96, y));
+        this.draggedElement.style.left = `${x}%`; this.draggedElement.style.top = `${y}%`;
+        this.updateTacticalRole(this.draggedElement, x, y);
+    }
+
+    updateTacticalRole(el, x, y) {
+        const team = el.dataset.team; const badge = el.querySelector('.role-badge');
+        let role = "";
+        const isInsideDZone = (team === 'home' && x < 15 && y > 30 && y < 70) || (team === 'away' && x > 85 && y > 30 && y < 70);
+
+        if (isInsideDZone) role = "GK";
+        else {
+            const isMyHalf = (team === 'home' && x <= 50) || (team === 'away' && x >= 50);
+            if (isMyHalf) {
+                if (y < 30) role = (team === 'home' ? "LB" : "RB");
+                else if (y > 70) role = (team === 'home' ? "RB" : "LB");
+                else role = "CB";
+            } else {
+                if (y < 35) role = (team === 'home' ? "LW" : "RW");
+                else if (y > 65) role = (team === 'home' ? "RW" : "LW");
+                else { const depth = team === 'home' ? x : (100 - x); role = depth > 80 ? "ST" : "CAM"; }
+            }
+        }
+
+        if (badge.innerText !== role) {
+            badge.innerText = role; badge.classList.add('role-glow');
+            setTimeout(() => badge.classList.remove('role-glow'), 600);
+        }
+        const arabicRole = {"GK":"حارس","CB":"دفاع","LB":"ظ.أيسر","RB":"ظ.أيمن","LW":"ج.أيسر","RW":"ج.أيمن","CAM":"صانع","ST":"مهاجم"}[role] || role;
+        this.coordLabel.innerText = `المركز: ${arabicRole} (${Math.round(x)}%, ${Math.round(y)}%)`;
+    }
+
+    onEnd() {
+        if (this.draggedElement) this.draggedElement = null;
+        this.coordBox.style.display = 'none';
+    }
+}
+
+        // ==========================================
+        // [MAIN] EXECUTION
+        // ==========================================
+window.onload = () => {
+    // 1. كود إخفاء الشاحنة بعد 4 ثواني
+    setTimeout(() => {
+        const preloader = document.getElementById('master-truck-preloader');
+        if (preloader) {
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            setTimeout(() => preloader.remove(), 800);
+        }
+    }, 4000);
+
+    // 2. تشغيل محركات وأنظمة الموقع (الأكواد الأصلية)
+    new FutsalTacticalEngine();
+    initShootingStars();
+    initTilt();
+    initPrayersSystem(); 
+    fetchWeather();
+    renderStats();
+    renderMatches();
+    
+    setInterval(updateBookingTimer, 1000);
+    updateBookingTimer();
+    setInterval(rotateDhikr, 10000);
+    
+    console.log("Omar System: Truck Preloader & Site Engine Resurrected!");
+};
+    </script>
+</body>
+</html>
