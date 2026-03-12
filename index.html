@@ -130,13 +130,40 @@
             </div>
         </div>
 
-        <div class="page" id="weather">
-            <h2 class="section-title">أجواء الملعب</h2>
-            <div class="weather-card-hero tilt-card">
-                <div id="w-temp">--°C</div>
-                <div id="location-text">الخليل، فلسطين</div>
+<div class="page" id="weather">
+    <h2 class="section-title">أجواء الملعب</h2>
+    
+    <div class="weather-container">
+        <div class="weather-card" id="tilt-card">
+            <div class="weather-glare"></div> <div class="weather-header">
+                <div class="status-icon" id="main-emoji">☀️</div>
+                <div class="main-info">
+                    <h2 id="w-city">الخليل، فلسطين</h2>
+                    <p id="w-time">جاري التحميل...</p>
+                </div>
+                <div class="temp-big" id="w-temp">--°</div>
             </div>
+
+            <div class="weather-details">
+                <div class="detail-item">
+                    <i class="fas fa-wind"></i>
+                    <span id="w-wind">-- كم/س</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-droplet"></i>
+                    <span id="w-humidity">--%</span>
+                </div>
+                <a href="https://www.google.com/search?q=weather+hebron" target="_blank" class="maps-link">
+                    <i class="fas fa-location-dot"></i> خرائط جوجل
+                </a>
+            </div>
+
+            <div class="hourly-forecast" id="hourly-container">
+                </div>
         </div>
+    </div>
+</div>
+    </div>
 
         <div class="page" id="elite">
             <div class="tilt-card" style="text-align: center;">
@@ -181,6 +208,7 @@
 </div>
 </body>
 </html>
+
 
 
 
