@@ -739,7 +739,7 @@ function savePlayerSettings() {
 closeModal();
 }
 
-// تأثير الميلان لبطاقة الطقس - النسخة الكاملة والمسكرة صح
+// استبدل آخر سطر مكسور عندك بهاد الكود الكامل:
 document.addEventListener('mousemove', (e) => {
     const card = document.getElementById('tilt-card');
     if(!card) return;
