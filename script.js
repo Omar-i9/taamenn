@@ -605,16 +605,7 @@
 	                // [MAIN] EXECUTION
 	                // ==========================================
 	         window.onload = () => {
-	            // 1. كود إخفاء الشاحنة بعد 4 ثواني
-	            setTimeout(() => {
-	                const preloader = document.getElementById('master-truck-preloader');
-	                if (preloader) {
-	                    preloader.style.opacity = '0';
-	                    preloader.style.visibility = 'hidden';
-	                    setTimeout(() => preloader.remove(), 800);
-	                }
-	            }, 4000);
-
+				 
 	            // 2. تشغيل محركات وأنظمة الموقع (الأكواد الأصلية)
 	            new FutsalTacticalEngine();
 	            initShootingStars();
@@ -667,4 +658,5 @@ function downloadTactic() {
         link.click();
     });
 }
+
 
