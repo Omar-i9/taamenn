@@ -744,5 +744,17 @@ function savePlayerSettings() {
     closeModal();
 }
 
-
+// تأثير الميلان لبطاقة الطقس الجديدة
+document.addEventListener('mousemove', (e) => {
+    const card = document.getElementById('tilt-card');
+    if(!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 15;
+    const rotateY = (centerX - x) / 15;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+});
 
