@@ -96,7 +96,8 @@
 	                    top: 0; left: 0;
 	                    width: 100%; height: 100%;
 	                    background: radial-gradient(circle at center, #0a102e 0%, #000000 100%);
-	                    z-index: 999999;
+	                    z-index: 999999 !important;
+						pointer-events: all !important;
 	                    display: flex;
 	                    flex-direction: column;
 	                    justify-content: center;
@@ -189,6 +190,7 @@
 	                }
 
 	                .stars-container {
+						pointer-events: none !important; /* خلي النجوم للزينة بس، ما تسحب الضغطات */
 	                    position: fixed;
 	                    width: 100%; height: 100%;
 	                    z-index: -9;
@@ -1027,4 +1029,5 @@
 	                }
 
 	              
+
 
