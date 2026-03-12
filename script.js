@@ -544,6 +544,7 @@ class FutsalTacticalEngine {
             <div class="name-tag"><span class="player-name">${config.name}</span><span class="role-badge" id="role-${config.id}">--</span></div>
         `;
         node.addEventListener('pointerdown', (e) => this.onStart(e, node));
+        node.addEventListener('dblclick', () => openPlayerSettings(node));
         this.pitch.appendChild(node);
         this.updateTacticalRole(node, config.x, config.y);
     }
@@ -712,4 +713,5 @@ function closeModal() {
 }
     });
 }
+
 
