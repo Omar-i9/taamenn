@@ -630,4 +630,31 @@
 	            setInterval(rotateDhikr, 10000);
 	            
 	            console.log("Omar System: Truck Preloader & Site Engine Resurrected!");
+
 	         };
+
+// وظيفة تحميل صورة التكتيك باستخدام مكتبة html2canvas
+function downloadTacticImage() {
+    const pitchElement = document.getElementById('tactical-pitch-wrapper');
+    
+    // إخفاء مؤشر الإحداثيات مؤقتاً عشان الصورة تطلع نظيفة
+    const coordLabel = document.getElementById('live-coord');
+    if(coordLabel) coordLabel.style.opacity = '0';
+
+    html2canvas(pitchElement, {
+        backgroundColor: '#050a1f', // نفس لون خلفية موقعك
+        scale: 2, // جودة عالية
+        logging: false,
+        useCORS: true
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'Tamin-2026-Tactics.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+        // رجع مؤشر الإحداثيات
+        if(coordLabel) coordLabel.style.opacity = '1';
+        
+        alert('تم تحميل التكتيك بنجاح يا وحش! ⚽🔥');
+    });
+}
