@@ -658,3 +658,13 @@ function downloadTacticImage() {
         alert('تم تحميل التكتيك بنجاح يا وحش! ⚽🔥');
     });
 }
+
+function downloadTactic() {
+    const pitch = document.getElementById('tactical-pitch-wrapper');
+    html2canvas(pitch).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'tactic-2026.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+}
