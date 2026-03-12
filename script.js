@@ -621,6 +621,23 @@ function enterSite() {
 // ==========================================
 // [MAIN] EXECUTION - التعديل الجديد
 // ==========================================
+// [0] وظيفة الدخول الفورية - حطيناها فوق عشان تشتغل مهما صار تحت
+function enterSite() {
+    console.log("يلا شوي اصبر ومندخلك..!");
+    const screen = document.getElementById('welcome-screen');
+    if (screen) {
+        screen.style.opacity = '0';
+        screen.style.transform = 'scale(1.1)';
+        screen.style.pointerEvents = 'none';
+        setTimeout(() => {
+            screen.style.display = 'none';
+            const homePage = document.getElementById('home');
+            if (homePage) homePage.classList.add('active');
+            if (typeof navigate === "function") navigate('home');
+        }, 800);
+    }
+}
+
 window.onload = () => {
     // 1. إظهار شاشة الترحيب فوراً ونقل المستخدم لأعلى الصفحة
     const welcomeScreen = document.getElementById('welcome-screen');
@@ -684,23 +701,3 @@ function downloadTactic() {
     });
 }
 
-function enterSite() {
-    console.log("الزر انضغط يا معلم! جاري الدخول...");
-    const screen = document.getElementById('welcome-screen');
-    
-    if (screen) {
-        screen.style.opacity = '0';
-        screen.style.transform = 'scale(1.1)';
-        screen.style.pointerEvents = 'none';
-
-        setTimeout(() => {
-            screen.style.display = 'none';
-            // إظهار صفحة الهوم يدوياً للتأكيد
-            const homePage = document.getElementById('home');
-            if (homePage) homePage.classList.add('active');
-            
-            // تشغيل التنقل الأصلي
-            if (typeof navigate === "function") navigate('home');
-        }, 800);
-    }
-}
