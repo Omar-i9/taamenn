@@ -684,7 +684,23 @@ function downloadTactic() {
     });
 }
 
+function enterSite() {
+    console.log("الزر انضغط يا معلم! جاري الدخول...");
+    const screen = document.getElementById('welcome-screen');
+    
+    if (screen) {
+        screen.style.opacity = '0';
+        screen.style.transform = 'scale(1.1)';
+        screen.style.pointerEvents = 'none';
 
-
-
-
+        setTimeout(() => {
+            screen.style.display = 'none';
+            // إظهار صفحة الهوم يدوياً للتأكيد
+            const homePage = document.getElementById('home');
+            if (homePage) homePage.classList.add('active');
+            
+            // تشغيل التنقل الأصلي
+            if (typeof navigate === "function") navigate('home');
+        }, 800);
+    }
+}
