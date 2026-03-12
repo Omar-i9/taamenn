@@ -121,23 +121,20 @@ function navigate(pageId, btnElement = null) {
 }
 
 // ==========================================
-// [4] CUSTOM CURSOR LOGIC
+// [4] CUSTOM CURSOR LOGIC (النسخة المصلحة)
 // ==========================================
 const cursorDot = document.querySelector('.cursor-dot');
 const cursorOutline = document.querySelector('.cursor-outline');
 
+// السطر اللي كان ناقص هو اللي تحت هاد مباشرة
 window.addEventListener('mousemove', (e) => {
+    if(!cursorDot || !cursorOutline) return; // حماية إضافية
     const posX = e.clientX;
     const posY = e.clientY;
-    if(cursorDot) {
-        cursorDot.style.left = `${posX}px`;
-        cursorDot.style.top = `${posY}px`;
-    }
-    if(cursorOutline) {
-        cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 200, fill: "forwards" });
-    }
+    cursorDot.style.left = `${posX}px`;
+    cursorDot.style.top = `${posY}px`;
+    cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 200, fill: "forwards" });
 });
-
 // ==========================================
 // [5] SHOOTING STARS GENERATOR
 // ==========================================
@@ -747,4 +744,5 @@ function savePlayerSettings() {
 
     closeModal();
 }
+
 
