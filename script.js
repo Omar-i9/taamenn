@@ -758,3 +758,8 @@ document.addEventListener('mousemove', (e) => {
     card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 });
 
+
+function closeModal() {
+    const modal = document.getElementById('player-instructions-modal');
+    if(modal) modal.style.display = 'none';
+}
