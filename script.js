@@ -736,10 +736,10 @@ function savePlayerSettings() {
         currentPlayerNode.appendChild(ring);
     }
 
-    closeModal();
+closeModal();
 }
 
-// تأثير الميلان لبطاقة الطقس الجديدة
+// تأثير الميلان لبطاقة الطقس - النسخة الكاملة والمسكرة صح
 document.addEventListener('mousemove', (e) => {
     const card = document.getElementById('tilt-card');
     if(!card) return;
@@ -752,10 +752,3 @@ document.addEventListener('mousemove', (e) => {
     const rotateY = (centerX - x) / 15;
     card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 });
-
-
-function closeModal() {
-    const modal = document.getElementById('player-instructions-modal');
-    if(modal) modal.style.display = 'none';
-}
-
