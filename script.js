@@ -78,16 +78,33 @@
 	                // ==========================================
 	                // [3] SYSTEM INIT & WELCOME SCREEN
 	                // ==========================================
-	                function enterSite() {
-	                    const screen = document.getElementById('welcome-screen');
-	                    screen.style.opacity = '0';
-	                    screen.style.transform = 'scale(1.1)';
-	                    setTimeout(() => {
-	                        screen.style.display = 'none';
-	                        navigate('home'); 
-	                    }, 1000);
-	                }
+function enterSite() {
+    console.log("Entering the pitch... 🔥"); // عشان تتأكد إن الزر شغال
+    const screen = document.getElementById('welcome-screen');
+    
+    if (screen) {
+        // 1. تفعيل حركات التلاشي
+        screen.style.opacity = '0';
+        screen.style.transform = 'scale(1.1)';
+        screen.style.pointerEvents = 'none'; // عشان ما ينضغط مرتين
 
+        setTimeout(() => {
+            // 2. إخفاء الشاشة تماماً
+            screen.style.display = 'none';
+            
+            // 3. كود "الاحتياط" لإظهار صفحة الهوم
+            const homePage = document.getElementById('home');
+            if (homePage) {
+                homePage.classList.add('active');
+            }
+            
+            // 4. تشغيل وظيفة التنقل الأصلية
+            if (typeof navigate === "function") {
+                navigate('home');
+            }
+        }, 1000);
+    }
+}
 	                // ==========================================
 	                // [4] NAVIGATION SYSTEM (UPDATED WITH NOTIFICATIONS)
 	                // ==========================================
@@ -666,6 +683,7 @@ function downloadTactic() {
         link.click();
     });
 }
+
 
 
 
