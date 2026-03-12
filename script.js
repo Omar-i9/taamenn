@@ -666,5 +666,50 @@ function downloadTactic() {
         link.download = 'tactic-2026.png';
         link.href = canvas.toDataURL();
         link.click();
+
+        let currentPlayerNode = null;
+
+// لما تضغط على اللاعب تفتح الشاشة
+function openPlayerSettings(playerElement) {
+    currentPlayerNode = playerElement;
+    // بنسحب اسم اللاعب من الدائرة
+    const playerName = playerElement.querySelector('.player-name').innerText;
+    document.getElementById('modal-player-name').innerText = "تعليمات الكابتن لـ: " + playerName;
+    
+    // بنعرض الشاشة
+    document.getElementById('player-instructions-modal').style.display = 'flex';
+}
+
+// حفظ التعليمات اللي اخترتها
+function savePlayerSettings() {
+    if (!currentPlayerNode) return;
+    
+    const role = document.getElementById('player-role').value;
+    const instruction = document.getElementById('player-instruction').value;
+
+    // بدنا نحط علامة (Badge) صغيرة فوق اللاعب لو أخد دور (زي C أو PK)
+    let badge = currentPlayerNode.querySelector('.captain-badge');
+    if (role !== "") {
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'captain-badge';
+            currentPlayerNode.appendChild(badge);
+        }
+        badge.innerText = role;
+    } else if (badge) {
+        badge.remove(); // إذا شلنا الدور، بنطير العلامة
+    }
+
+    // بنحفظ التعليمة جوة العنصر عشان نستفيد منها بعدين
+    currentPlayerNode.setAttribute('data-instruction', instruction);
+    
+    closeModal();
+}
+
+// تسكير الشاشة
+function closeModal() {
+    document.getElementById('player-instructions-modal').style.display = 'none';
+}
     });
 }
+
