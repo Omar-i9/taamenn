@@ -681,14 +681,13 @@ function openPlayerSettings(playerElement) {
     document.getElementById('player-instructions-modal').style.display = 'flex';
 }
 
-// حفظ التعليمات اللي اخترتها
 function savePlayerSettings() {
     if (!currentPlayerNode) return;
     
     const role = document.getElementById('player-role').value;
     const instruction = document.getElementById('player-instruction').value;
 
-    // بدنا نحط علامة (Badge) صغيرة فوق اللاعب لو أخد دور (زي C أو PK)
+    // 1. التعامل مع شارة الدور (C, PK, إلخ)
     let badge = currentPlayerNode.querySelector('.captain-badge');
     if (role !== "") {
         if (!badge) {
@@ -697,21 +696,29 @@ function savePlayerSettings() {
             currentPlayerNode.appendChild(badge);
         }
         badge.innerText = role;
-    } else if (badge) {
-        badge.remove(); // إذا شلنا الدور، بنطير العلامة
+    } else if (badge) { badge.remove(); }
+
+    // 2. التعامل مع الأسهم التكتيكية
+    // أولاً: نمسح أي سهم أو علامة تعليمات قديمة
+    const oldArrow = currentPlayerNode.querySelector('.instruction-arrow');
+    const oldRing = currentPlayerNode.querySelector('.press-ring');
+    if (oldArrow) oldArrow.remove();
+    if (oldRing) oldRing.remove();
+
+    // ثانياً: نضيف السهم الجديد حسب الاختيار
+    if (instruction === "ATT") {
+        const arrow = document.createElement('div');
+        arrow.className = 'instruction-arrow arrow-att';
+        currentPlayerNode.appendChild(arrow);
+    } else if (instruction === "DEF") {
+        const arrow = document.createElement('div');
+        arrow.className = 'instruction-arrow arrow-def';
+        currentPlayerNode.appendChild(arrow);
+    } else if (instruction === "PRESS") {
+        const ring = document.createElement('div');
+        ring.className = 'press-ring';
+        currentPlayerNode.appendChild(ring);
     }
 
-    // بنحفظ التعليمة جوة العنصر عشان نستفيد منها بعدين
-    currentPlayerNode.setAttribute('data-instruction', instruction);
-    
     closeModal();
 }
-
-// تسكير الشاشة
-function closeModal() {
-    document.getElementById('player-instructions-modal').style.display = 'none';
-}
-    });
-}
-
-
