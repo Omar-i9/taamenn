@@ -419,46 +419,71 @@ function rotateDhikr() {
     if(el) el.innerText = dhikrs[Math.floor(Math.random() * dhikrs.length)];
 }
 
-// ==========================================
-// [10] WEATHER API
-// ==========================================
+// [1] وظيفة الطقس المتطورة
 async function fetchWeather() {
-    const lat = 31.5326; 
-    const long = 35.0998;
-    
+    const lat = 31.53, lon = 35.09; // إحداثيات الخليل
     try {
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max&timezone=auto`);
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&timezone=auto`);
         const data = await res.json();
         
-        const curr = data.current;
-        if(document.getElementById('w-temp')) document.getElementById('w-temp').innerText = `${Math.round(curr.temperature_2m)}°C`;
-        if(document.getElementById('w-wind')) document.getElementById('w-wind').innerText = `${curr.wind_speed_10m} km/h`;
-        if(document.getElementById('w-hum')) document.getElementById('w-hum').innerText = `${curr.relative_humidity_2m}%`;
-        
-        const code = curr.weather_code;
-        const desc = code < 3 ? "سماء صافية / غيوم متفرقة" : (code < 50 ? "ضباب خفيف" : "أجواء ماطرة / عاصفة");
-        if(document.getElementById('w-desc')) document.getElementById('w-desc').innerText = desc;
+        // تحديث البيانات الحالية
+        const temp = Math.round(data.current.temperature_2m);
+        const code = data.current.weather_code;
+        const wind = data.current.wind_speed_10m;
+        const humidity = data.current.relative_humidity_2m;
 
-        const daily = data.daily;
-        let html = '';
-        for(let i=0; i<5; i++) {
-            const d = new Date(daily.time[i]);
-            const dayName = d.toLocaleDateString('ar-EG', {weekday:'short'});
-            html += `
-                <div class="w-item" style="min-width:70px;">
-                    <div style="font-size:0.8rem; opacity:0.7;">${dayName}</div>
-                    <div style="font-weight:bold; font-size:1.2rem; color:var(--ramadan-gold);">${Math.round(daily.temperature_2m_max[i])}°</div>
+        // تحديد الإيموجي والوضع (ليل أو نهار)
+        const hour = new Date().getHours();
+        const isDay = hour > 6 && hour < 18;
+        
+        let emoji = isDay ? "☀️" : "🌙";
+        let statusText = isDay ? "يوم مشمس" : "ليل صافي";
+        if(code > 3) { emoji = "☁️"; statusText = "غائم جزئياً"; }
+        if(code > 60) { emoji = "🌧️"; statusText = "أجواء ماطرة"; }
+
+        document.getElementById('w-temp').innerText = `${temp}°`;
+        document.getElementById('main-emoji').innerText = emoji;
+        document.getElementById('w-time').innerText = statusText;
+        document.getElementById('w-wind').innerText = `${wind} كم/س`;
+        document.getElementById('w-humidity').innerText = `${humidity}%`;
+
+        // تحديث شريط الساعات
+        const hourlyCont = document.getElementById('hourly-container');
+        hourlyCont.innerHTML = "";
+        for(let i=0; i<6; i++) {
+            const hTemp = Math.round(data.hourly.temperature_2m[i]);
+            hourlyCont.innerHTML += `
+                <div class="hourly-item">
+                    <div style="font-size:0.8rem; opacity:0.7">${i+1}h</div>
+                    <div style="margin:5px 0">🌡️</div>
+                    <div style="font-weight:bold">${hTemp}°</div>
                 </div>
             `;
         }
-        if(document.getElementById('forecast-container')) document.getElementById('forecast-container').innerHTML = html;
-        if(document.getElementById('w-date')) document.getElementById('w-date').innerText = new Date().toLocaleDateString('ar-EG', {weekday:'long', day:'numeric', month:'long'});
-    } catch(e) { 
-        console.log("Weather error:", e);
-        if(document.getElementById('w-desc')) document.getElementById('w-desc').innerText = "تعذر جلب بيانات الطقس";
-    }
+    } catch(e) { console.log("Weather Error", e); }
 }
 
+// [2] كود الـ Tilt (تأثير الميلان)
+const card = document.getElementById('tilt-card');
+if(card) {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 10;
+        const rotateY = (centerX - x) / 10;
+        
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    });
+}
 // ==========================================
 // [11] MATCH HISTORY
 // ==========================================
@@ -722,3 +747,4 @@ function savePlayerSettings() {
 
     closeModal();
 }
+
