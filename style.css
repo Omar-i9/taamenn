@@ -1010,7 +1010,6 @@
 	                    .player-token { width: 45px; height: 45px; }
 	                    .player-token .p-name { display: none; }
 	                    
-	                    .cursor-dot, .cursor-outline { display: none; }
 	                    
 	                    .grid-menu { grid-template-columns: 1fr; }
 	                    
@@ -1136,3 +1135,4 @@
 	         }
 
 	              
+
