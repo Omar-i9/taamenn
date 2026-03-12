@@ -33,8 +33,7 @@
 	                    box-sizing: border-box;
 	                    outline: none;
 	                    -webkit-tap-highlight-color: transparent;
-	                    cursor: none; /* الماوس المخصص */
-	                    user-select: none;
+
 	                }
 
 	                body {
@@ -1135,4 +1134,5 @@
 	            font-weight: bold;
 	            text-align: center;
 	         }
+
 	              
