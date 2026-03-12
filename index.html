@@ -6,11 +6,16 @@
 	<meta content="تأمين 2026 - المنصة الرياضية الرمضانية الشاملة" name="description">
 	<meta content="#050a1f" name="theme-color">
 	<title>تأمين 2026 | الإصدار الرمضاني البلاتيني (GDMi)</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&family=Tajawal:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-	<div id="master-truck-preloader">
+    <div id="master-truck-preloader">
 		<div class="loader">
 			<div class="truckWrapper">
 				<div class="truckBody">
@@ -30,166 +35,26 @@
 					<circle cx="15" cy="15" fill="#282828" r="13.5" stroke="#282828" stroke-width="3"></circle>
 					<circle cx="15" cy="15" fill="#DFDFDF" r="7"></circle></svg>
 				</div>
-				<div class="road"></div><svg class="lampPost" id="Capa_1" version="1.1" viewbox="0 0 453.459 453.459" xmlns="http://www.w3.org/2000/svg">
-				<path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0zM232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg>
+				<div class="road"></div>
 			</div>
 		</div>
-		<div class="loading-text-style">
-			جاري تحميل نظام تــأمين...
-		</div>
+		<div class="loading-text-style">جاري تحميل نظام تــأمين...</div>
 	</div>
-	<div id="notification-container"></div>
-	<div id="welcome-screen">
-		<div class="welcome-content">
-			<h1 class="welcome-title">"تأمــين" رمضـان</h1>
-			<p class="welcome-subtitle">حيث تلتقي الروحانية بالمنافسة</p><button class="enter-btn" onclick="enterSite()">دخول إلى الملعب</button>
-		</div>
-		<div class="signature">
-			DESIGNED BY GDMi
-		</div>
-	</div>
-	<div id="sky-background"></div>
-	<div class="stars-container" id="starsContainer"></div>
-	<div class="moon-container">
-		<div class="moon"></div>
-	</div>
-	<div class="lantern-wire">
-		<div class="hanging-lantern">
-			🏮
-		</div>
-		<div class="hanging-lantern">
-			🏮
-		</div>
-		<div class="hanging-lantern">
-			🏮
-		</div>
-		<div class="hanging-lantern">
-			🏮
-		</div>
-		<div class="hanging-lantern">
-			🏮
-		</div>
-	</div>
-	<div class="cursor-dot"></div>
-	<div class="cursor-outline"></div>
-	<nav class="main-nav">
-		<div class="nav-item active" onclick="navigate('home', this)" title="ساحة البداية">
-			<i class="fas fa-home"></i>
-		</div>
-		<div class="nav-item" onclick="navigate('cannon', this)" title="توقيت النخبة">
-			<i class="fas fa-mosque"></i>
-		</div>
-		<div class="nav-item" onclick="navigate('booking', this)" title="غرفة العمليات">
-			<i class="fas fa-clock"></i>
-		</div>
-		<div class="nav-item" onclick="navigate('radar', this)" title="التحليل الفني">
-			<i class="fas fa-chart-pie"></i>
-		</div>
-		<div class="nav-item" onclick="navigate('matches', this)" title="أرشيف الأمجاد">
-			<i class="fas fa-trophy"></i>
-		</div>
-		<div class="nav-item" onclick="navigate('weather', this)" title="الطقس والأجواء">
-			<i class="fas fa-cloud-sun"></i>
-		</div>
-		<div class="nav-item" onclick="navigate('elite', this)" title="الصالة الملكية">
-			<i class="fas fa-crown"></i>
-		</div>
-	</nav>
-	<div class="page active" id="home">
-		<div class="hero-section">
-			<h1 class="hero-title">تأمـين 2026</h1>
-			<div class="hero-subtitle">
-				RAMADAN ELITE LEAGUE - النسخة البـلاتـيـنـية
-			</div>
-		</div>
-		<div class="grid-menu">
-			<div class="menu-card tilt-card" onclick="navigate('cannon')">
-				<i class="fas fa-bullhorn"></i>
-				<h3>توقيت النخبة</h3>
-				<p>مواقيت الصلاة، الإمساك، وعداد الإفطار الدقيق.</p>
-			</div>
-			<div class="menu-card tilt-card" onclick="navigate('booking')">
-				<i class="fas fa-stopwatch"></i>
-				<h3>غرفة العمليات</h3>
-				<p>موعد الحجز الرسمي، العد التنازلي، وحالة الملعب.</p>
-			</div>
-			<div class="menu-card tilt-card" onclick="navigate('radar')">
-				<i class="fas fa-users-viewfinder"></i>
-				<h3>التحليل الفني</h3>
-				<p>تشكيلات الفرق، إحصائيات اللاعبين، وتحليل الأداء.</p>
-			</div>
-		</div>
-		<div class="tilt-card" style="margin-top: 50px; text-align: center; border-color: var(--ramadan-gold);">
-			<h4 style="color: var(--ramadan-gold); margin-bottom: 15px; font-family:'Reem Kufi';">✨ نفحات رمضانية</h4>
-			<p id="dhikrDisplay" style="font-size: 1.3rem;">سبحان الله وبحمده، عدد خلقه، ورضا نفسه، وزنة عرشه، ومداد كلماته.</p>
-		</div>
-	</div>
-	<div class="page" id="cannon">
-		<h2 class="section-title">توقيت النخبة</h2>
-		<div class="cannon-section tilt-card" id="dynamicTimerSection">
-			<div class="next-prayer-label" id="nextPrayerNameLabel">
-				الوقت المتبقي للصلاة القادمة
-			</div>
-			<div class="countdown-main" id="dynamicPrayerCounter">
-				--:--:--
-			</div>
-			<div class="date-display" id="hijriDate">
-				جاري الاتصال بالقمر الصناعي...
-			</div>
-		</div>
-		<div class="prayers-grid" id="prayersContainer">
-			<div style="grid-column: 1/-1; text-align: center; color: #888;">
-				جاري جلب المواقيت وتحديد الصلاة القادمة...
-			</div>
-		</div>
-	</div>
-	<div class="page" id="booking">
-		<h2 class="section-title">غرفة العمليات</h2>
-		<div class="tilt-card" id="bookingTimerCard" style="text-align: center; margin-bottom: 30px; background: #000; border-color: var(--accent-cyan);">
-			<h3 id="bookingTitle" style="color: var(--accent-cyan); margin-bottom: 20px;">العد التنازلي للحجز (الجمعة 20:00 - 21:00)</h3>
-			<div id="timerContainer" style="display: flex; justify-content: center; gap: 15px; font-family: 'Orbitron';">
-				<div class="w-item">
-					<span id="b-days" style="font-size: 2.5rem;">00</span><small>يوم</small>
-				</div>
-				<div class="w-item">
-					<span id="b-hours" style="font-size: 2.5rem;">00</span><small>ساعة</small>
-				</div>
-				<div class="w-item">
-					<span id="b-mins" style="font-size: 2.5rem;">00</span><small>دقيقة</small>
-				</div>
-				<div class="w-item">
-					<span id="b-secs" style="font-size: 2.5rem;">00</span><small>ثانية</small>
-				</div>
-			</div>
-		</div>
-		<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-			<div class="tilt-card" style="text-align: center;">
-				<i class="fas fa-crown" style="font-size: 2rem; color: var(--ramadan-gold);"></i>
-				<h4 style="margin: 10px 0;">الملك الحالي</h4>
-				<p>فريق كريم</p>
-			</div>
-			<div class="tilt-card" style="text-align: center;">
-				<i class="fas fa-fire" style="font-size: 2rem; color: var(--danger-red);"></i>
-				<h4 style="margin: 10px 0;">الهداف</h4>
-				<p>يوسف & خضر</p>
-			</div>
-			<div class="tilt-card" style="text-align: center;">
-				<i class="fas fa-check-circle" style="font-size: 2rem; color: var(--success-green);"></i>
-				<h4 style="margin: 10px 0;">حالة الحجز</h4>
-				<p>طافية %0</p>
-			</div>
-		</div>
-	</div>
-	<div class="page" id="radar">
+
+    <div class="page" id="radar">
 		<h2 class="section-title">التحليل الفني والتحركات</h2>
 		<div class="radar-controls">
-			<button class="radar-btn active" onclick="toggleRadarMode('pitch', this)"><i class="fas fa-futbol"></i> الملعب التفاعلي</button> <button class="radar-btn" onclick="toggleRadarMode('stats', this)"><i class="fas fa-table"></i> الإحصائيات والأرقام</button> <button class="radar-btn" id="tactical-view-toggle"><i class="fas fa-cube"></i> المنظور</button>
+			<button class="radar-btn active" onclick="toggleRadarMode('pitch', this)"><i class="fas fa-futbol"></i> الملعب التفاعلي</button>
+            <button class="radar-btn" onclick="toggleRadarMode('stats', this)"><i class="fas fa-table"></i> الإحصائيات والأرقام</button>
+            <button class="radar-btn" id="tactical-view-toggle"><i class="fas fa-cube"></i> المنظور</button>
+            
+            <button class="radar-btn" onclick="downloadTacticImage()" style="background: #d4af37; color: #000;">
+                <i class="fas fa-camera"></i> تحميل التكتيك
+            </button>
 		</div>
 		<div id="pitch-view">
 			<div id="tactical-pitch-wrapper">
-				<div id="live-coord">
-					<span id="coord-label"></span>
-				</div>
+				<div id="live-coord"><span id="coord-label"></span></div>
 				<div id="tactical-futsal-pitch">
 					<div class="tp-midline"></div>
 					<div class="tp-center-circle"></div>
@@ -198,95 +63,8 @@
 				</div>
 			</div>
 		</div>
-		<div id="stats-view">
-			<h3 style="color: var(--accent-cyan); margin-bottom: 15px;">📊 سجلات فريق النخبة</h3>
-			<div class="stats-table-container">
-				<table class="stats-table">
-					<thead>
-						<tr>
-							<th style="text-align: right;">اللاعب</th>
-							<th>الأهداف ⚽</th>
-							<th>الأسيست 👟</th>
-							<th>المساهمات 🔥</th>
-							<th>التقييم ⭐</th>
-						</tr>
-					</thead>
-					<tbody id="eliteTableBody"></tbody>
-				</table>
-			</div>
-			<h3 style="color: var(--danger-red); margin-bottom: 15px;">📊 سجلات فريق التحدي</h3>
-			<div class="stats-table-container">
-				<table class="stats-table">
-					<thead>
-						<tr>
-							<th style="text-align: right;">اللاعب</th>
-							<th>الأهداف ⚽</th>
-							<th>الأسيست 👟</th>
-							<th>المساهمات 🔥</th>
-							<th>التقييم ⭐</th>
-						</tr>
-					</thead>
-					<tbody id="challengeTableBody"></tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-	<div class="page" id="matches">
-		<h2 class="section-title">أرشيف الأمجاد</h2>
-		<div class="cl-theme-container tilt-card">
-			<div class="cl-bg-stars"></div>
-			<h3 class="cl-title">ليالي الأبطال</h3>
-			<p class="cl-subtitle">THE CHAMPIONS ELITE</p>
-			<div class="cl-trophy-wrapper">
-				<div class="trophy-glow"></div>
-				<div class="cl-trophy">
-					<div class="trophy-top"></div>
-					<div class="trophy-bowl"></div>
-					<div class="trophy-handle handle-left"></div>
-					<div class="trophy-handle handle-right"></div>
-					<div class="trophy-stem"></div>
-					<div class="trophy-base"></div>
-				</div>
-			</div>
-		</div>
-		<div id="matchHistoryContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"></div>
-	</div>
-	<div class="page" id="weather">
-		<h2 class="section-title">أجواء الملعب</h2>
-		<div class="weather-card-hero tilt-card">
-			<div class="weather-main-info">
-				<div id="w-date" style="color: var(--gold-glow); font-size: 1.1rem;">
-					...
-				</div>
-				<h2 id="w-temp">--°C</h2>
-				<div id="w-desc" style="font-size: 1.5rem; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">
-					جاري التحميل...
-				</div>
-				<div id="location-text" style="margin-top: 15px; font-size: 1rem; color: #a0d8ef; font-weight: bold; background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; display: inline-block;">
-					<i class="fab fa-google" style="margin-left: 5px; color: #fff;"></i> الخليل، فلسطين (تحديث مباشر)
-				</div>
-			</div>
-			<div class="weather-details">
-				<div class="w-item">
-					<i class="fas fa-wind"></i><span id="w-wind">--</span><small style="opacity:0.6; font-size:0.7rem;">سرعة الرياح</small>
-				</div>
-				<div class="w-item">
-					<i class="fas fa-tint"></i><span id="w-hum">--</span><small style="opacity:0.6; font-size:0.7rem;">الرطوبة</small>
-				</div>
-				<div class="w-item">
-					<i class="fas fa-eye"></i><span>ممتازة</span><small style="opacity:0.6; font-size:0.7rem;">الرؤية</small>
-				</div>
-			</div>
-		</div>
-		<h3 style="margin: 30px 0; color: var(--accent-cyan); text-align: center;">توقعات الأسبوع للخليل</h3>
-		<div class="weather-details" id="forecast-container" style="justify-content: center;"></div>
-	</div>
-	<div class="page" id="elite">
-		<div class="tilt-card" style="text-align: center; border: 2px solid var(--ramadan-gold);">
-			<i class="fas fa-coffee" style="font-size: 4rem; color: #fff; margin-bottom: 20px;"></i>
-			<h2 style="font-family: 'Reem Kufi'; margin-bottom: 20px; color: var(--ramadan-gold);">الصالة الملكية</h2>
-			<p style="font-size: 1.2rem; line-height: 1.8; margin-bottom: 30px;">"يا هلا بفرسان تأمين.. المكان مكانكم، والوقت وقتكم. رمضان بيجمعنا على الخير والمحبة والمنافسة الشريفة."</p><a class="radar-btn active" href="https://wa.me/972594054750" style="display: inline-flex; text-decoration: none; justify-content: center;" target="_blank"><i class="fab fa-whatsapp"></i> تواصل مع الإدارة</a>
-		</div>
-	</div>
+        </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
