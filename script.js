@@ -11,16 +11,11 @@ function enterSite() {
         setTimeout(() => {
             screen.style.display = 'none';
             const homePage = document.getElementById('home');
-            if (homePage) {
-                homePage.classList.add('active');
-            }
-            if (typeof navigate === "function") {
-                navigate('home');
-            }
-        }, 1000);
+            if (homePage) homePage.classList.add('active');
+            if (typeof navigate === "function") navigate('home');
+        }, 500);
     }
 }
-
 // ==========================================
 // [1] DATABASE OF NOTIFICATIONS
 // ==========================================
@@ -763,3 +758,4 @@ function closeModal() {
     const modal = document.getElementById('player-instructions-modal');
     if(modal) modal.style.display = 'none';
 }
+
