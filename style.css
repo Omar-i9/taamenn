@@ -1077,3 +1077,49 @@
     box-shadow: 0 0 10px var(--ramadan-gold, #ffd700);
     z-index: 10;
 }
+
+/* حاوية الأسهم فوق اللاعب */
+.instruction-arrow {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 5;
+    transition: all 0.3s ease;
+}
+
+/* سهم الهجوم (للأمام) */
+.arrow-att {
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 10px solid #ff4d4d; /* أحمر ناري */
+}
+
+/* سهم الدفاع (للخلف) */
+.arrow-def {
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid #4d94ff; /* أزرق دفاعي */
+}
+
+/* علامة الضغط (دائرة حول اللاعب) */
+.press-ring {
+    top: -5px;
+    left: -5px;
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    border: 2px dashed var(--ramadan-gold);
+    border-radius: 50%;
+    animation: rotateRing 4s linear infinite;
+}
+
+@keyframes rotateRing {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
