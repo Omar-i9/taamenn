@@ -604,25 +604,36 @@
 	                // ==========================================
 	                // [MAIN] EXECUTION
 	                // ==========================================
-	         window.onload = () => {
-				 
-	            // 2. تشغيل محركات وأنظمة الموقع (الأكواد الأصلية)
-	            new FutsalTacticalEngine();
-	            initShootingStars();
-	            initTilt();
-	            initPrayersSystem(); 
-	            fetchWeather();
-	            renderStats();
-	            renderMatches();
-	            
-	            setInterval(updateBookingTimer, 1000);
-	            updateBookingTimer();
-	            setInterval(rotateDhikr, 10000);
-	            
-	            console.log("Omar System: Truck Preloader & Site Engine Resurrected!");
-
-	         };
-
+// ==========================================
+	        // [MAIN] EXECUTION
+	        // ==========================================
+// ==========================================
+	        // [MAIN] EXECUTION
+	        // ==========================================
+	        window.onload = () => {
+                // 1. إظهار شاشة الترحيب فوراً
+                const welcomeScreen = document.getElementById('welcome-screen');
+                if (welcomeScreen) {
+                    welcomeScreen.style.display = 'flex';
+                    welcomeScreen.style.opacity = '1';
+                    welcomeScreen.style.visibility = 'visible';
+                }
+				 
+	            // 2. تشغيل محركات وأنظمة الموقع
+	            new FutsalTacticalEngine();
+	            initShootingStars();
+	            initTilt();
+	            initPrayersSystem(); 
+	            fetchWeather();
+	            renderStats();
+	            renderMatches();
+	            
+	            setInterval(updateBookingTimer, 1000);
+	            updateBookingTimer();
+	            setInterval(rotateDhikr, 10000);
+	            
+	            console.log("Omar System: Welcome Screen Ready!");
+	        };
 // وظيفة تحميل صورة التكتيك باستخدام مكتبة html2canvas
 function downloadTacticImage() {
     const pitchElement = document.getElementById('tactical-pitch-wrapper');
@@ -658,5 +669,6 @@ function downloadTactic() {
         link.click();
     });
 }
+
 
 
