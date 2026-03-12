@@ -1,0 +1,1138 @@
+	                :root {
+	                    --night-blue: #050a1f;
+	                    --deep-purple: #0f0c29;
+	                    --ramadan-gold: #ffd700;
+	                    --gold-glow: #ffcc33;
+	                    --metallic-gold: #d4af37;
+	                    --accent-cyan: #00f2ff;
+	                    --danger-red: #ff4d4d;
+	                    --success-green: #2ecc71;
+	                    
+	                    /* ألوان دوري الأبطال الجديدة */
+	                    --cl-blue: #001432;
+	                    --cl-silver: #e0e5ec;
+	                    --cl-dark-silver: #8b9bb4;
+	                    --cl-highlight: #ffffff;
+	                    
+	                    --glass: rgba(255, 255, 255, 0.05);
+	                    --glass-thick: rgba(255, 255, 255, 0.08);
+	                    --glass-border: rgba(255, 215, 0, 0.15);
+	                    --border-gold: rgba(255, 215, 0, 0.3);
+	                    --main-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	                    --neon-glow: 0 0 10px rgba(255, 215, 0, 0.3);
+	                    --transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+	                }
+
+	                /* ================================================================
+	                   [2] التنسيقات الأساسية (RESET & BASE)
+	                   ================================================================
+	                */
+	                * {
+	                    margin: 0;
+	                    padding: 0;
+	                    box-sizing: border-box;
+	                    outline: none;
+	                    -webkit-tap-highlight-color: transparent;
+	                    cursor: none; /* الماوس المخصص */
+	                    user-select: none;
+	                }
+
+	                body {
+	                    font-family: 'Tajawal', sans-serif;
+	                    background: var(--night-blue);
+	                    color: #fff;
+	                    overflow-x: hidden;
+	                    min-height: 100vh;
+	                    line-height: 1.6;
+	                    position: relative;
+	                }
+
+	                ::-webkit-scrollbar { width: 8px; }
+	                ::-webkit-scrollbar-track { background: var(--night-blue); }
+	                ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+	                ::-webkit-scrollbar-thumb:hover { background: var(--ramadan-gold); }
+
+	                /* ================================================================
+	                   [3] المؤشر المخصص (CUSTOM CURSOR)
+	                   ================================================================
+	                */
+	                .cursor-dot {
+	                    position: fixed;
+	                    top: 0; left: 0;
+	                    width: 8px; height: 8px;
+	                    background: var(--accent-cyan);
+	                    border-radius: 50%;
+	                    z-index: 10000;
+	                    pointer-events: none;
+	                    box-shadow: 0 0 15px var(--accent-cyan);
+	                    transform: translate(-50%, -50%);
+	                }
+
+	                .cursor-outline {
+	                    position: fixed;
+	                    top: 0; left: 0;
+	                    width: 45px; height: 45px;
+	                    border: 1px solid rgba(255, 215, 0, 0.5);
+	                    border-radius: 50%;
+	                    z-index: 9999;
+	                    pointer-events: none;
+	                    transform: translate(-50%, -50%);
+	                    transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
+	                }
+
+	                body:has(a:hover, button:hover, .nav-item:hover, .action-card:hover, .clickable:hover) .cursor-outline {
+	                    width: 70px;
+	                    height: 70px;
+	                    background: rgba(255, 215, 0, 0.05);
+	                    border-color: var(--accent-cyan);
+	                    border-width: 2px;
+	                }
+
+	                /* ================================================================
+	                   [4] شاشة الترحيب (WELCOME SCREEN)
+	                   ================================================================
+	                */
+	                #welcome-screen {
+	                    position: fixed;
+	                    top: 0; left: 0;
+	                    width: 100%; height: 100%;
+	                    background: radial-gradient(circle at center, #0a102e 0%, #000000 100%);
+	                    z-index: 999999;
+	                    display: flex;
+	                    flex-direction: column;
+	                    justify-content: center;
+	                    align-items: center;
+	                    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+	                }
+
+	                .welcome-content { text-align: center; position: relative; }
+
+	                .welcome-title {
+	                    font-family: 'Reem Kufi', sans-serif;
+	                    font-size: clamp(3rem, 8vw, 6rem);
+	                    color: transparent;
+	                    background: linear-gradient(to bottom, var(--ramadan-gold), #fff, var(--metallic-gold));
+	                    -webkit-background-clip: text;
+	                    background-clip: text;
+	                    margin-bottom: 20px;
+	                    opacity: 0;
+	                    transform: translateY(30px);
+	                    animation: textReveal 1.5s ease forwards 0.5s;
+	                    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
+	                }
+
+	                .welcome-subtitle {
+	                    font-size: 1.2rem;
+	                    color: #888;
+	                    opacity: 0;
+	                    animation: fadeIn 1s ease forwards 1.5s;
+	                    letter-spacing: 2px;
+	                }
+
+	                .enter-btn {
+	                    margin-top: 50px;
+	                    padding: 15px 50px;
+	                    background: transparent;
+	                    border: 1px solid var(--ramadan-gold);
+	                    color: var(--ramadan-gold);
+	                    font-family: 'Tajawal', sans-serif;
+	                    font-size: 1.2rem;
+	                    border-radius: 50px;
+	                    cursor: pointer;
+	                    position: relative;
+	                    overflow: hidden;
+	                    transition: var(--transition);
+	                    opacity: 0;
+	                    animation: fadeIn 1s ease forwards 2s;
+	                }
+
+	                .enter-btn::before {
+	                    content: '';
+	                    position: absolute;
+	                    top: 0; left: -100%;
+	                    width: 100%; height: 100%;
+	                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+	                    transition: 0.5s;
+	                }
+
+	                .enter-btn:hover {
+	                    background: var(--ramadan-gold);
+	                    color: #000;
+	                    box-shadow: 0 0 30px var(--ramadan-gold);
+	                    transform: scale(1.05);
+	                }
+	                
+	                .enter-btn:hover::before { left: 100%; }
+
+	                .signature {
+	                    position: absolute;
+	                    bottom: 30px;
+	                    font-family: 'Orbitron', sans-serif;
+	                    font-size: 1rem;
+	                    color: rgba(255,255,255,0.3);
+	                    letter-spacing: 5px;
+	                    animation: pulseText 3s infinite;
+	                }
+
+	                @keyframes textReveal { to { opacity: 1; transform: translateY(0); } }
+	                @keyframes fadeIn { to { opacity: 1; } }
+
+	                /* ================================================================
+	                   [5] خلفية السماء والبيئة (ATMOSPHERE)
+	                   ================================================================
+	                */
+	                #sky-background {
+	                    position: fixed;
+	                    top: 0; left: 0;
+	                    width: 100%; height: 100%;
+	                    z-index: -10;
+	                    background: linear-gradient(180deg, #02040a 0%, #050a1f 40%, #11112b 100%);
+	                }
+
+	                .stars-container {
+	                    position: fixed;
+	                    width: 100%; height: 100%;
+	                    z-index: -9;
+	                    perspective: 500px;
+	                }
+
+	                .star {
+	                    position: absolute;
+	                    background: #fff;
+	                    border-radius: 50%;
+	                    opacity: 0.8;
+	                    box-shadow: 0 0 5px #fff;
+	                    animation: twinkle var(--d) infinite alternate;
+	                }
+
+	                @keyframes twinkle {
+	                    0% { opacity: 0.3; transform: scale(0.8); }
+	                    100% { opacity: 1; transform: scale(1.2); }
+	                }
+
+	                .shooting-star {
+	                    position: absolute;
+	                    top: 50%; left: 50%;
+	                    height: 2px;
+	                    background: linear-gradient(-45deg, rgba(255,255,255,1), rgba(0,0,255,0));
+	                    filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+	                    width: 0;
+	                    opacity: 0;
+	                    z-index: -8;
+	                }
+	                
+	                @keyframes shoot {
+	                    0% { width: 0; transform: translateX(0); opacity: 1; }
+	                    15% { width: 100px; }
+	                    100% { width: 0; transform: translateX(300px); opacity: 0; }
+	                }
+
+	                .moon-container {
+	                    position: fixed;
+	                    top: 40px; left: 40px;
+	                    width: 100px; height: 100px;
+	                    z-index: -5;
+	                    transition: transform 0.5s ease;
+	                }
+
+	                .moon {
+	                    width: 80px;
+	                    height: 80px;
+	                    background: radial-gradient(circle at 30% 30%, #fff, var(--ramadan-gold));
+	                    border-radius: 50%;
+	                    box-shadow: 0 0 60px rgba(255, 215, 0, 0.4), inset -10px -10px 20px rgba(0,0,0,0.2);
+	                    position: relative;
+	                    animation: moonPulse 4s infinite alternate;
+	                }
+	                
+	                .moon::after {
+	                    content: '';
+	                    position: absolute;
+	                    top: -5px; right: -5px;
+	                    width: 100%; height: 100%;
+	                    background: var(--night-blue);
+	                    border-radius: 50%;
+	                    transform: scale(0.85) translate(15px, -10px);
+	                    filter: blur(2px);
+	                }
+
+	                @keyframes moonPulse {
+	                    0% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.3); }
+	                    100% { box-shadow: 0 0 90px rgba(255, 215, 0, 0.6); }
+	                }
+
+	                .lantern-wire {
+	                    position: fixed;
+	                    top: -20px; width: 100%;
+	                    display: flex; justify-content: space-evenly;
+	                    z-index: 5; pointer-events: none;
+	                }
+
+	                .hanging-lantern {
+	                    font-size: 2.8rem;
+	                    transform-origin: top center;
+	                    animation: swingLantern 4s infinite ease-in-out;
+	                    filter: drop-shadow(0 10px 20px rgba(255, 165, 0, 0.5));
+	                    position: relative;
+	                }
+	                
+	                .hanging-lantern::before {
+	                    content: '';
+	                    position: absolute;
+	                    top: -100px; left: 50%;
+	                    width: 1px; height: 120px;
+	                    background: rgba(255, 255, 255, 0.3);
+	                }
+
+	                @keyframes swingLantern {
+	                    0%, 100% { transform: rotate(5deg); }
+	                    50% { transform: rotate(-5deg); }
+	                }
+
+	                /* ================================================================
+	                   [6] شريط التنقل (NAVIGATION)
+	                   ================================================================
+	                */
+	                .main-nav {
+	                    position: fixed;
+	                    bottom: 25px; left: 50%;
+	                    transform: translateX(-50%);
+	                    background: rgba(15, 12, 41, 0.85);
+	                    backdrop-filter: blur(20px);
+	                    -webkit-backdrop-filter: blur(20px);
+	                    border: 1px solid rgba(255, 255, 255, 0.1);
+	                    padding: 10px 20px;
+	                    border-radius: 40px;
+	                    display: flex; gap: 10px;
+	                    z-index: 1000;
+	                    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+	                    transition: var(--transition);
+	                }
+
+	                .nav-item {
+	                    width: 50px;
+	                    height: 50px;
+	                    border-radius: 50%;
+	                    display: flex; align-items: center; justify-content: center;
+	                    color: rgba(255,255,255,0.5);
+	                    font-size: 1.2rem;
+	                    position: relative;
+	                    transition: var(--transition);
+	                }
+
+	                .nav-item:hover, .nav-item.active {
+	                    color: var(--night-blue);
+	                    background: var(--ramadan-gold);
+	                    transform: translateY(-8px);
+	                    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+	                }
+
+	                .nav-item::after {
+	                    content: attr(title);
+	                    position: absolute;
+	                    top: -40px; left: 50%;
+	                    transform: translateX(-50%) scale(0);
+	                    background: rgba(0,0,0,0.8);
+	                    color: #fff;
+	                    padding: 4px 10px;
+	                    border-radius: 5px;
+	                    font-size: 0.7rem;
+	                    white-space: nowrap;
+	                    opacity: 0;
+	                    transition: 0.3s;
+	                    pointer-events: none;
+	                }
+
+	                .nav-item:hover::after {
+	                    transform: translateX(-50%) scale(1);
+	                    opacity: 1;
+	                }
+
+	                /* ================================================================
+	                   [7] حاوية الصفحات (PAGE LAYOUT)
+	                   ================================================================
+	                */
+	                .page {
+	                    display: none;
+	                    padding: 100px 20px 120px;
+	                    max-width: 1200px;
+	                    margin: 0 auto;
+	                    opacity: 0;
+	                    transform: translateY(20px);
+	                    transition: opacity 0.6s ease, transform 0.6s ease;
+	                }
+
+	                .page.active {
+	                    display: block;
+	                    opacity: 1;
+	                    transform: translateY(0);
+	                }
+
+	                .section-title {
+	                    text-align: center;
+	                    font-family: 'Reem Kufi', sans-serif;
+	                    font-size: 3rem;
+	                    color: var(--ramadan-gold);
+	                    margin-bottom: 50px;
+	                    text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+	                    position: relative;
+	                    display: inline-block;
+	                    left: 50%; transform: translateX(-50%);
+	                    width: 100%;
+	                }
+	                
+	                .section-title::after {
+	                    content: '⬥ ⬥ ⬥';
+	                    display: block;
+	                    font-size: 1rem;
+	                    color: rgba(255,255,255,0.3);
+	                    margin-top: 10px;
+	                    letter-spacing: 5px;
+	                }
+
+	                /* ================================================================
+	                   [8] البطاقات التفاعلية (CARDS & TILT)
+	                   ================================================================
+	                */
+	                .tilt-card {
+	                    background: var(--glass);
+	                    border: 1px solid var(--glass-border);
+	                    border-radius: 30px;
+	                    padding: 30px;
+	                    position: relative;
+	                    overflow: hidden;
+	                    transform-style: preserve-3d;
+	                    transform: perspective(1000px);
+	                    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s;
+	                }
+	                
+	                .tilt-card:hover {
+	                    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 215, 0, 0.05);
+	                    border-color: rgba(255, 215, 0, 0.4);
+	                }
+
+	                .booking-active {
+	                    border-color: var(--success-green) !important;
+	                    box-shadow: 0 0 30px var(--success-green), inset 0 0 20px rgba(46, 204, 113, 0.2) !important;
+	                    animation: pulseGreen 1.5s infinite alternate;
+	                }
+
+	                @keyframes pulseGreen {
+	                    0% { box-shadow: 0 0 20px var(--success-green); }
+	                    100% { box-shadow: 0 0 40px var(--success-green); }
+	                }
+
+	                .booking-open-text {
+	                    font-size: 2rem;
+	                    color: var(--success-green);
+	                    font-weight: bold;
+	                    animation: blink 1s infinite;
+	                    font-family: 'Reem Kufi', sans-serif;
+	                }
+	              
+	                
+	                @keyframes blink { 50% { opacity: 0.5; } }
+
+	                /* ================================================================
+	                   [9] الصفحة الرئيسية (HOME)
+	                   ================================================================
+	                */
+	                .hero-section { text-align: center; margin-bottom: 60px; }
+
+	                .hero-title {
+	                    font-family: 'Reem Kufi', sans-serif;
+	                    font-size: 5rem;
+	                    background: linear-gradient(180deg, var(--ramadan-gold), #fff);
+	                    -webkit-background-clip: text;
+	                    -webkit-text-fill-color: transparent;
+	                    filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.3));
+	                }
+
+	                .hero-subtitle {
+	                    font-size: 1.2rem;
+	                    letter-spacing: 8px;
+	                    color: rgba(255,255,255,0.7);
+	                    margin-top: 10px;
+	                    text-transform: uppercase;
+	                }
+
+	                .grid-menu {
+	                    display: grid;
+	                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	                    gap: 30px;
+	                }
+
+	                .menu-card { text-align: center; cursor: pointer; }
+
+	                .menu-card i {
+	                    font-size: 3.5rem;
+	                    color: var(--ramadan-gold);
+	                    margin-bottom: 20px;
+	                    display: block;
+	                    transform: translateZ(30px);
+	                }
+
+	                .menu-card h3 {
+	                    font-size: 1.5rem;
+	                    margin-bottom: 10px;
+	                    transform: translateZ(20px);
+	                }
+
+	                .menu-card p {
+	                    color: #aaa;
+	                    font-size: 0.9rem;
+	                    transform: translateZ(10px);
+	                }
+
+	                /* ================================================================
+	                   [10] صفحة الرادار (RADAR & PITCH)
+	                   ================================================================
+	                */
+	                .radar-controls {
+	                    display: flex;
+	                    justify-content: center;
+	                    gap: 15px;
+	                    margin-bottom: 30px;
+	                    flex-wrap: wrap;
+	                }
+
+	                .radar-btn {
+	                    background: rgba(255, 255, 255, 0.05);
+	                    border: 1px solid var(--border-gold);
+	                    color: #fff;
+	                    padding: 10px 25px;
+	                    border-radius: 20px;
+	                    cursor: pointer;
+	                    transition: var(--transition);
+	                    font-family: 'Tajawal', sans-serif;
+	                    display: flex;
+	                    align-items: center; gap: 8px;
+	                }
+
+	                .radar-btn.active, .radar-btn:hover {
+	                    background: var(--ramadan-gold);
+	                    color: #000;
+	                    box-shadow: 0 0 15px var(--ramadan-gold);
+	                }
+
+	         /* متغيرات الملعب التكتيكي الجديد (يمكن وضعها هنا أو في :root) */
+	         :root {
+	            --pitch-color: #14532d;
+	            --pitch-line-color: rgba(255, 255, 255, 0.8);
+	            --gold-glow-pitch: 0 0 20px rgba(250, 204, 21, 0.6);
+	         }
+
+	         /* حاوية الملعب الجديد */
+	         #tactical-pitch-wrapper {
+	            position: relative;
+	            width: 100%;
+	            height: 650px;
+	            perspective: 1500px;
+	            margin-bottom: 50px;
+	         }
+
+	         #tactical-futsal-pitch {
+	            position: relative;
+	            width: 100%;
+	            height: 100%;
+	            background-color: var(--pitch-color);
+	            border: 5px solid var(--pitch-line-color);
+	            border-radius: 4px;
+	            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+	            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+	            overflow: hidden;
+	            transform: rotateX(20deg); /* الوضع الافتراضي 3D */
+	         }
+
+	         #tactical-futsal-pitch.is-2d { transform: rotateX(0deg); }
+
+	         /* خطوط الملعب الخماسي */
+	         .tp-midline { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--pitch-line-color); transform: translateX(-50%); }
+	         .tp-center-circle { position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; border: 4px solid var(--pitch-line-color); border-radius: 50%; transform: translate(-50%, -50%); }
+	         .tp-penalty-arc { position: absolute; width: 140px; height: 240px; border: 4px solid var(--pitch-line-color); top: 50%; transform: translateY(-50%); }
+	         .tp-penalty-arc.home { left: -70px; border-radius: 0 120px 120px 0; }
+	         .tp-penalty-arc.away { right: -70px; border-radius: 120px 0 0 120px; }
+
+	         /* الأيقونات التكتيكية للاعبين */
+	         .player-node {
+	            position: absolute; width: 50px; height: 50px; border-radius: 50%; cursor: grab; z-index: 50;
+	            display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;
+	            color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.5); touch-action: none;
+	            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+	            font-family: 'Orbitron', sans-serif;
+	         }
+	         .player-node:active { cursor: grabbing; transform: scale(1.2); box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 100 !important; }
+	         .player-node:hover { transform: scale(1.1); z-index: 60; }
+
+	         .team-red { background: radial-gradient(circle, var(--accent-cyan), #004d40); border: 2px solid #fff; } /* لون النخبة الأصلي */
+	         .team-blue { background: radial-gradient(circle, var(--danger-red), #b71c1c); border: 2px solid #fff; } /* لون التحدي الأصلي */
+
+	         /* تفاصيل اللاعب (الاسم والمركز) */
+	         .name-tag { position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); white-space: nowrap; text-align: center; pointer-events: none; }
+	         .player-name { display: block; font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 5px; margin-bottom: 2px; font-family: 'Tajawal', sans-serif; }
+	         .role-badge { display: inline-block; font-size: 11px; background: var(--ramadan-gold); color: #000; padding: 2px 8px; border-radius: 10px; font-weight: 900; transition: all 0.3s ease; font-family: 'Tajawal', sans-serif; }
+	         .role-glow { box-shadow: var(--gold-glow-pitch); animation: pulse-role 1.5s infinite; }
+
+	         @keyframes pulse-role { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+
+	         /* فقاعة الإحداثيات */
+	         #live-coord {
+	            position: absolute; top: 10px; right: 10px; background: rgba(15, 23, 42, 0.9);
+	            border-right: 4px solid var(--ramadan-gold); padding: 10px 20px; border-radius: 4px; font-size: 14px;
+	            z-index: 1000; display: none; backdrop-filter: blur(5px); color: var(--ramadan-gold); font-weight: bold;
+	         }
+	                #stats-view { display: none; animation: fadeIn 0.5s; }
+	                
+	                .stats-table-container {
+	                    background: rgba(0,0,0,0.3);
+	                    border-radius: 20px;
+	                    padding: 20px;
+	                    margin-bottom: 20px;
+	                    border: 1px solid rgba(255,255,255,0.1);
+	                    overflow-x: auto;
+	                }
+	                
+	                .stats-table { width: 100%; border-collapse: collapse; min-width: 500px; }
+	                .stats-table th { padding: 15px; color: var(--ramadan-gold); border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
+	                .stats-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
+	                .stats-table tr:last-child td { border-bottom: none; }
+	                .stats-table tr:hover td { background: rgba(255,255,255,0.05); }
+
+	                /* ================================================================
+	                   [11] المدفع والتوقيت (CANNON) - التحديث الجديد للصلوات
+	                   ================================================================
+	                */
+	                .cannon-section {
+	                    text-align: center;
+	                    padding: 40px;
+	                    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(0, 242, 255, 0.05));
+	                    border-radius: 30px;
+	                    border: 1px solid var(--glass-border);
+	                    position: relative;
+	                    overflow: hidden;
+	                    transition: all 0.5s ease;
+	                }
+	                
+	                .cannon-section.maghrib-active {
+	                    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(212, 175, 55, 0.1));
+	                    border-color: var(--ramadan-gold);
+	                    box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+	                }
+
+	                .next-prayer-label {
+	                    font-size: 1.5rem;
+	                    color: var(--accent-cyan);
+	                    margin-bottom: 10px;
+	                    font-family: 'Reem Kufi', sans-serif;
+	                    transition: color 0.3s;
+	                }
+
+	                .cannon-section.maghrib-active .next-prayer-label {
+	                    color: var(--ramadan-gold);
+	                    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+	                    font-size: 1.8rem;
+	                }
+
+	                .countdown-main {
+	                    font-family: 'Orbitron', sans-serif;
+	                    font-size: 4rem;
+	                    font-weight: 900;
+	                    color: #fff;
+	                    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+	                    margin: 20px 0;
+	                    direction: ltr;
+	                    transition: all 0.3s;
+	                }
+	                
+	                .cannon-section.maghrib-active .countdown-main {
+	                    color: var(--ramadan-gold);
+	                    text-shadow: 0 0 30px var(--ramadan-gold);
+	                    transform: scale(1.05);
+	                }
+	                
+	                .date-display { font-size: 1.2rem; color: #ccc; margin-bottom: 30px; }
+
+	                .prayers-grid {
+	                    display: grid;
+	                    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+	                    gap: 15px;
+	                    margin-top: 40px;
+	                }
+
+	                .prayer-unit {
+	                    background: rgba(255,255,255,0.05);
+	                    padding: 15px;
+	                    border-radius: 15px;
+	                    border: 1px solid rgba(255,255,255,0.05);
+	                    transition: var(--transition);
+	                }
+	                
+	                .prayer-unit.active-next {
+	                    background: rgba(0, 242, 255, 0.15);
+	                    border-color: var(--accent-cyan);
+	                    transform: scale(1.05);
+	                    box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+	                }
+	                
+	                .prayer-unit.active-maghrib {
+	                    background: rgba(255, 215, 0, 0.2);
+	                    border-color: var(--ramadan-gold);
+	                    transform: scale(1.08);
+	                    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+	                }
+
+	                /* ================================================================
+	                   [12] الطقس (WEATHER) - تحسينات العرض المربوط بالخليل
+	                   ================================================================
+	                */
+	                .weather-card-hero {
+	                    background: linear-gradient(135deg, #1a2a6c, #11294b, #2b5876);
+	                    display: flex; flex-wrap: wrap;
+	                    justify-content: space-between; align-items: center;
+	                    padding: 40px; border-radius: 30px;
+	                    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+	                    position: relative;
+	                    overflow: hidden;
+	                    border: 1px solid rgba(255,255,255,0.1);
+	                }
+	                
+	                .weather-card-hero::before {
+	                    content: '\f0c2'; /* أيقونة سحابة من فاونت اوسم */
+	                    font-family: 'Font Awesome 6 Free';
+	                    font-weight: 900;
+	                    position: absolute;
+	                    right: -20px;
+	                    top: -20px;
+	                    font-size: 15rem;
+	                    color: rgba(255,255,255,0.03);
+	                    pointer-events: none;
+	                }
+
+	                .weather-main-info {
+	                    z-index: 2;
+	                }
+
+	                .weather-main-info h2 { 
+	                    font-size: 5rem; 
+	                    margin: 0; 
+	                    font-family: 'Orbitron', sans-serif;
+	                    background: linear-gradient(to bottom, #fff, #a0d8ef);
+	                    -webkit-background-clip: text;
+	                    -webkit-text-fill-color: transparent;
+	                }
+	                
+	                .weather-details { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; z-index: 2; }
+	                
+	                .w-item { 
+	                    display: flex; flex-direction: column; align-items: center; 
+	                    background: rgba(0,0,0,0.3);
+	                    padding: 15px 25px; border-radius: 20px; 
+	                    border: 1px solid rgba(255,255,255,0.05);
+	                    backdrop-filter: blur(10px);
+	                    transition: all 0.3s ease;
+	                }
+	                
+	                .w-item:hover {
+	                    transform: translateY(-5px);
+	                    background: rgba(0,0,0,0.5);
+	                    border-color: var(--accent-cyan);
+	                }
+
+	                .w-item i {
+	                    font-size: 1.5rem;
+	                    color: var(--accent-cyan);
+	                    margin-bottom: 8px;
+	                }
+
+	                /* ================================================================
+	                   [13] أرشيف الأمجاد - كأس دوري الأبطال (CHAMPIONS LEAGUE 3D CSS)
+	                   ================================================================
+	                */
+	                .cl-theme-container {
+	                    background: radial-gradient(circle at center, #001f4d 0%, #000a1a 100%);
+	                    border-radius: 30px;
+	                    padding: 40px;
+	                    position: relative;
+	                    overflow: hidden;
+	                    border: 1px solid rgba(255,255,255,0.1);
+	                    margin-bottom: 40px;
+	                }
+	                
+	                /* نجوم دوري الأبطال في الخلفية */
+	                .cl-bg-stars {
+	                    position: absolute;
+	                    top: 0; left: 0; width: 100%; height: 100%;
+	                    background-image: radial-gradient(#ffffff 1px, transparent 1px);
+	                    background-size: 50px 50px;
+	                    opacity: 0.05;
+	                    z-index: 1;
+	                }
+
+	                .cl-trophy-wrapper {
+	                    position: relative;
+	                    width: 100%;
+	                    height: 350px;
+	                    display: flex;
+	                    justify-content: center;
+	                    align-items: center;
+	                    z-index: 5;
+	                    perspective: 1000px;
+	                    margin-bottom: 30px;
+	                }
+
+	                /* الحاوية الرئيسية للكأس */
+	                .cl-trophy {
+	                    position: relative;
+	                    width: 160px;
+	                    height: 280px;
+	                    animation: floatTrophy 4s ease-in-out infinite;
+	                    transform-style: preserve-3d;
+	                }
+
+	                @keyframes floatTrophy {
+	                    0%, 100% { transform: translateY(0) rotateY(0deg); }
+	                    50% { transform: translateY(-15px) rotateY(10deg); }
+	                }
+
+	                /* القاعدة (Base) */
+	                .trophy-base {
+	                    position: absolute;
+	                    bottom: 0;
+	                    left: 50%;
+	                    transform: translateX(-50%);
+	                    width: 90px;
+	                    height: 30px;
+	                    background: linear-gradient(to right, #4a5568, #a0aec0, #cbd5e0, #a0aec0, #4a5568);
+	                    border-radius: 10px 10px 5px 5px;
+	                    box-shadow: inset 0 -5px 10px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.6);
+	                    z-index: 2;
+	                }
+	                
+	                .trophy-base::after {
+	                    content: '';
+	                    position: absolute;
+	                    top: -10px;
+	                    left: 50%;
+	                    transform: translateX(-50%);
+	                    width: 60px;
+	                    height: 10px;
+	                    background: linear-gradient(to right, #718096, #e2e8f0, #718096);
+	                    border-radius: 5px 5px 0 0;
+	                }
+
+	                /* الجذع (Stem) */
+	                .trophy-stem {
+	                    position: absolute;
+	                    bottom: 30px;
+	                    left: 50%;
+	                    transform: translateX(-50%);
+	                    width: 30px;
+	                    height: 50px;
+	                    background: linear-gradient(to right, #718096 0%, #ffffff 50%, #718096 100%);
+	                    z-index: 2;
+	                    border-radius: 5px;
+	                }
+
+	                /* الوعاء الرئيسي (The Bowl) */
+	                .trophy-bowl {
+	                    position: absolute;
+	                    bottom: 80px;
+	                    left: 50%;
+	                    transform: translateX(-50%);
+	                    width: 120px;
+	                    height: 140px;
+	                    background: linear-gradient(135deg, #a0aec0 0%, #ffffff 40%, #e2e8f0 60%, #718096 100%);
+	                    border-radius: 10px 10px 60px 60px;
+	                    z-index: 3;
+	                    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2), inset 10px 10px 20px rgba(255,255,255,0.8);
+	                    overflow: hidden;
+	                }
+
+	                /* الخطوط الفضية على الوعاء */
+	                .trophy-bowl::before {
+	                    content: '';
+	                    position: absolute;
+	                    top: 20px; left: 10%; width: 80%; height: 2px;
+	                    background: rgba(255,255,255,0.6);
+	                    box-shadow: 0 40px 0 rgba(255,255,255,0.4), 0 80px 0 rgba(255,255,255,0.3);
+	                }
+
+	                /* الفتحة العلوية للكأس */
+	                .trophy-top {
+	                    position: absolute;
+	                    top: 60px;
+	                    left: 50%;
+	                    transform: translateX(-50%);
+	                    width: 140px;
+	                    height: 30px;
+	                    background: linear-gradient(to bottom, #e2e8f0, #718096);
+	                    border-radius: 50%;
+	                    z-index: 4;
+	                    box-shadow: inset 0 -5px 10px rgba(0,0,0,0.3);
+	                }
+	                
+	                .trophy-top::after {
+	                    content: '';
+	                    position: absolute;
+	                    top: 5px; left: 50%; transform: translateX(-50%);
+	                    width: 120px; height: 15px;
+	                    background: #2d3748; /* التجويف الداخلي المظلم */
+	                    border-radius: 50%;
+	                }
+
+	                /* الأذنين المميزتين (The Big Ears) */
+	                .trophy-handle {
+	                    position: absolute;
+	                    top: 70px;
+	                    width: 60px;
+	                    height: 110px;
+	                    border: 12px solid #cbd5e0;
+	                    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+	                    z-index: 1;
+	                    box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.4);
+	                }
+
+	                .handle-left {
+	                    left: -30px;
+	                    border-right-color: transparent;
+	                    border-bottom-color: transparent;
+	                    transform: rotate(-15deg);
+	                }
+	                
+	                /* تأثير اللمعان على المقبض الأيسر */
+	                .handle-left::after {
+	                    content: ''; position: absolute; top: 10px; left: -5px; width: 5px; height: 40px; background: rgba(255,255,255,0.8); border-radius: 5px; transform: rotate(10deg);
+	                }
+
+	                .handle-right {
+	                    right: -30px;
+	                    border-left-color: transparent;
+	                    border-bottom-color: transparent;
+	                    transform: rotate(15deg);
+	                }
+
+	                /* توهج خلف الكأس */
+	                .trophy-glow {
+	                    position: absolute;
+	                    top: 50%; left: 50%;
+	                    transform: translate(-50%, -50%);
+	                    width: 200px; height: 200px;
+	                    background: radial-gradient(circle, rgba(0, 195, 255, 0.4) 0%, transparent 70%);
+	                    z-index: 0;
+	                    animation: pulseGlow 3s infinite alternate;
+	                }
+
+	                @keyframes pulseGlow {
+	                    0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); }
+	                    100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+	                }
+
+	                .cl-title {
+	                    text-align: center;
+	                    font-family: 'Reem Kufi', sans-serif;
+	                    font-size: 2.5rem;
+	                    color: #fff;
+	                    text-shadow: 0 0 15px var(--accent-cyan);
+	                    z-index: 5;
+	                    position: relative;
+	                    margin-bottom: 10px;
+	                }
+	                
+	                .cl-subtitle {
+	                    text-align: center;
+	                    color: var(--cl-dark-silver);
+	                    letter-spacing: 3px;
+	                    margin-bottom: 30px;
+	                    z-index: 5;
+	                    position: relative;
+	                }
+
+	                /* ================================================================
+	                   [14] نظام الإشعارات (NOTIFICATIONS)
+	                   ================================================================
+	                */
+	                #notification-container {
+	                    position: fixed;
+	                    top: 20px;
+	                    right: 20px;
+	                    z-index: 100000;
+	                    pointer-events: none;
+	                    width: 320px;
+	                }
+
+	                .toast-notification {
+	                    background: rgba(15, 12, 41, 0.95);
+	                    border-right: 4px solid var(--ramadan-gold);
+	                    color: #fff;
+	                    padding: 15px 20px;
+	                    margin-bottom: 10px;
+	                    border-radius: 8px;
+	                    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+	                    display: flex;
+	                    align-items: center;
+	                    gap: 15px;
+	                    transform: translateX(120%);
+	                    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	                    font-family: 'Tajawal', sans-serif;
+	                    font-size: 0.9rem;
+	                    backdrop-filter: blur(5px);
+	                }
+
+	                .toast-notification.show {
+	                    transform: translateX(0);
+	                }
+
+	                .toast-icon {
+	                    color: var(--ramadan-gold);
+	                    font-size: 1.2rem;
+	                }
+
+	                /* ================================================================
+	                   [15] استجابة الشاشات (RESPONSIVE)
+	                   ================================================================
+	                */
+	                @media (max-width: 768px) {
+	                    .section-title { font-size: 2rem; }
+	                    .hero-title { font-size: 3rem; }
+	                    
+	                    .pitch-wrapper { 
+	                        height: 500px;
+	                        transform: none; 
+	                        border-width: 2px;
+	                    }
+	                    .pitch-wrapper:hover { transform: none; }
+	                    
+	                    .countdown-main { font-size: 2.5rem; }
+	                    .main-nav { width: 90%; padding: 10px; bottom: 15px; gap: 5px; }
+	                    .nav-item { width: 40px; height: 40px; font-size: 1rem; }
+	                    
+	                    .welcome-title { font-size: 3.5rem; }
+	                    
+	                    .player-token { width: 45px; height: 45px; }
+	                    .player-token .p-name { display: none; }
+	                    
+	                    .cursor-dot, .cursor-outline { display: none; }
+	                    
+	                    .grid-menu { grid-template-columns: 1fr; }
+	                    
+	                    .tilt-card .w-item span { font-size: 1.5rem !important; }
+
+	                    #notification-container {
+	                        right: 50%;
+	                        transform: translateX(50%);
+	                        top: 10px;
+	                        width: 90%;
+	                    }
+	                    
+	                    .weather-main-info h2 { font-size: 3.5rem; }
+	                    .cl-trophy-wrapper { transform: scale(0.8); height: 250px; }
+	                }
+
+	              
+	              /* حاوية اللودر - بتغطي الشاشة كاملة بالأسود */
+	         #master-truck-preloader {
+	            position: fixed;
+	            top: 0; left: 0;
+	            width: 100%; height: 100%;
+	            background-color: #808080; /* أسود فخم */
+	            display: flex;
+	            flex-direction: column;
+	            justify-content: center;
+	            align-items: center;
+	            z-index: 9999999; /* عشان يغطي شاشة الترحيب تاعت الموقع */
+	            transition: opacity 0.6s ease, visibility 0.6s;
+	         }
+
+	         /* كودك إنت بالحرف بدون أي تعديل */
+	         .loader {
+	          width: fit-content;
+	          height: fit-content;
+	          display: flex;
+	          align-items: center;
+	          justify-content: center;
+	         }
+	         .truckWrapper {
+	          width: 200px;
+	          height: 100px;
+	          display: flex;
+	          flex-direction: column;
+	          position: relative;
+	          align-items: center;
+	          justify-content: flex-end;
+	          overflow-x: hidden;
+	         }
+	         .truckBody {
+	          width: 130px;
+	          height: fit-content;
+	          margin-bottom: 6px;
+	          animation: motion 1s linear infinite;
+	         }
+	         @keyframes motion {
+	          0% { transform: translateY(0px); }
+	          50% { transform: translateY(3px); }
+	          100% { transform: translateY(0px); }
+	         }
+	         .truckTires {
+	          width: 130px;
+	          height: fit-content;
+	          display: flex;
+	          align-items: center;
+	          justify-content: space-between;
+	          padding: 0px 10px 0px 15px;
+	          position: absolute;
+	          bottom: 0;
+	         }
+	         .truckTires svg { width: 24px; }
+	         .road {
+	          width: 100%;
+	          height: 1.5px;
+	          background-color: #282828;
+	          position: relative;
+	          bottom: 0;
+	          align-self: flex-end;
+	          border-radius: 3px;
+	         }
+	         .road::before {
+	          content: "";
+	          position: absolute;
+	          width: 20px;
+	          height: 100%;
+	          background-color: #282828;
+	          right: -50%;
+	          border-radius: 3px;
+	          animation: roadAnimation 1.4s linear infinite;
+	          border-left: 10px solid white;
+	         }
+	         .road::after {
+	          content: "";
+	          position: absolute;
+	          width: 10px;
+	          height: 100%;
+	          background-color: #282828;
+	          right: -65%;
+	          border-radius: 3px;
+	          animation: roadAnimation 1.4s linear infinite;
+	          border-left: 4px solid white;
+	         }
+	         .lampPost {
+	          position: absolute;
+	          bottom: 0;
+	          right: -90%;
+	          height: 90px;
+	          animation: roadAnimation 1.4s linear infinite;
+	         }
+	         @keyframes roadAnimation {
+	          0% { transform: translateX(0px); }
+	          100% { transform: translateX(-350px); }
+	         }
+
+	         /* جملة التحميل */
+	         .loading-text-style {
+	            margin-top: 25px;
+	            color: #ffffff;
+	            font-family: 'Tajawal', sans-serif;
+	            font-size: 1.1rem;
+	            font-weight: bold;
+	            text-align: center;
+	         }
+	              
