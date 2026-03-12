@@ -1181,3 +1181,34 @@
     background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
     pointer-events: none;
 }
+
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    flex-direction: column;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 400px;
+    padding: 25px;
+    background: var(--night-blue);
+    border-radius: 20px;
+}
+
+.custom-select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    background: #1a1a2e;
+    color: white;
+    border: 1px solid var(--ramadan-gold);
+    border-radius: 8px;
+    font-family: 'Tajawal', sans-serif;
+}
