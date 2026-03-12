@@ -126,9 +126,8 @@ function navigate(pageId, btnElement = null) {
 const cursorDot = document.querySelector('.cursor-dot');
 const cursorOutline = document.querySelector('.cursor-outline');
 
-// السطر اللي كان ناقص هو اللي تحت هاد مباشرة
 window.addEventListener('mousemove', (e) => {
-    if(!cursorDot || !cursorOutline) return; // حماية إضافية
+    if (!cursorDot || !cursorOutline) return;
     const posX = e.clientX;
     const posY = e.clientY;
     cursorDot.style.left = `${posX}px`;
@@ -744,5 +743,6 @@ function savePlayerSettings() {
 
     closeModal();
 }
+
 
 
