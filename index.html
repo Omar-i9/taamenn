@@ -148,8 +148,40 @@
     </main>
 
     <script src="script.js"></script>
+
+    <div id="player-instructions-modal" class="modal" style="display: none;">
+    <div class="modal-content tilt-card">
+        <h3 id="modal-player-name" style="color: var(--ramadan-gold); margin-bottom: 15px;">اسم اللاعب</h3>
+        
+        <div style="margin-bottom: 15px; text-align: right;">
+            <label style="color: white; font-size: 0.9rem;">الدور القيادي:</label>
+            <select id="player-role" class="custom-select">
+                <option value="">بدون دور</option>
+                <option value="C">كابتن الفريق (C)</option>
+                <option value="PK">ركلات جزاء</option>
+                <option value="FK">ركلات حرة</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 20px; text-align: right;">
+            <label style="color: white; font-size: 0.9rem;">التعليمات التكتيكية:</label>
+            <select id="player-instruction" class="custom-select">
+                <option value="STAY">التزام بالمركز</option>
+                <option value="ATT">تقدم للهجوم</option>
+                <option value="DEF">تغطية دفاعية</option>
+                <option value="PRESS">ضغط عالي</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button onclick="savePlayerSettings()" class="radar-btn active" style="flex: 1;">حفظ التكتيك</button>
+            <button onclick="closeModal()" class="radar-btn" style="flex: 1; background: #333;">إلغاء</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
+
 
 
 
