@@ -1,4 +1,21 @@
-	                // ==========================================
+
+// [0] وظيفة الدخول الفورية - حطيناها فوق عشان تشتغل مهما صار تحت
+function enterSite() {
+    console.log("يلا شوي اصبر ومندخلك..!");
+    const screen = document.getElementById('welcome-screen');
+    if (screen) {
+        screen.style.opacity = '0';
+        screen.style.transform = 'scale(1.1)';
+        screen.style.pointerEvents = 'none';
+        setTimeout(() => {
+            screen.style.display = 'none';
+            const homePage = document.getElementById('home');
+            if (homePage) homePage.classList.add('active');
+            if (typeof navigate === "function") navigate('home');
+        }, 800);
+    }
+}
+// ==========================================
 	                // [1] DATABASE OF NOTIFICATIONS (رسائل عشوائية)
 	                // ==========================================
 	                const pageMessages = {
@@ -621,22 +638,6 @@ function enterSite() {
 // ==========================================
 // [MAIN] EXECUTION - التعديل الجديد
 // ==========================================
-// [0] وظيفة الدخول الفورية - حطيناها فوق عشان تشتغل مهما صار تحت
-function enterSite() {
-    console.log("يلا شوي اصبر ومندخلك..!");
-    const screen = document.getElementById('welcome-screen');
-    if (screen) {
-        screen.style.opacity = '0';
-        screen.style.transform = 'scale(1.1)';
-        screen.style.pointerEvents = 'none';
-        setTimeout(() => {
-            screen.style.display = 'none';
-            const homePage = document.getElementById('home');
-            if (homePage) homePage.classList.add('active');
-            if (typeof navigate === "function") navigate('home');
-        }, 800);
-    }
-}
 
 window.onload = () => {
     // 1. إظهار شاشة الترحيب فوراً ونقل المستخدم لأعلى الصفحة
@@ -700,4 +701,3 @@ function downloadTactic() {
         link.click();
     });
 }
-
