@@ -1,28 +1,52 @@
-	                :root {
-	                    --night-blue: #050a1f;
-	                    --deep-purple: #0f0c29;
-	                    --ramadan-gold: #ffd700;
-	                    --gold-glow: #ffcc33;
-	                    --metallic-gold: #d4af37;
-	                    --accent-cyan: #00f2ff;
-	                    --danger-red: #ff4d4d;
-	                    --success-green: #2ecc71;
-	                    
-	                    /* ألوان دوري الأبطال الجديدة */
-	                    --cl-blue: #001432;
-	                    --cl-silver: #e0e5ec;
-	                    --cl-dark-silver: #8b9bb4;
-	                    --cl-highlight: #ffffff;
-	                    
-	                    --glass: rgba(255, 255, 255, 0.05);
-	                    --glass-thick: rgba(255, 255, 255, 0.08);
-	                    --glass-border: rgba(255, 215, 0, 0.15);
-	                    --border-gold: rgba(255, 215, 0, 0.3);
-	                    --main-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-	                    --neon-glow: 0 0 10px rgba(255, 215, 0, 0.3);
-	                    --transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-	                }
+:root {
+    /* الوضع الليلي - ألوان دوري الأبطال والفخامة */
+    --bg-night: linear-gradient(135deg, #050a1f 0%, #0b1635 100%);
+    --card-night: rgba(255, 255, 255, 0.05);
+    --text-night: #e0e5ec;
+    --accent-night: #ffd700; /* ذهبي */
 
+    /* الوضع النهاري - ألوان حيوية ونشاط */
+    --bg-day: linear-gradient(135deg, #87CEEB 0%, #f0f8ff 100%);
+    --card-day: rgba(255, 255, 255, 0.7);
+    --text-day: #1a2a6c;
+    --accent-day: #ff8c00; /* برتقالي شمسي */
+}
+
+/* شاشة الترحيب الجديدة - Glassmorphism */
+#welcome-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-night); /* افتراضي ليلي */
+    transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+    transform: scale(0.9);
+    animation: zoomIn 0.8s forwards;
+}
+
+@keyframes zoomIn {
+    to { transform: scale(1); opacity: 1; }
+}
+
+.welcome-exit {
+    transform: scale(1.5) !important;
+    opacity: 0 !important;
+    pointer-events: none;
+}
 	                /* ================================================================
 	                   [2] التنسيقات الأساسية (RESET & BASE)
 	                   ================================================================
@@ -50,42 +74,6 @@
 	                ::-webkit-scrollbar-track { background: var(--night-blue); }
 	                ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
 	                ::-webkit-scrollbar-thumb:hover { background: var(--ramadan-gold); }
-
-	                /* ================================================================
-	                   [3] المؤشر المخصص (CUSTOM CURSOR)
-	                   ================================================================
-	                */
-	                .cursor-dot {
-	                    position: fixed;
-	                    top: 0; left: 0;
-	                    width: 8px; height: 8px;
-	                    background: var(--accent-cyan);
-	                    border-radius: 50%;
-	                    z-index: 10000;
-	                    pointer-events: none;
-	                    box-shadow: 0 0 15px var(--accent-cyan);
-	                    transform: translate(-50%, -50%);
-	                }
-
-	                .cursor-outline {
-	                    position: fixed;
-	                    top: 0; left: 0;
-	                    width: 45px; height: 45px;
-	                    border: 1px solid rgba(255, 215, 0, 0.5);
-	                    border-radius: 50%;
-	                    z-index: 9999;
-	                    pointer-events: none;
-	                    transform: translate(-50%, -50%);
-	                    transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
-	                }
-
-	                body:has(a:hover, button:hover, .nav-item:hover, .action-card:hover, .clickable:hover) .cursor-outline {
-	                    width: 70px;
-	                    height: 70px;
-	                    background: rgba(255, 215, 0, 0.05);
-	                    border-color: var(--accent-cyan);
-	                    border-width: 2px;
-	                }
 
 	                /* ================================================================
 	                   [4] شاشة الترحيب (WELCOME SCREEN)
@@ -1212,3 +1200,4 @@
     border-radius: 8px;
     font-family: 'Tajawal', sans-serif;
 }
+
