@@ -1,3 +1,49 @@
+// 1. نظام الوقت الذكي (توقيت الخليل)
+function updateThemeByTime() {
+    // جلب ساعة الخليل الحالية (GMT+3)
+    const now = new Date();
+    const hour = now.getHours(); 
+    const body = document.body;
+
+    // من الـ 6 الصبح للـ 6 المسا = نهار
+    if (hour >= 6 && hour < 18) {
+        body.classList.add('theme-day');
+        body.classList.remove('theme-night');
+        console.log("صباح الخير يا وحش.. وضع النهار شغال ☀️");
+    } else {
+        body.classList.add('theme-night');
+        body.classList.remove('theme-day');
+        console.log("مساء الفل.. وضع النجوم والقمر شغال 🌙");
+    }
+}
+
+// 2. تحديث وظيفة الدخول عشان تختفي تلقائي وتصلح الـ Error
+function enterSite() {
+    const screen = document.getElementById('welcome-screen');
+    if (screen) {
+        screen.classList.add('welcome-exit');
+        setTimeout(() => {
+            screen.style.display = 'none';
+            // إذا عندك وظائف تشغيل ملاعب أو طقس شغلها هون
+            if(typeof fetchWeather === "function") fetchWeather();
+            navigate('home');
+        }, 1000);
+    }
+}
+
+// 3. التشغيل التلقائي (الـ 3 ثواني اللي طلبتهم)
+window.addEventListener('DOMContentLoaded', () => {
+    updateThemeByTime(); // حدد الثيم أول ما يفتح
+    
+    // شاشة الترحيب تختفي لحالها بعد 3 ثواني
+    setTimeout(() => {
+        const screen = document.getElementById('welcome-screen');
+        if (screen && screen.style.display !== 'none') {
+            enterSite();
+        }
+    }, 3000);
+});
+
 // ==========================================
 // [0] وظيفة الدخول - في الصدارة عشان ما تضرب
 // ==========================================
