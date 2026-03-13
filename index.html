@@ -19,14 +19,17 @@
 <body>
     <div id="notification-container"></div>
     
-    <div id="welcome-screen">
-        <div class="welcome-content">
-            <h1 class="welcome-title">"تأمــين" رمضـان</h1>
-            <p class="welcome-subtitle">حيث تلتقي الروحانية بالمنافسة</p>
-            <button class="enter-btn" onclick="enterSite()">دخول إلى الملعب</button>
+<div id="welcome-screen">
+    <div class="glass-panel">
+        <h1 style="font-family: 'Orbitron', sans-serif; color: white; font-size: 2.5rem; margin-bottom: 10px;">تأمين</h1>
+        <p style="color: var(--accent-night); font-size: 1.2rem; letter-spacing: 2px;">الـحـلــة الـجـديـدة</p>
+        <div class="loader-line" style="width: 100%; height: 2px; background: rgba(255,255,255,0.1); margin-top: 20px; position: relative; overflow: hidden;">
+            <div class="loader-fill" style="position: absolute; width: 40%; height: 100%; background: var(--accent-night); animation: load 2s infinite;"></div>
         </div>
-        <div class="signature">DESIGNED BY GDMi</div>
-    </div>    
+        <button class="enter-btn" onclick="enterSite()" style="margin-top: 30px; opacity: 0.8;">دخول يدوي</button>
+    </div>
+</div>
+</div>    
     <div id="sky-background"></div>
     <div class="stars-container" id="starsContainer"></div>
     <div class="moon-container">
@@ -217,6 +220,7 @@
 </div>
 </body>
 </html>
+
 
 
 
