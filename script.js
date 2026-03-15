@@ -488,146 +488,180 @@
 	                    `).join('');
 	                }
 
-	         // ==========================================
-	         // المحرك التكتيكي الجديد (FutsalTacticalEngine)
-	         // ==========================================
-	         class FutsalTacticalEngine {
-	            constructor() {
-	                this.pitch = document.getElementById('tactical-futsal-pitch');
-	                this.viewToggle = document.getElementById('tactical-view-toggle');
-	                this.coordBox = document.getElementById('live-coord');
-	                this.coordLabel = document.getElementById('coord-label');
-	                this.draggedElement = null;
-	                this.is3D = true;
-	                
-	                if(this.pitch) this.init();
-	            }
+// ==========================================
+// [13] نظام التقاط الشاشة (SCREENSHOT)
+// ==========================================
+function takeScreenshot() {
+    const pitchElement = document.getElementById('tactical-pitch-wrapper');
+    if(!pitchElement) return alert("الملعب غير موجود!");
 
-	            init() {
-	                this.setupPlayers();
-	                this.bindEvents();
-	            }
+    // تغيير نص الزر أثناء التصوير
+    const btn = document.querySelector('.radar-btn .fa-camera').parentElement;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التصوير...';
 
-	            setupPlayers() {
-	                // يمكنك تعديل الأسماء والمراكز المبدئية هنا
-	                const teamA = [
-	                    { id: 'R1', name: 'ارقم', x: 8, y: 50, color: 'team-red', team: 'home' },
-	                    { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
-	                    { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
-	                    { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
-	                    { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
-	                ];
-	                const teamB = [
-	                    { id: 'B1', name: 'محمد', x: 92, y: 50, color: 'team-blue', team: 'away' },
-	                    { id: 'B2', name: 'سنقرط', x: 75, y: 25, color: 'team-blue', team: 'away' },
-	                    { id: 'B3', name: 'احمد', x: 75, y: 75, color: 'team-blue', team: 'away' },
-	                    { id: 'B4', name: 'كريم', x: 60, y: 30, color: 'team-blue', team: 'away' },
-	                    { id: 'B5', name: 'خضر', x: 55, y: 70, color: 'team-blue', team: 'away' },
-	                ];
-	                [...teamA, ...teamB].forEach(p => this.createPlayer(p));
-	            }
+    html2canvas(pitchElement, {
+        backgroundColor: '#14532d', // لون أرضية الملعب لتجنب الخلفية الشفافة
+        scale: 2,
+        useCORS: true
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'تشكيلة_فريق_تأمين.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        btn.innerHTML = originalText; // إرجاع شكل الزر
+    }).catch(err => {
+        console.error("Screenshot Error: ", err);
+        btn.innerHTML = originalText;
+        alert("حدث خطأ أثناء حفظ التشكيلة.");
+    });
+}
 
-	            createPlayer(config) {
-	                const node = document.createElement('div');
-	                node.className = `player-node ${config.color}`;
-	                node.id = config.id; node.dataset.team = config.team;
-	                node.style.left = `${config.x}%`; node.style.top = `${config.y}%`;
-	                node.innerHTML = `
-	                    ${config.id.charAt(0) === 'R' ? 'A' : 'B'}
-	                    <div class="name-tag"><span class="player-name">${config.name}<\/span><span class="role-badge" id="role-${config.id}">--<\/span><\/div>
-	                `;
-	                node.addEventListener('pointerdown', (e) => this.onStart(e, node));
-	                this.pitch.appendChild(node);
-	                this.updateTacticalRole(node, config.x, config.y);
-	            }
+// ==========================================
+// [14] المحرك التكتيكي (FutsalTacticalEngine)
+// ==========================================
+class FutsalTacticalEngine {
+    constructor() {
+        this.pitch = document.getElementById('tactical-futsal-pitch');
+        this.viewToggle = document.getElementById('tactical-view-toggle');
+        this.coordBox = document.getElementById('live-coord');
+        this.coordLabel = document.getElementById('coord-label');
+        this.draggedElement = null;
+        this.is3D = true;
 
-	            bindEvents() {
-	                window.addEventListener('pointermove', (e) => this.onMove(e));
-	                window.addEventListener('pointerup', () => this.onEnd());
-	                if(this.viewToggle) {
-	                    this.viewToggle.addEventListener('click', () => {
-	                        this.is3D = !this.is3D;
-	                        if(this.is3D) this.pitch.classList.remove('is-2d');
-	                        else this.pitch.classList.add('is-2d');
-	                    });
-	                }
-	            }
+        if(this.pitch) this.init();
+    }
 
-	            onStart(e, el) {
-	                this.draggedElement = el;
-	                el.setPointerCapture(e.pointerId);
-	                this.coordBox.style.display = 'block';
-	            }
+    init() {
+        this.setupPlayers();
+        this.bindEvents();
+    }
 
-	            onMove(e) {
-	                if (!this.draggedElement) return;
-	                const rect = this.pitch.getBoundingClientRect();
-	                let x = ((e.clientX - rect.left) / rect.width) * 100;
-	                let y = ((e.clientY - rect.top) / rect.height) * 100;
-	                x = Math.max(2, Math.min(98, x)); y = Math.max(4, Math.min(96, y));
-	                this.draggedElement.style.left = `${x}%`; this.draggedElement.style.top = `${y}%`;
-	                this.updateTacticalRole(this.draggedElement, x, y);
-	            }
+    setupPlayers() {
+        const teamA = [
+            { id: 'R1', name: 'ارقم', x: 8, y: 50, color: 'team-red', team: 'home' },
+            { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
+            { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
+            { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
+            { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
+        ];
+        const teamB = [
+            { id: 'B1', name: 'محمد', x: 92, y: 50, color: 'team-blue', team: 'away' },
+            { id: 'B2', name: 'سنقرط', x: 75, y: 25, color: 'team-blue', team: 'away' },
+            { id: 'B3', name: 'احمد', x: 75, y: 75, color: 'team-blue', team: 'away' },
+            { id: 'B4', name: 'كريم', x: 60, y: 30, color: 'team-blue', team: 'away' },
+            { id: 'B5', name: 'خضر', x: 55, y: 70, color: 'team-blue', team: 'away' },
+        ];
+        [...teamA, ...teamB].forEach(p => this.createPlayer(p));
+    }
 
-	            updateTacticalRole(el, x, y) {
-	                const team = el.dataset.team; const badge = el.querySelector('.role-badge');
-	                let role = "";
-	                const isInsideDZone = (team === 'home' && x < 15 && y > 30 && y < 70) || (team === 'away' && x > 85 && y > 30 && y < 70);
+    createPlayer(config) {
+        const node = document.createElement('div');
+        node.className = `player-node ${config.color}`;
+        node.id = config.id;
+        node.dataset.team = config.team;
+        node.style.left = `${config.x}%`;
+        node.style.top = `${config.y}%`;
+        node.innerHTML = `
+            ${config.id.charAt(0) === 'R' ? 'A' : 'B'}
+            <div class="name-tag"><span class="player-name">${config.name}</span><span class="role-badge" id="role-${config.id}">--</span></div>
+        `;
+        node.addEventListener('pointerdown', (e) => this.onStart(e, node));
+        this.pitch.appendChild(node);
+        this.updateTacticalRole(node, config.x, config.y);
+    }
 
-	                if (isInsideDZone) role = "GK";
-	                else {
-	                    const isMyHalf = (team === 'home' && x <= 50) || (team === 'away' && x >= 50);
-	                    if (isMyHalf) {
-	                        if (y < 30) role = (team === 'home' ? "LB" : "RB");
-	                        else if (y > 70) role = (team === 'home' ? "RB" : "LB");
-	                        else role = "CB";
-	                    } else {
-	                        if (y < 35) role = (team === 'home' ? "LW" : "RW");
-	                        else if (y > 65) role = (team === 'home' ? "RW" : "LW");
-	                        else { const depth = team === 'home' ? x : (100 - x); role = depth > 80 ? "ST" : "CAM"; }
-	                    }
-	                }
+    bindEvents() {
+        window.addEventListener('pointermove', (e) => this.onMove(e));
+        window.addEventListener('pointerup', () => this.onEnd());
+        if(this.viewToggle) {
+            this.viewToggle.addEventListener('click', () => {
+                this.is3D = !this.is3D;
+                if(this.is3D) this.pitch.classList.remove('is-2d');
+                else this.pitch.classList.add('is-2d');
+            });
+        }
+    }
 
-	                if (badge.innerText !== role) {
-	                    badge.innerText = role; badge.classList.add('role-glow');
-	                    setTimeout(() => badge.classList.remove('role-glow'), 600);
-	                }
-	                const arabicRole = {"GK":"حارس","CB":"دفاع","LB":"ظ.أيسر","RB":"ظ.أيمن","LW":"ج.أيسر","RW":"ج.أيمن","CAM":"صانع","ST":"مهاجم"}[role] || role;
-	                this.coordLabel.innerText = `المركز: ${arabicRole} (${Math.round(x)}%, ${Math.round(y)}%)`;
-	            }
+    onStart(e, el) {
+        this.draggedElement = el;
+        el.setPointerCapture(e.pointerId);
+        if(this.coordBox) this.coordBox.style.display = 'block';
+    }
 
-	            onEnd() {
-	                if (this.draggedElement) this.draggedElement = null;
-	                this.coordBox.style.display = 'none';
-	            }
-	         }
+    onMove(e) {
+        if (!this.draggedElement) return;
+        const rect = this.pitch.getBoundingClientRect();
+        let x = ((e.clientX - rect.left) / rect.width) * 100;
+        let y = ((e.clientY - rect.top) / rect.height) * 100;
+        x = Math.max(2, Math.min(98, x));
+        y = Math.max(4, Math.min(96, y));
+        this.draggedElement.style.left = `${x}%`;
+        this.draggedElement.style.top = `${y}%`;
+        this.updateTacticalRole(this.draggedElement, x, y);
+    }
 
-	                // ==========================================
-	                // [MAIN] EXECUTION
-	                // ==========================================
-	         window.onload = () => {
-	            // 1. كود إخفاء الشاحنة بعد 4 ثواني
-	            setTimeout(() => {
-	                const preloader = document.getElementById('master-truck-preloader');
-	                if (preloader) {
-	                    preloader.style.opacity = '0';
-	                    preloader.style.visibility = 'hidden';
-	                    setTimeout(() => preloader.remove(), 800);
-	                }
-	            }, 4000);
+    updateTacticalRole(el, x, y) {
+        const team = el.dataset.team;
+        const badge = el.querySelector('.role-badge');
+        let role = "";
+        const isInsideDZone = (team === 'home' && x < 15 && y > 30 && y < 70) || (team === 'away' && x > 85 && y > 30 && y < 70);
 
-	            // 2. تشغيل محركات وأنظمة الموقع (الأكواد الأصلية)
-	            new FutsalTacticalEngine();
-	            initShootingStars();
-	            initTilt();
-	            initPrayersSystem(); 
-	            fetchWeather();
-	            renderStats();
-	            renderMatches();
-	            
-	            setInterval(updateBookingTimer, 1000);
-	            updateBookingTimer();
-	            setInterval(rotateDhikr, 10000);
-	            
-	            console.log("Omar System: Truck Preloader & Site Engine Resurrected!");
-	         };
+        if (isInsideDZone) role = "GK";
+        else {
+            const isMyHalf = (team === 'home' && x <= 50) || (team === 'away' && x >= 50);
+            if (isMyHalf) {
+                if (y < 30) role = (team === 'home' ? "LB" : "RB");
+                else if (y > 70) role = (team === 'home' ? "RB" : "LB");
+                else role = "CB";
+            } else {
+                if (y < 35) role = (team === 'home' ? "LW" : "RW");
+                else if (y > 65) role = (team === 'home' ? "RW" : "LW");
+                else { const depth = team === 'home' ? x : (100 - x); role = depth > 80 ? "ST" : "CAM"; }
+            }
+        }
+
+        if (badge && badge.innerText !== role) {
+            badge.innerText = role; badge.classList.add('role-glow');
+            setTimeout(() => badge.classList.remove('role-glow'), 600);
+        }
+        const arabicRole = {"GK":"حارس","CB":"دفاع","LB":"ظ.أيسر","RB":"ظ.أيمن","LW":"ج.أيسر","RW":"ج.أيمن","CAM":"صانع","ST":"مهاجم"}[role] || role;
+        if(this.coordLabel) this.coordLabel.innerText = `المركز: ${arabicRole} (${Math.round(x)}%, ${Math.round(y)}%)`;
+    }
+
+    onEnd() {
+        if (this.draggedElement) this.draggedElement = null;
+        if(this.coordBox) this.coordBox.style.display = 'none';
+    }
+}
+
+// ==========================================
+// [MAIN] EXECUTION (التشغيل الرئيسي للموقع)
+// ==========================================
+window.onload = () => {
+    // إخفاء الشاحنة إن وجدت
+    setTimeout(() => {
+        const preloader = document.getElementById('master-truck-preloader');
+        if (preloader) {
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            setTimeout(() => preloader.remove(), 800);
+        }
+    }, 4000);
+
+    // تشغيل كل الأنظمة
+    new FutsalTacticalEngine();
+    initShootingStars();
+    initTilt();
+    initPrayersSystem();
+    fetchWeather();
+    renderStats();
+    renderMatches();
+    
+    setInterval(updateBookingTimer, 1000);
+    updateBookingTimer();
+    setInterval(rotateDhikr, 10000);
+    
+    console.log("Omar System: All Engines Online! No syntax errors.");
+};
+// تنبيه: لا تضع أي أقواس بعد هذا السطر نهائياً!
