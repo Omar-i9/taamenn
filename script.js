@@ -518,10 +518,11 @@ function takeScreenshot() {
 }
 
 // ==========================================
-// [14] المحرك التكتيكي (FutsalTacticalEngine)
+// [14] المحرك التكتيكي المطور (FutsalTacticalEngine)
 // ==========================================
 class FutsalTacticalEngine {
     constructor() {
+        this.teamStrategy = 'balanced'; 
         this.pitch = document.getElementById('tactical-futsal-pitch');
         this.viewToggle = document.getElementById('tactical-view-toggle');
         this.coordBox = document.getElementById('live-coord');
@@ -562,13 +563,54 @@ class FutsalTacticalEngine {
         node.dataset.team = config.team;
         node.style.left = `${config.x}%`;
         node.style.top = `${config.y}%`;
+
+        // الهيكل الجديد: اسم في الوسط، مركز بالأسفل، دور فوق يمين، تعليمات فوق يسار
         node.innerHTML = `
-            ${config.id.charAt(0) === 'R' ? 'A' : 'B'}
-            <div class="name-tag"><span class="player-name">${config.name}</span><span class="role-badge" id="role-${config.id}">--</span></div>
+            <div class="team-role-top-right" id="team-role-${config.id}" style="display:none;"></div>
+            <div class="instruction-top-left" id="instr-${config.id}" style="display:none;"></div>
+            <div class="player-name-center">${config.name}</div>
+            <div class="role-badge-bottom" id="role-${config.id}">--</div>
         `;
+
+        // حدث الضغط مرتين لفتح القائمة المتقدمة
+        node.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            this.showAdvancedMenu(e.pageX, e.pageY, node);
+        });
+
         node.addEventListener('pointerdown', (e) => this.onStart(e, node));
         this.pitch.appendChild(node);
         this.updateTacticalRole(node, config.x, config.y);
+    }
+
+    showAdvancedMenu(x, y, playerEl) {
+        const oldMenu = document.getElementById('player-adv-menu');
+        if(oldMenu) oldMenu.remove();
+
+        const menu = document.createElement('div');
+        menu.id = 'player-adv-menu';
+        menu.style = `position:absolute; top:${y}px; left:${x}px; background:rgba(5, 10, 31, 0.98); color:white; border:1px solid gold; padding:12px; z-index:10000; border-radius:12px; font-family:Tajawal; min-width:160px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); text-align:right;`;
+
+        // 1. خيارات دور اللاعب في الفريق
+        let html = `<div style="color:gold; font-size:0.75rem; margin-bottom:8px; border-bottom:1px solid #333; padding-bottom:4px;">مهام الفريق</div>`;
+        const teamRoles = ['كابتن', 'ركلات جزاء', 'ركلات حرة', 'ركنية'];
+        teamRoles.forEach(r => {
+            html += `<div class="menu-item" onclick="updatePlayerTag('${playerEl.id}', 'team', '${r}')" style="padding:6px; cursor:pointer; font-size:0.8rem; border-radius:4px; transition:0.2s;">• ${r}</div>`;
+        });
+
+        // 2. خيارات التعليمات التكتيكية
+        html += `<div style="color:#00f2ff; font-size:0.75rem; margin:10px 0 8px; border-bottom:1px solid #333; padding-bottom:4px;">تعليمات تكتيكية</div>`;
+        const instructions = ['يضغط', 'يساند الهجوم', 'يساند الدفاع', 'تمركز ثابت'];
+        instructions.forEach(i => {
+            html += `<div class="menu-item" onclick="updatePlayerTag('${playerEl.id}', 'instr', '${i}')" style="padding:6px; cursor:pointer; font-size:0.8rem; border-radius:4px; transition:0.2s;">• ${i}</div>`;
+        });
+
+        menu.innerHTML = html;
+        document.body.appendChild(menu);
+
+        setTimeout(() => {
+            document.addEventListener('click', () => { if(document.getElementById('player-adv-menu')) menu.remove(); }, {once:true});
+        }, 10);
     }
 
     bindEvents() {
@@ -603,7 +645,7 @@ class FutsalTacticalEngine {
 
     updateTacticalRole(el, x, y) {
         const team = el.dataset.team;
-        const badge = el.querySelector('.role-badge');
+        const badge = el.querySelector('.role-badge-bottom');
         let role = "";
         const isInsideDZone = (team === 'home' && x < 15 && y > 30 && y < 70) || (team === 'away' && x > 85 && y > 30 && y < 70);
 
@@ -622,9 +664,9 @@ class FutsalTacticalEngine {
         }
 
         if (badge && badge.innerText !== role) {
-            badge.innerText = role; badge.classList.add('role-glow');
-            setTimeout(() => badge.classList.remove('role-glow'), 600);
+            badge.innerText = role; 
         }
+        
         const arabicRole = {"GK":"حارس","CB":"دفاع","LB":"ظ.أيسر","RB":"ظ.أيمن","LW":"ج.أيسر","RW":"ج.أيمن","CAM":"صانع","ST":"مهاجم"}[role] || role;
         if(this.coordLabel) this.coordLabel.innerText = `المركز: ${arabicRole} (${Math.round(x)}%, ${Math.round(y)}%)`;
     }
@@ -633,13 +675,46 @@ class FutsalTacticalEngine {
         if (this.draggedElement) this.draggedElement = null;
         if(this.coordBox) this.coordBox.style.display = 'none';
     }
+
+    applyPreset(formation) {
+        const presets = {
+            'diamond': [{id:'R1', x:10, y:50}, {id:'R2', x:30, y:20}, {id:'R3', x:30, y:80}, {id:'R4', x:45, y:50}, {id:'R5', x:15, y:50}],
+            'square': [{id:'R1', x:10, y:50}, {id:'R2', x:25, y:30}, {id:'R3', x:25, y:70}, {id:'R4', x:45, y:30}, {id:'R5', x:45, y:70}]
+        };
+        const players = presets[formation];
+        if(players) {
+            players.forEach(p => {
+                const el = document.getElementById(p.id);
+                if(el) {
+                    el.style.left = p.x + '%';
+                    el.style.top = p.y + '%';
+                    this.updateTacticalRole(el, p.x, p.y);
+                }
+            });
+        }
+    }
 }
 
+// دالة عالمية لتحديث التاجات فوق اللاعب
+window.updatePlayerTag = function(playerId, type, value) {
+    const player = document.getElementById(playerId);
+    if(!player) return;
+
+    if(type === 'team') {
+        const tag = player.querySelector('.team-role-top-right');
+        tag.innerText = value;
+        tag.style.display = 'block';
+    } else {
+        const tag = player.querySelector('.instruction-top-left');
+        tag.innerText = value;
+        tag.style.display = 'block';
+    }
+};
+
 // ==========================================
-// [MAIN] EXECUTION (التشغيل الرئيسي للموقع)
+// [MAIN] EXECUTION
 // ==========================================
 window.onload = () => {
-    // إخفاء الشاحنة إن وجدت
     setTimeout(() => {
         const preloader = document.getElementById('master-truck-preloader');
         if (preloader) {
@@ -649,19 +724,16 @@ window.onload = () => {
         }
     }, 4000);
 
-    // تشغيل كل الأنظمة
     new FutsalTacticalEngine();
-    initShootingStars();
-    initTilt();
-    initPrayersSystem();
-    fetchWeather();
-    renderStats();
-    renderMatches();
+    if(typeof initShootingStars === 'function') initShootingStars();
+    if(typeof initTilt === 'function') initTilt();
+    if(typeof initPrayersSystem === 'function') initPrayersSystem();
+    if(typeof fetchWeather === 'function') fetchWeather();
+    if(typeof renderStats === 'function') renderStats();
+    if(typeof renderMatches === 'function') renderMatches();
     
-    setInterval(updateBookingTimer, 1000);
-    updateBookingTimer();
-    setInterval(rotateDhikr, 10000);
+    setInterval(() => { if(typeof updateBookingTimer === 'function') updateBookingTimer(); }, 1000);
+    setInterval(() => { if(typeof rotateDhikr === 'function') rotateDhikr(); }, 10000);
     
-    console.log("Omar System: All Engines Online! No syntax errors.");
+    console.log("Omar System: Full Tactical Integration Complete.");
 };
-// تنبيه: لا تضع أي أقواس بعد هذا السطر نهائياً!
