@@ -2,24 +2,31 @@
 	                   [1] المتغيرات العامة (CSS VARIABLES) - الأصلية والمضافة
 	                   ================================================================
 	                */
-:root {
-    /* ألوان دوري الأبطال الأساسية */
-    --cl-blue: #001432; /* أزرق كحلي عميق */
-    --cl-light-blue: #002868; /* أزرق مشع للوسط */
-    
-    /* ألوان رمضان الذهبية */
-    --ramadan-gold: #FFD700;
-    --gold-glow: #FFCC33;
-    
-    /* تأثير الزجاج الشفاف (Glassmorphism) */
-    --glass-bg: rgba(0, 20, 50, 0.45); /* خلفية زجاجية كحلية */
-    --glass-border: rgba(255, 215, 0, 0.25); /* إطار ذهبي خفيف */
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); /* ظل احترافي */
-    
-    /* ألوان النصوص */
-    --text-main: #FFFFFF;
-    --text-muted: #8b9bb4;
-}
+	                :root {
+	                    --night-blue: #050a1f;
+	                    --deep-purple: #0f0c29;
+	                    --ramadan-gold: #ffd700;
+	                    --gold-glow: #ffcc33;
+	                    --metallic-gold: #d4af37;
+	                    --accent-cyan: #00f2ff;
+	                    --danger-red: #ff4d4d;
+	                    --success-green: #2ecc71;
+	                    
+	                    /* ألوان دوري الأبطال الجديدة */
+	                    --cl-blue: #001432;
+	                    --cl-silver: #e0e5ec;
+	                    --cl-dark-silver: #8b9bb4;
+	                    --cl-highlight: #ffffff;
+	                    
+	                    --glass: rgba(255, 255, 255, 0.05);
+	                    --glass-thick: rgba(255, 255, 255, 0.08);
+	                    --glass-border: rgba(255, 215, 0, 0.15);
+	                    --border-gold: rgba(255, 215, 0, 0.3);
+	                    --main-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	                    --neon-glow: 0 0 10px rgba(255, 215, 0, 0.3);
+	                    --transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+	                }
+
 	                /* ================================================================
 	                   [2] التنسيقات الأساسية (RESET & BASE)
 	                   ================================================================
@@ -34,18 +41,16 @@
 	                    user-select: none;
 	                }
 
-body {
-    /* تدرج لوني دائري فخم بدون ما يخرب النجوم */
-    background: radial-gradient(circle at top center, var(--cl-light-blue) 0%, var(--cl-blue) 100%);
-    color: var(--text-main);
-    font-family: 'Tajawal', 'Reem Kufi', sans-serif;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    overflow-x: hidden;
-    /* هاد السطر بيضمن إن القمر والنجوم يضلوا ورا الكلام مش فوقه */
-    position: relative; 
-}
+	                body {
+	                    font-family: 'Tajawal', sans-serif;
+	                    background: var(--night-blue);
+	                    color: #fff;
+	                    overflow-x: hidden;
+	                    min-height: 100vh;
+	                    line-height: 1.6;
+	                    position: relative;
+	                }
+
 	                ::-webkit-scrollbar { width: 8px; }
 	                ::-webkit-scrollbar-track { background: var(--night-blue); }
 	                ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
@@ -393,28 +398,23 @@ body {
 	                   [8] البطاقات التفاعلية (CARDS & TILT)
 	                   ================================================================
 	                */
-.tilt-card, .glass-panel {
-    background: var(--glass-bg);
-    /* تأثير الغباش الزجاجي اللي ورا الكرت */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    
-    /* الإطار الذهبي والظل */
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    box-shadow: var(--glass-shadow);
-    
-    padding: 25px;
-    margin: 15px auto;
-    color: var(--text-main);
-    transition: transform 0.3s ease, border-color 0.3s ease;
-}
+	                .tilt-card {
+	                    background: var(--glass);
+	                    border: 1px solid var(--glass-border);
+	                    border-radius: 30px;
+	                    padding: 30px;
+	                    position: relative;
+	                    overflow: hidden;
+	                    transform-style: preserve-3d;
+	                    transform: perspective(1000px);
+	                    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s;
+	                }
+	                
+	                .tilt-card:hover {
+	                    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 215, 0, 0.05);
+	                    border-color: rgba(255, 215, 0, 0.4);
+	                }
 
-/* حركة حلوة لما تحط الماوس على الكرت */
-.tilt-card:hover, .glass-panel:hover {
-    border-color: var(--ramadan-gold);
-    box-shadow: 0 10px 40px rgba(255, 215, 0, 0.15);
-}
 	                .booking-active {
 	                    border-color: var(--success-green) !important;
 	                    box-shadow: 0 0 30px var(--success-green), inset 0 0 20px rgba(46, 204, 113, 0.2) !important;
@@ -519,130 +519,6 @@ body {
 	                    box-shadow: 0 0 15px var(--ramadan-gold);
 	                }
 
-					/* الحاوية الأساسية للاعب */
-.player-wrapper {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: grab;
-    z-index: 10;
-    transition: transform 0.2s;
-}
-
-.player-wrapper:active {
-    transform: scale(1.1); /* بكبر شوي لما تمسكه */
-}
-
-/* الدور فوق اللاعب (مثل: كابتن، يضغط) */
-.player-role {
-    font-size: 10px;
-    color: var(--ramadan-gold);
-    font-weight: bold;
-    margin-bottom: 2px;
-    text-shadow: 1px 1px 3px black;
-    white-space: nowrap;
-}
-
-/* الدائرة أو القميص */
-.player-circle {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-    border: 2px solid rgba(255,255,255,0.8);
-}
-
-/* ألوان الفرق */
-.team-a .player-circle { 
-    background-color: var(--danger-red); /* فريق 1 أحمر */
-}
-.team-b .player-circle { 
-    background-color: var(--cl-light-blue); /* فريق 2 أزرق */
-    border-color: var(--ramadan-gold);
-}
-
-/* اسم اللاعب تحت */
-.player-name {
-    font-size: 11px;
-    color: white;
-    margin-top: 3px;
-    font-family: 'Tajawal', sans-serif;
-    text-shadow: 1px 1px 3px black;
-    white-space: nowrap;
-}
-
-/* تنسيق اللاعب المطور */
-.player-node {
-    width: 50px;
-    height: 50px;
-    position: absolute;
-    border-radius: 50%;
-    cursor: grab;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: white;
-    user-select: none;
-    transition: transform 0.2s;
-    z-index: 10;
-}
-
-/* الاسم في قلب الدائرة */
-.player-name-center {
-    font-size: 0.75rem;
-    text-align: center;
-    pointer-events: none;
-}
-
-/* المركز (دفاع، هجوم..) في الأسفل */
-.role-badge-bottom {
-    position: absolute;
-    bottom: -18px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.65rem;
-    white-space: nowrap;
-    color: var(--ramadan-gold);
-}
-
-/* دور الفريق (كابتن، حرة..) فوق اليمين */
-.team-role-top-right {
-    position: absolute;
-    top: -15px;
-    right: -15px;
-    background: var(--ramadan-gold);
-    color: black;
-    padding: 2px 5px;
-    border-radius: 3px;
-    font-size: 0.6rem;
-    font-weight: 900;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-
-/* التعليمات (يضغط، يساند..) فوق اليسار */
-.instruction-top-left {
-    position: absolute;
-    top: 5px;
-    right: -15px;
-    background: #00f2ff;
-    color: black;
-    padding: 2px 5px;
-    border-radius: 3px;
-    font-size: 0.6rem;
-    font-weight: 700;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-
 	         /* متغيرات الملعب التكتيكي الجديد (يمكن وضعها هنا أو في :root) */
 	         :root {
 	            --pitch-color: #14532d;
@@ -683,22 +559,101 @@ body {
 
 	         /* الأيقونات التكتيكية للاعبين */
 	         .player-node {
-	            position: absolute; width: 50px; height: 50px; border-radius: 50%; cursor: grab; z-index: 50;
-	            display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;
-	            color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.5); touch-action: none;
-	            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
-	            font-family: 'Orbitron', sans-serif;
-	         }
+	        	    position: absolute; width: 50px; height: 50px; border-radius: 50%; cursor: grab; z-index: 50;
+	        	    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;
+	        	    color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.5); touch-action: none;
+	        	    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+	        	    font-family: 'Orbitron', sans-serif;
+                    overflow: visible !important;
+	        	 }
 	         .player-node:active { cursor: grabbing; transform: scale(1.2); box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 100 !important; }
 	         .player-node:hover { transform: scale(1.1); z-index: 60; }
 
-	         .team-red { background: radial-gradient(circle, var(--accent-cyan), #1501a7); border: 2px solid #fff; } /* لون النخبة الأصلي */
-	         .team-blue { background: radial-gradient(circle, var(--danger-red), #b00404); border: 2px solid #fff; } /* لون التحدي الأصلي */
+	         .team-red { background: #ff3b3b; border: 2px solid #fff; }
+	         .team-blue { background: #3b82ff; border: 2px solid #fff; }
 
-	         /* تفاصيل اللاعب (الاسم والمركز) */
-	         .name-tag { position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); white-space: nowrap; text-align: center; pointer-events: none; }
-	         .player-name { display: block; font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 5px; margin-bottom: 2px; font-family: 'Tajawal', sans-serif; }
-	         .role-badge { display: inline-block; font-size: 11px; background: var(--ramadan-gold); color: #000; padding: 2px 8px; border-radius: 10px; font-weight: 900; transition: all 0.3s ease; font-family: 'Tajawal', sans-serif; }
+	         /* تفاصيل اللاعب (الاسم والمركز والأدوار/التعليمات) */
+             .player-name-center {
+                position: relative;
+                z-index: 10;
+                font-size: 12px;           /* خط أوضح للاسم */
+                font-weight: bold;
+                font-family: 'Tajawal', sans-serif;
+                padding: 0 4px;            /* حافة خفيفة حول الاسم */
+             }
+
+             .role-badge-bottom {
+                position: absolute;
+                bottom: -26px;              /* أبعدناه أكثر عن الدائرة */
+                left: 50%;
+                transform: translateX(-50%);
+                display: inline-block;
+                font-size: 12px;            /* تكبير خط المركز */
+                background: var(--ramadan-gold);
+                color: #000;
+                padding: 2px 10px;          /* أنحف طولياً، أوسع عرضياً */
+                border-radius: 10px;
+                font-weight: 900;
+                transition: all 0.3s ease;
+                font-family: 'Tajawal', sans-serif;
+             }
+
+	         .team-role-top-right {
+                position: absolute;
+                top: -28px;                 /* أعلى يمين الدائرة مع مسافة أمان */
+                right: -20px;               /* أبعدناه عن مركز الدائرة */
+                background: linear-gradient(135deg, #facc15, #f59e0b); /* ذهبي متوهج */
+                color: #1f2933;
+                padding: 2px 10px;          /* نحيف طولياً، أعرض عرضياً */
+                border-radius: 4px;         /* مستطيل أنيق */
+                font-size: 12px;            /* خط موحد 12px */
+                font-weight: 900;
+                border: 1px solid rgba(120,53,15,0.7);
+                z-index: 12;
+                min-width: 60px;
+                text-align: center;
+                white-space: nowrap;
+                box-shadow: 0 0 8px rgba(250,204,21,0.8); /* توهج ذهبي */
+             }
+
+             .instruction-top-left {
+                position: absolute;
+                top: -14px;                 /* أسفل الدور مباشرة مع فجوة صغيرة */
+                right: -20px;               /* نفس محاذاة الدور لليمين */
+                background: linear-gradient(135deg, #38bdf8, #0ea5e9); /* أزرق سماوي */
+                color: #022c41;
+                padding: 2px 10px;          /* نحيف وأعرض */
+                border-radius: 4px;         /* مستطيل مشابه */
+                font-size: 12px;            /* نفس حجم الخط */
+                font-weight: 700;
+                border: 1px solid rgba(12,74,110,0.8);
+                z-index: 11;
+                min-width: 70px;
+                text-align: center;
+                white-space: nowrap;
+                box-shadow: 0 0 8px rgba(56,189,248,0.75); /* توهج أزرق سماوي */
+             }
+
+             /* شارة الكابتن C أسفل يمين الدائرة */
+             .captain-badge {
+                position: absolute;
+                bottom: -6px;
+                right: -4px;
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                background: radial-gradient(circle at 30% 20%, #fef9c3, #b45309);
+                color: #111827;
+                font-size: 0.55rem;
+                font-weight: 900;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(0,0,0,0.7);
+                box-shadow: 0 0 8px rgba(250,204,21,0.9);
+                z-index: 13;
+             }
+
 	         .role-glow { box-shadow: var(--gold-glow-pitch); animation: pulse-role 1.5s infinite; }
 
 	         @keyframes pulse-role { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
@@ -709,6 +664,106 @@ body {
 	            border-right: 4px solid var(--ramadan-gold); padding: 10px 20px; border-radius: 4px; font-size: 14px;
 	            z-index: 1000; display: none; backdrop-filter: blur(5px); color: var(--ramadan-gold); font-weight: bold;
 	         }
+
+             /* القائمة المتقدمة التي تظهر عند الضغط المزدوج على اللاعب */
+             .tactical-advanced-menu {
+                position: absolute;
+                background: radial-gradient(circle at top, rgba(56,189,248,0.28), rgba(15,23,42,0.98));
+                border: 1px solid var(--glass-border);
+                border-radius: 14px;
+                padding: 14px 16px 12px;
+                min-width: 280px;
+                z-index: 1200;
+                box-shadow: 0 18px 45px rgba(0,0,0,0.8);
+                font-family: 'Tajawal', sans-serif;
+                direction: rtl;
+                backdrop-filter: blur(16px);
+             }
+
+             .tam-header {
+                font-weight: 800;
+                font-size: 0.95rem;
+                margin-bottom: 10px;
+                color: var(--ramadan-gold);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+             }
+
+             .tam-header::before {
+                content: "\f1e3";
+                font-family: "Font Awesome 6 Free";
+                font-weight: 900;
+                font-size: 0.9rem;
+                color: var(--accent-cyan);
+             }
+
+             .tam-group {
+                margin-bottom: 10px;
+             }
+
+             .tam-group label {
+                display: block;
+                font-size: 0.72rem;
+                color: #cbd5f5;
+                margin-bottom: 4px;
+             }
+
+             .tam-group select {
+                width: 100%;
+                padding: 5px 8px;
+                border-radius: 8px;
+                border: 1px solid rgba(148,163,184,0.6);
+                background: rgba(15,23,42,0.96);
+                color: #e5e7eb;
+                font-size: 0.78rem;
+                appearance: none;
+             }
+
+             .tam-group select:focus {
+                outline: none;
+                border-color: var(--accent-cyan);
+                box-shadow: 0 0 0 1px rgba(56,189,248,0.5);
+             }
+
+             .tam-actions {
+                display: flex;
+                justify-content: flex-start;
+                gap: 6px;
+                margin-top: 6px;
+             }
+
+             .tam-btn {
+                padding: 4px 10px;
+                border-radius: 6px;
+                border: none;
+                font-size: 0.7rem;
+                cursor: pointer;
+                background: rgba(255,255,255,0.1);
+                color: #fff;
+                transition: 0.2s;
+             }
+
+             .tam-btn:hover {
+                background: rgba(255,255,255,0.2);
+             }
+
+             .tam-save {
+                background: var(--ramadan-gold);
+                color: #000;
+             }
+
+             .tam-save:hover {
+                box-shadow: 0 0 10px var(--ramadan-gold);
+             }
+
+             .tam-clear {
+                background: rgba(220,53,69,0.8);
+             }
+
+             .tam-clear:hover {
+                box-shadow: 0 0 10px rgba(220,53,69,0.8);
+             }
 	                #stats-view { display: none; animation: fadeIn 0.5s; }
 	                
 	                .stats-table-container {
@@ -1136,49 +1191,9 @@ body {
 	                    
 	                    .welcome-title { font-size: 3.5rem; }
 	                    
-/* حاوية اللاعب بالكامل */
-.player-token {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: grab;
-    transition: transform 0.2s;
-    z-index: 100;
-}
-
-/* الدور فوق اللاعب (مثل: [C] أو (يضغط)) */
-.player-role-tag {
-    font-size: 10px;
-    font-weight: bold;
-    color: var(--ramadan-gold);
-    margin-bottom: 2px;
-    text-shadow: 1px 1px 2px #000;
-}
-
-/* الدائرة الملونة */
-.player-circle-core {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-}
-
-
-/* اسم اللاعب تحت */
-.player-label-name {
-    font-size: 11px;
-    color: white;
-    margin-top: 3px;
-    background: rgba(0,0,0,0.4);
-    padding: 1px 5px;
-    border-radius: 4px;
-}	                    
+	                    .player-token { width: 45px; height: 45px; }
+	                    .player-token .p-name { display: none; }
+	                    
 	                    .cursor-dot, .cursor-outline { display: none; }
 	                    
 	                    .grid-menu { grid-template-columns: 1fr; }
@@ -1196,11 +1211,110 @@ body {
 	                    .cl-trophy-wrapper { transform: scale(0.8); height: 250px; }
 	                }
 
-/* ألوان الفرق */
-	              .player-node.team-red {
-  background: #ff3b3b !important;
-}
+	              
+	              /* حاوية اللودر - بتغطي الشاشة كاملة بالأسود */
+	         #master-truck-preloader {
+	            position: fixed;
+	            top: 0; left: 0;
+	            width: 100%; height: 100%;
+	            background-color: #808080; /* أسود فخم */
+	            display: flex;
+	            flex-direction: column;
+	            justify-content: center;
+	            align-items: center;
+	            z-index: 9999999; /* عشان يغطي شاشة الترحيب تاعت الموقع */
+	            transition: opacity 0.6s ease, visibility 0.6s;
+	         }
 
-.player-node.team-blue {
-  background: #3b82ff !important;
-}
+	         /* كودك إنت بالحرف بدون أي تعديل */
+	         .loader {
+	          width: fit-content;
+	          height: fit-content;
+	          display: flex;
+	          align-items: center;
+	          justify-content: center;
+	         }
+	         .truckWrapper {
+	          width: 200px;
+	          height: 100px;
+	          display: flex;
+	          flex-direction: column;
+	          position: relative;
+	          align-items: center;
+	          justify-content: flex-end;
+	          overflow-x: hidden;
+	         }
+	         .truckBody {
+	          width: 130px;
+	          height: fit-content;
+	          margin-bottom: 6px;
+	          animation: motion 1s linear infinite;
+	         }
+	         @keyframes motion {
+	          0% { transform: translateY(0px); }
+	          50% { transform: translateY(3px); }
+	          100% { transform: translateY(0px); }
+	         }
+	         .truckTires {
+	          width: 130px;
+	          height: fit-content;
+	          display: flex;
+	          align-items: center;
+	          justify-content: space-between;
+	          padding: 0px 10px 0px 15px;
+	          position: absolute;
+	          bottom: 0;
+	         }
+	         .truckTires svg { width: 24px; }
+	         .road {
+	          width: 100%;
+	          height: 1.5px;
+	          background-color: #282828;
+	          position: relative;
+	          bottom: 0;
+	          align-self: flex-end;
+	          border-radius: 3px;
+	         }
+	         .road::before {
+	          content: "";
+	          position: absolute;
+	          width: 20px;
+	          height: 100%;
+	          background-color: #282828;
+	          right: -50%;
+	          border-radius: 3px;
+	          animation: roadAnimation 1.4s linear infinite;
+	          border-left: 10px solid white;
+	         }
+	         .road::after {
+	          content: "";
+	          position: absolute;
+	          width: 10px;
+	          height: 100%;
+	          background-color: #282828;
+	          right: -65%;
+	          border-radius: 3px;
+	          animation: roadAnimation 1.4s linear infinite;
+	          border-left: 4px solid white;
+	         }
+	         .lampPost {
+	          position: absolute;
+	          bottom: 0;
+	          right: -90%;
+	          height: 90px;
+	          animation: roadAnimation 1.4s linear infinite;
+	         }
+	         @keyframes roadAnimation {
+	          0% { transform: translateX(0px); }
+	          100% { transform: translateX(-350px); }
+	         }
+
+	         /* جملة التحميل */
+	         .loading-text-style {
+	            margin-top: 25px;
+	            color: #ffffff;
+	            font-family: 'Tajawal', sans-serif;
+	            font-size: 1.1rem;
+	            font-weight: bold;
+	            text-align: center;
+	         }
