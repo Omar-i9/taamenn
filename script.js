@@ -501,6 +501,8 @@
 	                this.coordLabel = document.getElementById('coord-label');
 	                this.draggedElement = null;
 	                this.is3D = true;
+	                // لتتبع كابتن كل فريق (home / away)
+	                this.captainByTeam = { home: null, away: null };
 	                
 	                if(this.pitch) this.init();
 	            }
@@ -532,15 +534,179 @@
 	            createPlayer(config) {
 	                const node = document.createElement('div');
 	                node.className = `player-node ${config.color}`;
-	                node.id = config.id; node.dataset.team = config.team;
-	                node.style.left = `${config.x}%`; node.style.top = `${config.y}%`;
+	                node.id = config.id;
+	                node.dataset.team = config.team;
+	                node.style.left = `${config.x}%`;
+	                node.style.top = `${config.y}%`;
+
+	                // هيكل اللاعب مع مربعات الدور والتعليمات فوق بعض
 	                node.innerHTML = `
-	                    ${config.id.charAt(0) === 'R' ? 'A' : 'B'}
-	                    <div class="name-tag"><span class="player-name">${config.name}<\/span><span class="role-badge" id="role-${config.id}">--<\/span><\/div>
+	                    <div class="team-role-top-right" id="team-role-${config.id}" style="display:none;"><\/div>
+	                    <div class="instruction-top-left" id="instr-${config.id}" style="display:none;"><\/div>
+	                    <div class="player-name-center">${config.name}<\/div>
+	                    <div class="role-badge-bottom" id="role-${config.id}">--<\/div>
+	                    <div class="captain-badge" id="captain-${config.id}" style="display:none;">C<\/div>
 	                `;
+
+	                // ضغط مزدوج لفتح قائمة متقدمة
+	                node.addEventListener('dblclick', (e) => {
+	                    e.stopPropagation();
+	                    this.showAdvancedMenu(e.pageX, e.pageY, node);
+	                });
+
+	                // سحب اللاعب
 	                node.addEventListener('pointerdown', (e) => this.onStart(e, node));
+
 	                this.pitch.appendChild(node);
 	                this.updateTacticalRole(node, config.x, config.y);
+	            }
+
+	            // قائمة لاختيار أدوار وتعليمات جاهزة عند الضغط المزدوج
+	            showAdvancedMenu(x, y, playerNode) {
+	                // إزالة أي قائمة سابقة
+	                const oldMenu = document.getElementById('tactical-advanced-menu');
+	                if (oldMenu) oldMenu.remove();
+
+	                const menu = document.createElement('div');
+	                menu.id = 'tactical-advanced-menu';
+	                menu.className = 'tactical-advanced-menu';
+	                menu.style.left = `${x}px`;
+	                menu.style.top = `${y}px`;
+
+	                const playerId = playerNode.id;
+	                const teamRoleEl = playerNode.querySelector(`#team-role-${playerId}`);
+	                const instrEl = playerNode.querySelector(`#instr-${playerId}`);
+	                const captainBadgeEl = playerNode.querySelector(`#captain-${playerId}`);
+
+	                const currentRole = teamRoleEl && teamRoleEl.textContent ? teamRoleEl.textContent : '';
+	                const currentInstr = instrEl && instrEl.textContent ? instrEl.textContent : '';
+
+	                menu.innerHTML = `
+	                    <div class="tam-header">إعدادات ${playerNode.dataset.team === 'home' ? 'النخبة' : 'التحدي'} - ${playerId}<\/div>
+	                    <div class="tam-group">
+	                        <label>دور اللاعب في الفريق:<\/label>
+	                        <select id="tam-team-role">
+	                            <option value="">بدون دور محدد<\/option>
+	                            <option value="كابتن" ${currentRole === 'كابتن' ? 'selected' : ''}>كابتن<\/option>
+	                            <option value="قائد الدفاع" ${currentRole === 'قائد الدفاع' ? 'selected' : ''}>قائد الدفاع<\/option>
+	                            <option value="قائد الهجوم" ${currentRole === 'قائد الهجوم' ? 'selected' : ''}>قائد الهجوم<\/option>
+	                            <option value="منفذ الركلات الثابتة" ${currentRole === 'منفذ الركلات الثابتة' ? 'selected' : ''}>منفذ الركلات الثابتة<\/option>
+	                            <option value="منفذ ركلات الجزاء" ${currentRole === 'منفذ ركلات الجزاء' ? 'selected' : ''}>منفذ ركلات الجزاء<\/option>
+	                            <option value="لاعب حر" ${currentRole === 'لاعب حر' ? 'selected' : ''}>لاعب حر<\/option>
+	                            <option value="صانع ألعاب رئيسي" ${currentRole === 'صانع ألعاب رئيسي' ? 'selected' : ''}>صانع ألعاب رئيسي<\/option>
+	                        <\/select>
+	                    <\/div>
+	                    <div class="tam-group">
+	                        <label>تعليمات تكتيكية خاصة:<\/label>
+	                        <select id="tam-instr">
+	                            <option value="">بدون تعليمات<\/option>
+	                            <option value="يضغط للأمام" ${currentInstr === 'يضغط للأمام' ? 'selected' : ''}>يضغط للأمام<\/option>
+	                            <option value="يغطي الظهير" ${currentInstr === 'يغطي الظهير' ? 'selected' : ''}>يغطي الظهير<\/option>
+	                            <option value="يسقط للخلف" ${currentInstr === 'يسقط للخلف' ? 'selected' : ''}>يسقط للخلف<\/option>
+	                            <option value="يثبت في العمق" ${currentInstr === 'يثبت في العمق' ? 'selected' : ''}>يثبت في العمق<\/option>
+	                            <option value="يتحرك بين الخطوط" ${currentInstr === 'يتحرك بين الخطوط' ? 'selected' : ''}>يتحرك بين الخطوط<\/option>
+	                            <option value="يفتح على الخط" ${currentInstr === 'يفتح على الخط' ? 'selected' : ''}>يفتح على الخط<\/option>
+	                            <option value="يدخل للعمق" ${currentInstr === 'يدخل للعمق' ? 'selected' : ''}>يدخل للعمق<\/option>
+	                        <\/select>
+	                    <\/div>
+	                    <div class="tam-actions">
+	                        <button type="button" class="tam-btn tam-save">حفظ<\/button>
+	                        <button type="button" class="tam-btn tam-clear">مسح<\/button>
+	                        <button type="button" class="tam-btn tam-close">إغلاق<\/button>
+	                    <\/div>
+	                `;
+
+	                document.body.appendChild(menu);
+
+	                const saveBtn = menu.querySelector('.tam-save');
+	                const clearBtn = menu.querySelector('.tam-clear');
+	                const closeBtn = menu.querySelector('.tam-close');
+	                const roleInput = menu.querySelector('#tam-team-role');
+	                const instrInput = menu.querySelector('#tam-instr');
+
+	                saveBtn.addEventListener('click', () => {
+	                    const roleText = roleInput.value;
+	                    const instrText = instrInput.value;
+	                    const teamKey = playerNode.dataset.team; // home or away
+
+	                    // منطق الكابتن: لاعب واحد فقط لكل فريق
+	                    if (roleText === 'كابتن') {
+	                        const currentCaptainId = this.captainByTeam[teamKey];
+	                        if (currentCaptainId && currentCaptainId !== playerId) {
+	                            // يوجد كابتن آخر في نفس الفريق
+	                            alert('هذا الفريق يملك كابتن بالفعل. قم بإزالة دور الكابتن عنه أولاً ثم عيّنه للاعب جديد.');
+	                            roleInput.value = teamRoleEl && teamRoleEl.textContent ? teamRoleEl.textContent : '';
+	                            return;
+	                        }
+	                        this.captainByTeam[teamKey] = playerId;
+	                        if (captainBadgeEl) captainBadgeEl.style.display = 'flex';
+	                    } else {
+	                        // إذا كان هذا اللاعب هو الكابتن الحالي وتم تغيير دوره، أزل الكابتن من الفريق
+	                        if (this.captainByTeam[teamKey] === playerId) {
+	                            this.captainByTeam[teamKey] = null;
+	                        }
+	                        if (captainBadgeEl) captainBadgeEl.style.display = 'none';
+	                    }
+
+	                    if (teamRoleEl) {
+	                        if (roleText) {
+	                            teamRoleEl.textContent = roleText;
+	                            teamRoleEl.style.display = 'block';
+	                        } else {
+	                            teamRoleEl.textContent = '';
+	                            teamRoleEl.style.display = 'none';
+	                        }
+	                    }
+
+	                    if (instrEl) {
+	                        if (instrText) {
+	                            instrEl.textContent = instrText;
+	                            instrEl.style.display = 'block';
+	                        } else {
+	                            instrEl.textContent = '';
+	                            instrEl.style.display = 'none';
+	                        }
+	                    }
+
+	                    menu.remove();
+	                });
+
+	                clearBtn.addEventListener('click', () => {
+	                    const teamKey = playerNode.dataset.team;
+	                    const wasCaptain = (this.captainByTeam[teamKey] === playerId);
+
+	                    roleInput.value = '';
+	                    instrInput.value = '';
+	                    if (teamRoleEl) {
+	                        teamRoleEl.textContent = '';
+	                        teamRoleEl.style.display = 'none';
+	                    }
+	                    if (instrEl) {
+	                        instrEl.textContent = '';
+	                        instrEl.style.display = 'none';
+	                    }
+	                    if (captainBadgeEl) {
+	                        captainBadgeEl.style.display = 'none';
+	                    }
+	                    if (wasCaptain) {
+	                        this.captainByTeam[teamKey] = null;
+	                    }
+	                });
+
+	                closeBtn.addEventListener('click', () => {
+	                    menu.remove();
+	                });
+
+	                // إغلاق عند الضغط خارج القائمة
+	                setTimeout(() => {
+	                    const onBodyClick = (ev) => {
+	                        if (!menu.contains(ev.target)) {
+	                            menu.remove();
+	                            document.body.removeEventListener('click', onBodyClick);
+	                        }
+	                    };
+	                    document.body.addEventListener('click', onBodyClick);
+	                }, 0);
 	            }
 
 	            bindEvents() {
@@ -571,38 +737,113 @@
 	                this.updateTacticalRole(this.draggedElement, x, y);
 	            }
 
-	            updateTacticalRole(el, x, y) {
-	                const team = el.dataset.team; const badge = el.querySelector('.role-badge');
-	                let role = "";
-	                const isInsideDZone = (team === 'home' && x < 15 && y > 30 && y < 70) || (team === 'away' && x > 85 && y > 30 && y < 70);
+updateTacticalRole(el, x, y) {
+    const team = el.dataset.team;
+    const badge = el.querySelector('.role-badge-bottom');
+    let role = "";
 
-	                if (isInsideDZone) role = "GK";
-	                else {
-	                    const isMyHalf = (team === 'home' && x <= 50) || (team === 'away' && x >= 50);
-	                    if (isMyHalf) {
-	                        if (y < 30) role = (team === 'home' ? "LB" : "RB");
-	                        else if (y > 70) role = (team === 'home' ? "RB" : "LB");
-	                        else role = "CB";
-	                    } else {
-	                        if (y < 35) role = (team === 'home' ? "LW" : "RW");
-	                        else if (y > 65) role = (team === 'home' ? "RW" : "LW");
-	                        else { const depth = team === 'home' ? x : (100 - x); role = depth > 80 ? "ST" : "CAM"; }
-	                    }
-	                }
+    // حساب البعد عن مرمى الفريق نفسه
+    const depthFromOwnGoal = (team === 'home') ? x : (100 - x);
+    const laneY = y;
 
-	                if (badge.innerText !== role) {
-	                    badge.innerText = role; badge.classList.add('role-glow');
-	                    setTimeout(() => badge.classList.remove('role-glow'), 600);
-	                }
-	                const arabicRole = {"GK":"حارس","CB":"دفاع","LB":"ظ.أيسر","RB":"ظ.أيمن","LW":"ج.أيسر","RW":"ج.أيمن","CAM":"صانع","ST":"مهاجم"}[role] || role;
-	                this.coordLabel.innerText = `المركز: ${arabicRole} (${Math.round(x)}%, ${Math.round(y)}%)`;
-	            }
+    // تقسيم طولي
+    const inGKZone  = depthFromOwnGoal < 8;          // عند المرمى
+    const inDefZone = depthFromOwnGoal >= 8  && depthFromOwnGoal < 28; // دفاع
+    const inCDMZone = depthFromOwnGoal >= 28 && depthFromOwnGoal < 40; // محور دفاعي
+    const inCMZone  = depthFromOwnGoal >= 40 && depthFromOwnGoal < 65; // وسط
+    const inCAMZone = depthFromOwnGoal >= 65 && depthFromOwnGoal < 80; // وسط هجومي
+    const inSTZone  = depthFromOwnGoal >= 80;                         // هجوم
+
+    // تقسيم عرضي
+    const farLeft   = laneY < 22;
+    const farRight  = laneY > 78;
+
+    // 1) حارس
+    if (inGKZone && laneY > 30 && laneY < 70) {
+        role = "GK";
+    }
+    // 2) دفاع: CB / LB / RB
+    else if (inDefZone) {
+        if (farLeft)        role = "LB";
+        else if (farRight)  role = "RB";
+        else                role = "CB";
+    }
+    // 3) محور دفاعي
+    else if (inCDMZone) {
+        role = "CDM";
+    }
+    // 4) وسط: CM / LM / RM
+    else if (inCMZone) {
+        if (farLeft)        role = "LM";
+        else if (farRight)  role = "RM";
+        else                role = "CM";
+    }
+    // 5) وسط هجومي + أجنحة: CAM / LW / RW
+    else if (inCAMZone) {
+        if (farLeft)        role = "LW";
+        else if (farRight)  role = "RW";
+        else                role = "CAM";
+    }
+    // 6) هجوم أمامي: ST + LW/RW
+    else if (inSTZone) {
+        if (farLeft)        role = "LW";
+        else if (farRight)  role = "RW";
+        else                role = "ST";
+    }
+
+    if (!role) role = "CM"; // احتياطي
+
+    if (badge && badge.innerText !== role) {
+        badge.innerText = role;
+        badge.classList.add('role-glow');
+        setTimeout(() => badge.classList.remove('role-glow'), 600);
+    }
+
+    const arabicRoleMap = {
+        GK: "حارس",
+        CB: "قلب دفاع",
+        RB: "ظهير أيمن",
+        LB: "ظـهير أيسر",
+        CDM:"محور دفاعي",
+        CM: "وسط مركزي",
+        CAM:"صانع ألعاب",
+        LM: "وسط أيسر",
+        RM: "وسط أيمن",
+        LW: "جناح أيسر",
+        RW: "جناح أيمن",
+        ST: "مهاجم"
+    };
+
+    const arabicRole = arabicRoleMap[role] || role;
+    this.coordLabel.innerText = `المركز: ${arabicRole} (${Math.round(x)}%, ${Math.round(y)}%)`;
+}
 
 	            onEnd() {
 	                if (this.draggedElement) this.draggedElement = null;
 	                this.coordBox.style.display = 'none';
 	            }
 	         }
+
+             // أخذ لقطة شاشة للملعب وحفظها كصورة
+             function takeScreenshot() {
+                const wrapper = document.getElementById('tactical-pitch-wrapper');
+                if (!wrapper) return;
+
+                html2canvas(wrapper, {
+                    backgroundColor: null,
+                    useCORS: true,
+                    scale: 2
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    const ts = new Date();
+                    const name = `tamin-formation-${ts.getFullYear()}-${ts.getMonth()+1}-${ts.getDate()}-${ts.getHours()}${ts.getMinutes()}${ts.getSeconds()}.png`;
+                    link.download = name;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                }).catch(err => {
+                    console.error('Screenshot error', err);
+                });
+             }
 
 	                // ==========================================
 	                // [MAIN] EXECUTION
