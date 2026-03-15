@@ -538,7 +538,7 @@ class FutsalTacticalEngine {
         this.bindEvents();
     }
 
-    setupPlayers() {
+    س() {
         const teamA = [
             { id: 'R1', name: 'ارقم', x: 8, y: 50, color: 'team-red', team: 'home' },
             { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },

@@ -692,8 +692,8 @@ body {
 	         .player-node:active { cursor: grabbing; transform: scale(1.2); box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 100 !important; }
 	         .player-node:hover { transform: scale(1.1); z-index: 60; }
 
-	         .team-red { background: radial-gradient(circle, var(--accent-cyan), #004d40); border: 2px solid #fff; } /* لون النخبة الأصلي */
-	         .team-blue { background: radial-gradient(circle, var(--danger-red), #b71c1c); border: 2px solid #fff; } /* لون التحدي الأصلي */
+	         .team-red { background: radial-gradient(circle, var(--accent-cyan), #1501a7); border: 2px solid #fff; } /* لون النخبة الأصلي */
+	         .team-blue { background: radial-gradient(circle, var(--danger-red), #b00404); border: 2px solid #fff; } /* لون التحدي الأصلي */
 
 	         /* تفاصيل اللاعب (الاسم والمركز) */
 	         .name-tag { position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); white-space: nowrap; text-align: center; pointer-events: none; }
@@ -1170,8 +1170,13 @@ body {
 }
 
 /* ألوان الفرق */
-.team-red .player-circle-core { background: var(--danger-red); }
-.team-blue .player-circle-core { background: #0044ff; border-color: var(--ramadan-gold); }
+.team-red {
+  background: #00c853; /* أخضر */
+}
+
+.team-blue {
+  background: #ff6d00; /* برتقالي */
+}
 
 /* اسم اللاعب تحت */
 .player-label-name {
@@ -1199,4 +1204,10 @@ body {
 	                    .cl-trophy-wrapper { transform: scale(0.8); height: 250px; }
 	                }
 
-	              
+	              .player-node.team-red {
+  background: #ff3b3b !important;
+}
+
+.player-node.team-blue {
+  background: #3b82ff !important;
+}
