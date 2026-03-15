@@ -468,7 +468,8 @@
 	                        {t1: "كريم", t2: "عمر", s: "3 - 3", st: "انتهت", d: "الجمعه 20 فبراير"},      
 	                        {t1: "عمر", t2: "كريم", s: "6 - 8", st: "انتهت", d: "الجمعه 27 فبراير"},
 	                        {t1: "خضر", t2: "كريم", s: "13 - 7", st: "انتهت", d: "الجمعه 6 مارس"},
-	                                      {t1: "عمر", t2: "كريم", s: "-  -", st: "محتملة", d: "الجمعه 13 مارس"},
+						    {t1: "عمر", t2: "كريم", s: "9 - 6", st: "(لقاء ودي) انتهت", d: "الخميس 12 مارس"},
+	                        {t1: "عمر & كريم", t2: "كريم التميمي", s: "8 - 7", st: "انتهت", d: "الجمعه 13 مارس"},
 
 	                    ];
 	                    document.getElementById('matchHistoryContainer').innerHTML = matches.map(m => `
@@ -515,18 +516,18 @@
 	            setupPlayers() {
 	                // يمكنك تعديل الأسماء والمراكز المبدئية هنا
 	                const teamA = [
-	                    { id: 'R1', name: 'ارقم', x: 8, y: 50, color: 'team-red', team: 'home' },
-	                    { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
-	                    { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
+	                    { id: 'R1', name: 'خضر', x: 8, y: 50, color: 'team-red', team: 'home' },
+	                    { id: 'R2', name: 'يوسف', x: 25, y: 25, color: 'team-red', team: 'home' },
+	                    { id: 'R3', name: 'محمد علي', x: 25, y: 75, color: 'team-red', team: 'home' },
 	                    { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
-	                    { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
+	                    { id: 'R5', name: 'كريم', x: 45, y: 70, color: 'team-red', team: 'home' },
 	                ];
 	                const teamB = [
-	                    { id: 'B1', name: 'محمد', x: 92, y: 50, color: 'team-blue', team: 'away' },
-	                    { id: 'B2', name: 'سنقرط', x: 75, y: 25, color: 'team-blue', team: 'away' },
-	                    { id: 'B3', name: 'احمد', x: 75, y: 75, color: 'team-blue', team: 'away' },
-	                    { id: 'B4', name: 'كريم', x: 60, y: 30, color: 'team-blue', team: 'away' },
-	                    { id: 'B5', name: 'خضر', x: 55, y: 70, color: 'team-blue', team: 'away' },
+	                    { id: 'B1', name: 'كريم', x: 92, y: 50, color: 'team-blue', team: 'away' },
+	                    { id: 'B2', name: 'احمد', x: 75, y: 25, color: 'team-blue', team: 'away' },
+	                    { id: 'B3', name: 'عمر نجار', x: 75, y: 75, color: 'team-blue', team: 'away' },
+	                    { id: 'B4', name: 'قيس', x: 60, y: 30, color: 'team-blue', team: 'away' },
+	                    { id: 'B5', name: 'نجار', x: 55, y: 70, color: 'team-blue', team: 'away' },
 	                ];
 	                [...teamA, ...teamB].forEach(p => this.createPlayer(p));
 	            }
