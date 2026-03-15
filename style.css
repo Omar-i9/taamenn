@@ -1169,14 +1169,6 @@ body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-/* ألوان الفرق */
-.team-red {
-  background: #00c853; /* أخضر */
-}
-
-.team-blue {
-  background: #ff6d00; /* برتقالي */
-}
 
 /* اسم اللاعب تحت */
 .player-label-name {
@@ -1204,6 +1196,7 @@ body {
 	                    .cl-trophy-wrapper { transform: scale(0.8); height: 250px; }
 	                }
 
+/* ألوان الفرق */
 	              .player-node.team-red {
   background: #ff3b3b !important;
 }

@@ -197,7 +197,9 @@
 	            if (element) {
 	                element.classList.add('active');
 	            }
-	         }        const statsElite = [
+	         }
+
+                 const statsElite = [
 	                    { name: "عمر", g: 1, a: 4, r: 9.7 },
 	                    { name: "يوسف", g: 5, a: 0, r: 10.0 },
 	                    { name: "ارقم", g: 0, a: 0, r: 7.9 },
@@ -488,252 +490,146 @@
 	                    `).join('');
 	                }
 
-// ==========================================
-// [13] نظام التقاط الشاشة (SCREENSHOT)
-// ==========================================
-function takeScreenshot() {
-    const pitchElement = document.getElementById('tactical-pitch-wrapper');
-    if(!pitchElement) return alert("الملعب غير موجود!");
+	         // ==========================================
+	         // المحرك التكتيكي الجديد (FutsalTacticalEngine)
+	         // ==========================================
+	         class FutsalTacticalEngine {
+	            constructor() {
+	                this.pitch = document.getElementById('tactical-futsal-pitch');
+	                this.viewToggle = document.getElementById('tactical-view-toggle');
+	                this.coordBox = document.getElementById('live-coord');
+	                this.coordLabel = document.getElementById('coord-label');
+	                this.draggedElement = null;
+	                this.is3D = true;
+	                
+	                if(this.pitch) this.init();
+	            }
 
-    // تغيير نص الزر أثناء التصوير
-    const btn = document.querySelector('.radar-btn .fa-camera').parentElement;
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التصوير...';
+	            init() {
+	                this.setupPlayers();
+	                this.bindEvents();
+	            }
 
-    html2canvas(pitchElement, {
-        backgroundColor: '#14532d', // لون أرضية الملعب لتجنب الخلفية الشفافة
-        scale: 2,
-        useCORS: true
-    }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'تشكيلة_فريق_تأمين.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        btn.innerHTML = originalText; // إرجاع شكل الزر
-    }).catch(err => {
-        console.error("Screenshot Error: ", err);
-        btn.innerHTML = originalText;
-        alert("حدث خطأ أثناء حفظ التشكيلة.");
-    });
-}
+	            setupPlayers() {
+	                // يمكنك تعديل الأسماء والمراكز المبدئية هنا
+	                const teamA = [
+	                    { id: 'R1', name: 'ارقم', x: 8, y: 50, color: 'team-red', team: 'home' },
+	                    { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
+	                    { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
+	                    { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
+	                    { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
+	                ];
+	                const teamB = [
+	                    { id: 'B1', name: 'محمد', x: 92, y: 50, color: 'team-blue', team: 'away' },
+	                    { id: 'B2', name: 'سنقرط', x: 75, y: 25, color: 'team-blue', team: 'away' },
+	                    { id: 'B3', name: 'احمد', x: 75, y: 75, color: 'team-blue', team: 'away' },
+	                    { id: 'B4', name: 'كريم', x: 60, y: 30, color: 'team-blue', team: 'away' },
+	                    { id: 'B5', name: 'خضر', x: 55, y: 70, color: 'team-blue', team: 'away' },
+	                ];
+	                [...teamA, ...teamB].forEach(p => this.createPlayer(p));
+	            }
 
-// ==========================================
-// [14] المحرك التكتيكي المطور (FutsalTacticalEngine)
-// ==========================================
-class FutsalTacticalEngine {
-    constructor() {
-        this.teamStrategy = 'balanced'; 
-        this.pitch = document.getElementById('tactical-futsal-pitch');
-        this.viewToggle = document.getElementById('tactical-view-toggle');
-        this.coordBox = document.getElementById('live-coord');
-        this.coordLabel = document.getElementById('coord-label');
-        this.draggedElement = null;
-        this.is3D = true;
+	            createPlayer(config) {
+	                const node = document.createElement('div');
+	                node.className = `player-node ${config.color}`;
+	                node.id = config.id; node.dataset.team = config.team;
+	                node.style.left = `${config.x}%`; node.style.top = `${config.y}%`;
+	                node.innerHTML = `
+	                    ${config.id.charAt(0) === 'R' ? 'A' : 'B'}
+	                    <div class="name-tag"><span class="player-name">${config.name}<\/span><span class="role-badge" id="role-${config.id}">--<\/span><\/div>
+	                `;
+	                node.addEventListener('pointerdown', (e) => this.onStart(e, node));
+	                this.pitch.appendChild(node);
+	                this.updateTacticalRole(node, config.x, config.y);
+	            }
 
-        if(this.pitch) this.init();
-    }
+	            bindEvents() {
+	                window.addEventListener('pointermove', (e) => this.onMove(e));
+	                window.addEventListener('pointerup', () => this.onEnd());
+	                if(this.viewToggle) {
+	                    this.viewToggle.addEventListener('click', () => {
+	                        this.is3D = !this.is3D;
+	                        if(this.is3D) this.pitch.classList.remove('is-2d');
+	                        else this.pitch.classList.add('is-2d');
+	                    });
+	                }
+	            }
 
-    init() {
-        this.setupPlayers();
-        this.bindEvents();
-    }
+	            onStart(e, el) {
+	                this.draggedElement = el;
+	                el.setPointerCapture(e.pointerId);
+	                this.coordBox.style.display = 'block';
+	            }
 
-    س() {
-        const teamA = [
-            { id: 'R1', name: 'ارقم', x: 8, y: 50, color: 'team-red', team: 'home' },
-            { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
-            { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
-            { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
-            { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
-        ];
-        const teamB = [
-            { id: 'B1', name: 'محمد', x: 92, y: 50, color: 'team-blue', team: 'away' },
-            { id: 'B2', name: 'سنقرط', x: 75, y: 25, color: 'team-blue', team: 'away' },
-            { id: 'B3', name: 'احمد', x: 75, y: 75, color: 'team-blue', team: 'away' },
-            { id: 'B4', name: 'كريم', x: 60, y: 30, color: 'team-blue', team: 'away' },
-            { id: 'B5', name: 'خضر', x: 55, y: 70, color: 'team-blue', team: 'away' },
-        ];
-        [...teamA, ...teamB].forEach(p => this.createPlayer(p));
-    }
+	            onMove(e) {
+	                if (!this.draggedElement) return;
+	                const rect = this.pitch.getBoundingClientRect();
+	                let x = ((e.clientX - rect.left) / rect.width) * 100;
+	                let y = ((e.clientY - rect.top) / rect.height) * 100;
+	                x = Math.max(2, Math.min(98, x)); y = Math.max(4, Math.min(96, y));
+	                this.draggedElement.style.left = `${x}%`; this.draggedElement.style.top = `${y}%`;
+	                this.updateTacticalRole(this.draggedElement, x, y);
+	            }
 
-    createPlayer(config) {
-        const node = document.createElement('div');
-        node.className = `player-node ${config.color}`;
-        node.id = config.id;
-        node.dataset.team = config.team;
-        node.style.left = `${config.x}%`;
-        node.style.top = `${config.y}%`;
+	            updateTacticalRole(el, x, y) {
+	                const team = el.dataset.team; const badge = el.querySelector('.role-badge');
+	                let role = "";
+	                const isInsideDZone = (team === 'home' && x < 15 && y > 30 && y < 70) || (team === 'away' && x > 85 && y > 30 && y < 70);
 
-        // الهيكل الجديد: اسم في الوسط، مركز بالأسفل، دور فوق يمين، تعليمات فوق يسار
-        node.innerHTML = `
-            <div class="team-role-top-right" id="team-role-${config.id}" style="display:none;"></div>
-            <div class="instruction-top-left" id="instr-${config.id}" style="display:none;"></div>
-            <div class="player-name-center">${config.name}</div>
-            <div class="role-badge-bottom" id="role-${config.id}">--</div>
-        `;
+	                if (isInsideDZone) role = "GK";
+	                else {
+	                    const isMyHalf = (team === 'home' && x <= 50) || (team === 'away' && x >= 50);
+	                    if (isMyHalf) {
+	                        if (y < 30) role = (team === 'home' ? "LB" : "RB");
+	                        else if (y > 70) role = (team === 'home' ? "RB" : "LB");
+	                        else role = "CB";
+	                    } else {
+	                        if (y < 35) role = (team === 'home' ? "LW" : "RW");
+	                        else if (y > 65) role = (team === 'home' ? "RW" : "LW");
+	                        else { const depth = team === 'home' ? x : (100 - x); role = depth > 80 ? "ST" : "CAM"; }
+	                    }
+	                }
 
-        // حدث الضغط مرتين لفتح القائمة المتقدمة
-        node.addEventListener('dblclick', (e) => {
-            e.stopPropagation();
-            this.showAdvancedMenu(e.pageX, e.pageY, node);
-        });
+	                if (badge.innerText !== role) {
+	                    badge.innerText = role; badge.classList.add('role-glow');
+	                    setTimeout(() => badge.classList.remove('role-glow'), 600);
+	                }
+	                const arabicRole = {"GK":"حارس","CB":"دفاع","LB":"ظ.أيسر","RB":"ظ.أيمن","LW":"ج.أيسر","RW":"ج.أيمن","CAM":"صانع","ST":"مهاجم"}[role] || role;
+	                this.coordLabel.innerText = `المركز: ${arabicRole} (${Math.round(x)}%, ${Math.round(y)}%)`;
+	            }
 
-        node.addEventListener('pointerdown', (e) => this.onStart(e, node));
-        this.pitch.appendChild(node);
-        this.updateTacticalRole(node, config.x, config.y);
-    }
+	            onEnd() {
+	                if (this.draggedElement) this.draggedElement = null;
+	                this.coordBox.style.display = 'none';
+	            }
+	         }
 
-    showAdvancedMenu(x, y, playerEl) {
-        const oldMenu = document.getElementById('player-adv-menu');
-        if(oldMenu) oldMenu.remove();
+	                // ==========================================
+	                // [MAIN] EXECUTION
+	                // ==========================================
+	         window.onload = () => {
+	            // 1. كود إخفاء الشاحنة بعد 4 ثواني
+	            setTimeout(() => {
+	                const preloader = document.getElementById('master-truck-preloader');
+	                if (preloader) {
+	                    preloader.style.opacity = '0';
+	                    preloader.style.visibility = 'hidden';
+	                    setTimeout(() => preloader.remove(), 800);
+	                }
+	            }, 4000);
 
-        const menu = document.createElement('div');
-        menu.id = 'player-adv-menu';
-        menu.style = `position:absolute; top:${y}px; left:${x}px; background:rgba(5, 10, 31, 0.98); color:white; border:1px solid gold; padding:12px; z-index:10000; border-radius:12px; font-family:Tajawal; min-width:160px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); text-align:right;`;
-
-        // 1. خيارات دور اللاعب في الفريق
-        let html = `<div style="color:gold; font-size:0.75rem; margin-bottom:8px; border-bottom:1px solid #333; padding-bottom:4px;">مهام الفريق</div>`;
-        const teamRoles = ['كابتن', 'ركلات جزاء', 'ركلات حرة', 'ركنية'];
-        teamRoles.forEach(r => {
-            html += `<div class="menu-item" onclick="updatePlayerTag('${playerEl.id}', 'team', '${r}')" style="padding:6px; cursor:pointer; font-size:0.8rem; border-radius:4px; transition:0.2s;">• ${r}</div>`;
-        });
-
-        // 2. خيارات التعليمات التكتيكية
-        html += `<div style="color:#00f2ff; font-size:0.75rem; margin:10px 0 8px; border-bottom:1px solid #333; padding-bottom:4px;">تعليمات تكتيكية</div>`;
-        const instructions = ['يضغط', 'يساند الهجوم', 'يساند الدفاع', 'تمركز ثابت'];
-        instructions.forEach(i => {
-            html += `<div class="menu-item" onclick="updatePlayerTag('${playerEl.id}', 'instr', '${i}')" style="padding:6px; cursor:pointer; font-size:0.8rem; border-radius:4px; transition:0.2s;">• ${i}</div>`;
-        });
-
-        menu.innerHTML = html;
-        document.body.appendChild(menu);
-
-        setTimeout(() => {
-            document.addEventListener('click', () => { if(document.getElementById('player-adv-menu')) menu.remove(); }, {once:true});
-        }, 10);
-    }
-
-    bindEvents() {
-        window.addEventListener('pointermove', (e) => this.onMove(e));
-        window.addEventListener('pointerup', () => this.onEnd());
-        if(this.viewToggle) {
-            this.viewToggle.addEventListener('click', () => {
-                this.is3D = !this.is3D;
-                if(this.is3D) this.pitch.classList.remove('is-2d');
-                else this.pitch.classList.add('is-2d');
-            });
-        }
-    }
-
-    onStart(e, el) {
-        this.draggedElement = el;
-        el.setPointerCapture(e.pointerId);
-        if(this.coordBox) this.coordBox.style.display = 'block';
-    }
-
-    onMove(e) {
-        if (!this.draggedElement) return;
-        const rect = this.pitch.getBoundingClientRect();
-        let x = ((e.clientX - rect.left) / rect.width) * 100;
-        let y = ((e.clientY - rect.top) / rect.height) * 100;
-        x = Math.max(2, Math.min(98, x));
-        y = Math.max(4, Math.min(96, y));
-        this.draggedElement.style.left = `${x}%`;
-        this.draggedElement.style.top = `${y}%`;
-        this.updateTacticalRole(this.draggedElement, x, y);
-    }
-
-    updateTacticalRole(el, x, y) {
-        const team = el.dataset.team;
-        const badge = el.querySelector('.role-badge-bottom');
-        let role = "";
-        const isInsideDZone = (team === 'home' && x < 15 && y > 30 && y < 70) || (team === 'away' && x > 85 && y > 30 && y < 70);
-
-        if (isInsideDZone) role = "GK";
-        else {
-            const isMyHalf = (team === 'home' && x <= 50) || (team === 'away' && x >= 50);
-            if (isMyHalf) {
-                if (y < 30) role = (team === 'home' ? "LB" : "RB");
-                else if (y > 70) role = (team === 'home' ? "RB" : "LB");
-                else role = "CB";
-            } else {
-                if (y < 35) role = (team === 'home' ? "LW" : "RW");
-                else if (y > 65) role = (team === 'home' ? "RW" : "LW");
-                else { const depth = team === 'home' ? x : (100 - x); role = depth > 80 ? "ST" : "CAM"; }
-            }
-        }
-
-        if (badge && badge.innerText !== role) {
-            badge.innerText = role; 
-        }
-        
-        const arabicRole = {"GK":"حارس","CB":"دفاع","LB":"ظ.أيسر","RB":"ظ.أيمن","LW":"ج.أيسر","RW":"ج.أيمن","CAM":"صانع","ST":"مهاجم"}[role] || role;
-        if(this.coordLabel) this.coordLabel.innerText = `المركز: ${arabicRole} (${Math.round(x)}%, ${Math.round(y)}%)`;
-    }
-
-    onEnd() {
-        if (this.draggedElement) this.draggedElement = null;
-        if(this.coordBox) this.coordBox.style.display = 'none';
-    }
-
-    applyPreset(formation) {
-        const presets = {
-            'diamond': [{id:'R1', x:10, y:50}, {id:'R2', x:30, y:20}, {id:'R3', x:30, y:80}, {id:'R4', x:45, y:50}, {id:'R5', x:15, y:50}],
-            'square': [{id:'R1', x:10, y:50}, {id:'R2', x:25, y:30}, {id:'R3', x:25, y:70}, {id:'R4', x:45, y:30}, {id:'R5', x:45, y:70}]
-        };
-        const players = presets[formation];
-        if(players) {
-            players.forEach(p => {
-                const el = document.getElementById(p.id);
-                if(el) {
-                    el.style.left = p.x + '%';
-                    el.style.top = p.y + '%';
-                    this.updateTacticalRole(el, p.x, p.y);
-                }
-            });
-        }
-    }
-}
-
-// دالة عالمية لتحديث التاجات فوق اللاعب
-window.updatePlayerTag = function(playerId, type, value) {
-    const player = document.getElementById(playerId);
-    if(!player) return;
-
-    if(type === 'team') {
-        const tag = player.querySelector('.team-role-top-right');
-        tag.innerText = value;
-        tag.style.display = 'block';
-    } else {
-        const tag = player.querySelector('.instruction-top-left');
-        tag.innerText = value;
-        tag.style.display = 'block';
-    }
-};
-
-// ==========================================
-// [MAIN] EXECUTION
-// ==========================================
-window.onload = () => {
-    setTimeout(() => {
-        const preloader = document.getElementById('master-truck-preloader');
-        if (preloader) {
-            preloader.style.opacity = '0';
-            preloader.style.visibility = 'hidden';
-            setTimeout(() => preloader.remove(), 800);
-        }
-    }, 4000);
-
-    new FutsalTacticalEngine();
-    if(typeof initShootingStars === 'function') initShootingStars();
-    if(typeof initTilt === 'function') initTilt();
-    if(typeof initPrayersSystem === 'function') initPrayersSystem();
-    if(typeof fetchWeather === 'function') fetchWeather();
-    if(typeof renderStats === 'function') renderStats();
-    if(typeof renderMatches === 'function') renderMatches();
-    
-    setInterval(() => { if(typeof updateBookingTimer === 'function') updateBookingTimer(); }, 1000);
-    setInterval(() => { if(typeof rotateDhikr === 'function') rotateDhikr(); }, 10000);
-    
-    console.log("Omar System: Full Tactical Integration Complete.");
-};
+	            // 2. تشغيل محركات وأنظمة الموقع (الأكواد الأصلية)
+	            new FutsalTacticalEngine();
+	            initShootingStars();
+	            initTilt();
+	            initPrayersSystem(); 
+	            fetchWeather();
+	            renderStats();
+	            renderMatches();
+	            
+	            setInterval(updateBookingTimer, 1000);
+	            updateBookingTimer();
+	            setInterval(rotateDhikr, 10000);
+	            
+	            console.log("Omar System: Truck Preloader & Site Engine Resurrected!");
+	         };
