@@ -440,36 +440,36 @@ try {
 async function updateWeatherSystem() {
     const lat = "31.5326"; 
     const lon = "35.0998";
-    const apiKey = "95213cb0c3d0aeb490b82a58075a8999"; // مفتاحك الجديد
+    const apiKey = "95213cb0c3d0aeb490b82a58075a8999"; 
     
-    // روابط البيانات (الحالي + التوقعات)
     const currentUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}&lang=ar`;
     const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}&lang=ar`;
 
     try {
-        // 1. جلب وتحديث البطاقة الكبيرة (Current Weather)
-        const resCurrent = await fetch(currentUrl);
-        const dataCurr = await resCurrent.json();
+        // 1. تحديث البطاقة الكبيرة
+        const resCurr = await fetch(currentUrl);
+        const dataCurr = await resCurr.json();
         
         if(dataCurr.cod === 200) {
-            document.querySelector('.temp-main').innerText = `${Math.round(dataCurr.main.temp)}°`;
-            document.querySelector('.weather-desc').innerText = dataCurr.weather[0].description;
-            document.querySelector('.humidity-val').innerText = `${dataCurr.main.humidity}%`;
-            document.querySelector('.wind-val').innerText = `${dataCurr.wind.speed} م/ث`;
-            // تحديث الأيقونة الكبيرة
-            const bigIcon = dataCurr.weather[0].icon;
-            document.querySelector('.big-weather-icon').src = `https://openweathermap.org/img/wn/${bigIcon}@4x.png`;
+            document.getElementById('w-temp').innerText = `${Math.round(dataCurr.main.temp)}°C`;
+            document.getElementById('w-desc').innerText = dataCurr.weather[0].description;
+            document.getElementById('w-wind').innerText = `${dataCurr.wind.speed} م/ث`;
+            document.getElementById('w-hum').innerText = `${dataCurr.main.humidity}%`;
+            
+            // تحديث التاريخ اليومي
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            document.getElementById('w-date').innerText = new Date().toLocaleDateString('ar-EG', options);
         }
 
-        // 2. جلب وتحديث شريط الساعات (Hourly Forecast)
-        const resForecast = await fetch(forecastUrl);
-        const dataFore = await resForecast.json();
+        // 2. تحديث شريط الساعات (توقعات الأسبوع/اليوم)
+        const resFore = await fetch(forecastUrl);
+        const dataFore = await resFore.json();
 
         const wrapper = document.getElementById('hourly-wrapper');
         if (wrapper && dataFore.list) {
             wrapper.innerHTML = '';
-            // عرض أول 15 ساعة لتفعيل خاصية السحب
-            dataFore.list.slice(0, 15).forEach(hour => {
+            // عرض أول 16 ساعة لتفعيل السحب الأفقي
+            dataFore.list.slice(0, 16).forEach(hour => {
                 const time = new Date(hour.dt * 1000).getHours() + ":00";
                 const temp = Math.round(hour.main.temp);
                 const icon = hour.weather[0].icon;
@@ -477,18 +477,17 @@ async function updateWeatherSystem() {
                 wrapper.innerHTML += `
                     <div class="hourly-item">
                         <span class="h-time">${time}</span>
-                        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="icon">
+                        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="weather">
                         <span class="h-temp">${temp}°</span>
                     </div>
                 `;
             });
         }
-        console.log("Omar System: All Weather Data Synced! ✅");
-    } catch (error) {
-        console.error("Weather Update Failed:", error);
+        console.log("Omar System: Weather Remake Synced! ✅");
+    } catch (e) {
+        console.error("System Error:", e);
     }
 }
-
                     // ==========================================
 	                // [12] MATCH HISTORY
 	                // ==========================================
