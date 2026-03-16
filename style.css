@@ -1,62 +1,67 @@
-	                /* ================================================================
-	                   [1] المتغيرات العامة (CSS VARIABLES) - الأصلية والمضافة
-	                   ================================================================
-	                */
-	                :root {
-	                    --night-blue: #050a1f;
-	                    --deep-purple: #0f0c29;
-	                    --ramadan-gold: #ffd700;
-	                    --gold-glow: #ffcc33;
-	                    --metallic-gold: #d4af37;
-	                    --accent-cyan: #00f2ff;
-	                    --danger-red: #ff4d4d;
-	                    --success-green: #2ecc71;
-	                    
-	                    /* ألوان دوري الأبطال الجديدة */
-	                    --cl-blue: #001432;
-	                    --cl-silver: #e0e5ec;
-	                    --cl-dark-silver: #8b9bb4;
-	                    --cl-highlight: #ffffff;
-	                    
-	                    --glass: rgba(255, 255, 255, 0.05);
-	                    --glass-thick: rgba(255, 255, 255, 0.08);
-	                    --glass-border: rgba(255, 215, 0, 0.15);
-	                    --border-gold: rgba(255, 215, 0, 0.3);
-	                    --main-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-	                    --neon-glow: 0 0 10px rgba(255, 215, 0, 0.3);
-	                    --transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-	                }
+/* ================================================================
+   [1] المتغيرات العامة (CSS VARIABLES) - تحديث الثيم الديناميكي
+   ================================================================ */
+:root {
+    /* ألوان المود الافتراضي (ليل) */
+    --main-bg: #000510;
+    --text-color: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    
+    /* هوية دوري الأبطال */
+    --accent-color: #00d2ff; 
+    --secondary-accent: #3a7bd5;
+    --font-main: 'Cairo', sans-serif;
 
-	                /* ================================================================
-	                   [2] التنسيقات الأساسية (RESET & BASE)
-	                   ================================================================
-	                */
-	                * {
-	                    margin: 0;
-	                    padding: 0;
-	                    box-sizing: border-box;
-	                    outline: none;
-	                    -webkit-tap-highlight-color: transparent;
-	                    cursor: none; /* الماوس المخصص */
-	                    user-select: none;
-	                }
+    /* ألوان رمضان (لسا موجودة للاستخدام في العناصر الخاصة) */
+    --ramadan-gold: #ffd700;
+    --night-blue: #02040a;
+}
 
-	                body {
-	                    font-family: 'Tajawal', sans-serif;
-	                    background: var(--night-blue);
-	                    color: #fff;
-	                    overflow-x: hidden;
-	                    min-height: 100vh;
-	                    line-height: 1.6;
-	                    position: relative;
-	                }
+/* ================================================================
+   [2] التنسيقات الأساسية (RESET & BASE)
+   ================================================================ */
+* {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: none; 
+    user-select: none;
+}
 
-	                ::-webkit-scrollbar { width: 8px; }
-	                ::-webkit-scrollbar-track { background: var(--night-blue); }
-	                ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
-	                ::-webkit-scrollbar-thumb:hover { background: var(--ramadan-gold); }
+body {
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    font-family: var(--font-main);
+    color: var(--text-color);
+    overflow-x: hidden;
+    transition: background 1.5s ease-in-out, color 0.8s ease-in-out;
+    position: relative;
+    z-index: 0;
+}
 
-	                /* ================================================================
+/* تحكم ثيم النهار */
+body.day-mode {
+    --text-color: #001c4d;
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+
+/* تحكم ثيم الليل */
+body.night-mode {
+    --text-color: #ffffff;
+    --glass-bg: rgba(0, 0, 0, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    background: radial-gradient(circle at 50% 0%, #001c4d 0%, #000510 100%) !important;
+}
+
+/* السكرول بار */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--night-blue); }
+::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }	                /* ================================================================
 	                   [3] المؤشر المخصص (CUSTOM CURSOR)
 	                   ================================================================
 	                */
@@ -92,207 +97,77 @@
 	                    border-width: 2px;
 	                }
 
-	                /* ================================================================
-	                   [4] شاشة الترحيب (WELCOME SCREEN)
-	                   ================================================================
-	                */
-	                #welcome-screen {
-	                    position: fixed;
-	                    top: 0; left: 0;
-	                    width: 100%; height: 100%;
-	                    background: radial-gradient(circle at center, #0a102e 0%, #000000 100%);
-	                    z-index: 999999;
-	                    display: flex;
-	                    flex-direction: column;
-	                    justify-content: center;
-	                    align-items: center;
-	                    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-	                }
 
-	                .welcome-content { text-align: center; position: relative; }
+/* ================================================================
+   [5] خلفية السماء والبيئة (ATMOSPHERE) - النسخة الذكية
+   ================================================================ */
 
-	                .welcome-title {
-	                    font-family: 'Reem Kufi', sans-serif;
-	                    font-size: clamp(3rem, 8vw, 6rem);
-	                    color: transparent;
-	                    background: linear-gradient(to bottom, var(--ramadan-gold), #fff, var(--metallic-gold));
-	                    -webkit-background-clip: text;
-	                    background-clip: text;
-	                    margin-bottom: 20px;
-	                    opacity: 0;
-	                    transform: translateY(30px);
-	                    animation: textReveal 1.5s ease forwards 0.5s;
-	                    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
-	                }
+/* الحاوية الأساسية - بتختفي في النهار عشان تظهر ألوان التدرج */
+#sky-background {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -10;
+    transition: opacity 1s;
+}
+body.day-mode #sky-background { opacity: 0; }
 
-	                .welcome-subtitle {
-	                    font-size: 1.2rem;
-	                    color: #888;
-	                    opacity: 0;
-	                    animation: fadeIn 1s ease forwards 1.5s;
-	                    letter-spacing: 2px;
-	                }
+/* طبقة التأثيرات (السحب للنهار / النجوم لليل) */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 200%; height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
 
-	                .enter-btn {
-	                    margin-top: 50px;
-	                    padding: 15px 50px;
-	                    background: transparent;
-	                    border: 1px solid var(--ramadan-gold);
-	                    color: var(--ramadan-gold);
-	                    font-family: 'Tajawal', sans-serif;
-	                    font-size: 1.2rem;
-	                    border-radius: 50px;
-	                    cursor: pointer;
-	                    position: relative;
-	                    overflow: hidden;
-	                    transition: var(--transition);
-	                    opacity: 0;
-	                    animation: fadeIn 1s ease forwards 2s;
-	                }
+/* حالة النهار: سحب متحركة */
+body.day-mode::before {
+    opacity: 0.4;
+    background: url('https://www.transparenttextures.com/patterns/clouds.png') repeat;
+    animation: moveClouds 120s linear infinite;
+}
 
-	                .enter-btn::before {
-	                    content: '';
-	                    position: absolute;
-	                    top: 0; left: -100%;
-	                    width: 100%; height: 100%;
-	                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-	                    transition: 0.5s;
-	                }
+/* حالة الليل: إظهار النجوم والشهب */
+.stars-container, .moon-container, .lantern-wire {
+    transition: opacity 1s, transform 1s;
+}
 
-	                .enter-btn:hover {
-	                    background: var(--ramadan-gold);
-	                    color: #000;
-	                    box-shadow: 0 0 30px var(--ramadan-gold);
-	                    transform: scale(1.05);
-	                }
-	                
-	                .enter-btn:hover::before { left: 100%; }
+body.day-mode .stars-container, 
+body.day-mode .moon-container, 
+body.day-mode .lantern-wire {
+    opacity: 0;
+    transform: translateY(-50px); /* حركة إخفاء لطيفة لفوق */
+    pointer-events: none;
+}
 
-	                .signature {
-	                    position: absolute;
-	                    bottom: 30px;
-	                    font-family: 'Orbitron', sans-serif;
-	                    font-size: 1rem;
-	                    color: rgba(255,255,255,0.3);
-	                    letter-spacing: 5px;
-	                    animation: pulseText 3s infinite;
-	                }
+/* إعدادات النجوم والشهب الأصلية (خليناها زي ما هي بس ضفنا التحكم) */
+.star {
+    position: absolute; background: #fff; border-radius: 50%;
+    opacity: 0.8; box-shadow: 0 0 5px #fff;
+    animation: twinkle var(--d) infinite alternate;
+}
 
-	                @keyframes textReveal { to { opacity: 1; transform: translateY(0); } }
-	                @keyframes fadeIn { to { opacity: 1; } }
+@keyframes twinkle {
+    0% { opacity: 0.3; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1.2); }
+}
 
-	                /* ================================================================
-	                   [5] خلفية السماء والبيئة (ATMOSPHERE)
-	                   ================================================================
-	                */
-	                #sky-background {
-	                    position: fixed;
-	                    top: 0; left: 0;
-	                    width: 100%; height: 100%;
-	                    z-index: -10;
-	                    background: linear-gradient(180deg, #02040a 0%, #050a1f 40%, #11112b 100%);
-	                }
+@keyframes moveClouds {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
 
-	                .stars-container {
-	                    position: fixed;
-	                    width: 100%; height: 100%;
-	                    z-index: -9;
-	                    perspective: 500px;
-	                }
-
-	                .star {
-	                    position: absolute;
-	                    background: #fff;
-	                    border-radius: 50%;
-	                    opacity: 0.8;
-	                    box-shadow: 0 0 5px #fff;
-	                    animation: twinkle var(--d) infinite alternate;
-	                }
-
-	                @keyframes twinkle {
-	                    0% { opacity: 0.3; transform: scale(0.8); }
-	                    100% { opacity: 1; transform: scale(1.2); }
-	                }
-
-	                .shooting-star {
-	                    position: absolute;
-	                    top: 50%; left: 50%;
-	                    height: 2px;
-	                    background: linear-gradient(-45deg, rgba(255,255,255,1), rgba(0,0,255,0));
-	                    filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
-	                    width: 0;
-	                    opacity: 0;
-	                    z-index: -8;
-	                }
-	                
-	                @keyframes shoot {
-	                    0% { width: 0; transform: translateX(0); opacity: 1; }
-	                    15% { width: 100px; }
-	                    100% { width: 0; transform: translateX(300px); opacity: 0; }
-	                }
-
-	                .moon-container {
-	                    position: fixed;
-	                    top: 40px; left: 40px;
-	                    width: 100px; height: 100px;
-	                    z-index: -5;
-	                    transition: transform 0.5s ease;
-	                }
-
-	                .moon {
-	                    width: 80px;
-	                    height: 80px;
-	                    background: radial-gradient(circle at 30% 30%, #fff, var(--ramadan-gold));
-	                    border-radius: 50%;
-	                    box-shadow: 0 0 60px rgba(255, 215, 0, 0.4), inset -10px -10px 20px rgba(0,0,0,0.2);
-	                    position: relative;
-	                    animation: moonPulse 4s infinite alternate;
-	                }
-	                
-	                .moon::after {
-	                    content: '';
-	                    position: absolute;
-	                    top: -5px; right: -5px;
-	                    width: 100%; height: 100%;
-	                    background: var(--night-blue);
-	                    border-radius: 50%;
-	                    transform: scale(0.85) translate(15px, -10px);
-	                    filter: blur(2px);
-	                }
-
-	                @keyframes moonPulse {
-	                    0% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.3); }
-	                    100% { box-shadow: 0 0 90px rgba(255, 215, 0, 0.6); }
-	                }
-
-	                .lantern-wire {
-	                    position: fixed;
-	                    top: -20px; width: 100%;
-	                    display: flex; justify-content: space-evenly;
-	                    z-index: 5; pointer-events: none;
-	                }
-
-	                .hanging-lantern {
-	                    font-size: 2.8rem;
-	                    transform-origin: top center;
-	                    animation: swingLantern 4s infinite ease-in-out;
-	                    filter: drop-shadow(0 10px 20px rgba(255, 165, 0, 0.5));
-	                    position: relative;
-	                }
-	                
-	                .hanging-lantern::before {
-	                    content: '';
-	                    position: absolute;
-	                    top: -100px; left: 50%;
-	                    width: 1px; height: 120px;
-	                    background: rgba(255, 255, 255, 0.3);
-	                }
-
-	                @keyframes swingLantern {
-	                    0%, 100% { transform: rotate(5deg); }
-	                    50% { transform: rotate(-5deg); }
-	                }
-
+/* إخفاء الهلال والفوانيس في النهار وتوهجهم في الليل */
+.moon {
+    width: 80px; height: 80px;
+    background: radial-gradient(circle at 30% 30%, #fff, var(--ramadan-gold));
+    border-radius: 50%;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.4);
+    animation: moonPulse 4s infinite alternate;
+}
 	                /* ================================================================
 	                   [6] شريط التنقل (NAVIGATION)
 	                   ================================================================
@@ -600,17 +475,17 @@
 
 	         .team-role-top-right {
                 position: absolute;
-                top: -38px;                 /* أعلى يمين الدائرة مع مسافة أمان */
+                top: -28px;                 /* أعلى يمين الدائرة مع مسافة أمان */
                 right: -20px;               /* أبعدناه عن مركز الدائرة */
                 background: linear-gradient(135deg, #facc15, #f59e0b); /* ذهبي متوهج */
                 color: #1f2933;
-                padding: 2px 5px;          /* نحيف طولياً، أعرض عرضياً */
-                border-radius: 12px;         /* مستطيل أنيق */
+                padding: 2px 10px;          /* نحيف طولياً، أعرض عرضياً */
+                border-radius: 4px;         /* مستطيل أنيق */
                 font-size: 12px;            /* خط موحد 12px */
                 font-weight: 900;
                 border: 1px solid rgba(120,53,15,0.7);
                 z-index: 12;
-                min-width: 40px;
+                min-width: 60px;
                 text-align: center;
                 white-space: nowrap;
                 box-shadow: 0 0 8px rgba(250,204,21,0.8); /* توهج ذهبي */
@@ -622,13 +497,13 @@
                 right: -20px;               /* نفس محاذاة الدور لليمين */
                 background: linear-gradient(135deg, #38bdf8, #0ea5e9); /* أزرق سماوي */
                 color: #022c41;
-                padding: 2px 5px;          /* نحيف وأعرض */
-                border-radius: 12px;         /* مستطيل مشابه */
+                padding: 2px 10px;          /* نحيف وأعرض */
+                border-radius: 4px;         /* مستطيل مشابه */
                 font-size: 12px;            /* نفس حجم الخط */
                 font-weight: 700;
                 border: 1px solid rgba(12,74,110,0.8);
                 z-index: 11;
-                min-width: 50px;
+                min-width: 70px;
                 text-align: center;
                 white-space: nowrap;
                 box-shadow: 0 0 8px rgba(56,189,248,0.75); /* توهج أزرق سماوي */
@@ -864,69 +739,172 @@
 	                    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 	                }
 
-	                /* ================================================================
-	                   [12] الطقس (WEATHER) - تحسينات العرض المربوط بالخليل
-	                   ================================================================
-	                */
-	                .weather-card-hero {
-	                    background: linear-gradient(135deg, #1a2a6c, #11294b, #2b5876);
-	                    display: flex; flex-wrap: wrap;
-	                    justify-content: space-between; align-items: center;
-	                    padding: 40px; border-radius: 30px;
-	                    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-	                    position: relative;
-	                    overflow: hidden;
-	                    border: 1px solid rgba(255,255,255,0.1);
-	                }
-	                
-	                .weather-card-hero::before {
-	                    content: '\f0c2'; /* أيقونة سحابة من فاونت اوسم */
-	                    font-family: 'Font Awesome 6 Free';
-	                    font-weight: 900;
-	                    position: absolute;
-	                    right: -20px;
-	                    top: -20px;
-	                    font-size: 15rem;
-	                    color: rgba(255,255,255,0.03);
-	                    pointer-events: none;
-	                }
+/* ================================================================
+   [12] الطقس (WEATHER) - تحسينات العرض المربوط بالخليل
+   ================================================================ */
 
-	                .weather-main-info {
-	                    z-index: 2;
-	                }
+/* 1. البطاقة الكبيرة (Hero Card) */
+.weather-card-hero {
+    background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.4s ease;
+}
 
-	                .weather-main-info h2 { 
-	                    font-size: 5rem; 
-	                    margin: 0; 
-	                    font-family: 'Orbitron', sans-serif;
-	                    background: linear-gradient(to bottom, #fff, #a0d8ef);
-	                    -webkit-background-clip: text;
-	                    -webkit-text-fill-color: transparent;
-	                }
-	                
-	                .weather-details { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; z-index: 2; }
-	                
-	                .w-item { 
-	                    display: flex; flex-direction: column; align-items: center; 
-	                    background: rgba(0,0,0,0.3);
-	                    padding: 15px 25px; border-radius: 20px; 
-	                    border: 1px solid rgba(255,255,255,0.05);
-	                    backdrop-filter: blur(10px);
-	                    transition: all 0.3s ease;
-	                }
-	                
-	                .w-item:hover {
-	                    transform: translateY(-5px);
-	                    background: rgba(0,0,0,0.5);
-	                    border-color: var(--accent-cyan);
-	                }
+/* حركة الغيوم كخلفية شفافة داخل البطاقة */
+.weather-card-hero::before {
+    content: '\f0c2'; 
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    font-size: 18rem;
+    color: rgba(255, 255, 255, 0.02);
+    pointer-events: none;
+    animation: cloudFloat 10s infinite alternate ease-in-out;
+}
 
-	                .w-item i {
-	                    font-size: 1.5rem;
-	                    color: var(--accent-cyan);
-	                    margin-bottom: 8px;
-	                }
+@keyframes cloudFloat {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-20px, 20px); }
+}
 
+.weather-main-info {
+    z-index: 2;
+    flex: 1;
+    min-width: 250px;
+}
+
+.weather-main-info h2 { 
+    font-size: 5.5rem; 
+    margin: 0; 
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(to bottom, #ffffff, var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.3));
+}
+
+.weather-desc {
+    font-size: 1.4rem;
+    color: var(--accent-color);
+    text-transform: capitalize;
+    margin-bottom: 15px;
+    display: block;
+}
+
+/* 2. تفاصيل الطقس (الرطوبة، الرياح) */
+.weather-details { 
+    display: flex; 
+    gap: 15px; 
+    flex-wrap: wrap; 
+    margin-top: 25px; 
+    z-index: 2; 
+}
+
+.w-item { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px 20px; 
+    border-radius: 20px; 
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    min-width: 100px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.w-item:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-color);
+    box-shadow: 0 10px 20px rgba(0, 210, 255, 0.2);
+}
+
+.w-item i {
+    font-size: 1.6rem;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 5px var(--accent-color));
+}
+
+/* 3. شريط الساعات المتحرك (Hourly Forecast) */
+#hourly-wrapper {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 25px 5px;
+    margin-top: 30px;
+    scrollbar-width: none; 
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+}
+
+#hourly-wrapper:active { cursor: grabbing; }
+
+#hourly-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.hourly-item {
+    min-width: 95px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 15px 10px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hourly-item:hover {
+    transform: scale(1.05) translateY(-5px);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: var(--accent-color);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.hourly-item .h-time {
+    font-size: 0.9rem;
+    color: #ccc;
+    font-weight: 500;
+}
+
+.hourly-item img {
+    width: 55px;
+    height: 55px;
+    margin: 5px 0;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+}
+
+.hourly-item .h-temp {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* تحسين استجابة الجوال */
+@media (max-width: 768px) {
+    .weather-card-hero { padding: 25px; }
+    .weather-main-info h2 { font-size: 3.5rem; }
+    .w-item { flex: 1; min-width: 80px; }
+}
 	                /* ================================================================
 	                   [13] أرشيف الأمجاد - كأس دوري الأبطال (CHAMPIONS LEAGUE 3D CSS)
 	                   ================================================================
@@ -1318,3 +1296,27 @@
 	            font-weight: bold;
 	            text-align: center;
 	         }
+
+			 .hourly-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 20px 10px;
+    scrollbar-width: none; /* إخفاء الشريط */
+    -webkit-overflow-scrolling: touch; 
+}
+.hourly-scroll-container::-webkit-scrollbar { display: none; }
+
+.hourly-item {
+    min-width: 75px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: transform 0.3s;
+}
+.hourly-item:hover { transform: translateY(-5px); }
+.hourly-item .time { font-size: 0.8rem; opacity: 0.8; margin-bottom: 5px; }
+.hourly-item .temp { font-size: 1.1rem; font-weight: 900; color: var(--ramadan-gold); }
