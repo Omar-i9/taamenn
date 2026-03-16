@@ -239,37 +239,59 @@
 	                    const lat = 31.5326; 
 	                    const long = 35.0998;
 	                    
-	                    try {
-	                        const date = new Date();
-	                        const timestamp = Math.floor(date.getTime() / 1000);
-	                        // جلب المواقيت للخليل
-	                        const res = await fetch(`https://api.aladhan.com/v1/timings/${timestamp}?latitude=${lat}&longitude=${long}&method=1`);
-	                        const data = await res.json();
-	                        
-	                        const timings = data.data.timings;
-	                        const hijri = data.data.date.hijri;
-	                        document.getElementById('hijriDate').innerText = `${hijri.day} ${hijri.month.ar} ${hijri.year} هـ`;
-	                        
-	                        // تخزين أوقات الصلاة في مصفوفة مرتبة
-	                        globalPrayerData = [
-	                            { id: 'Fajr', name: 'الفجر', time: timings.Fajr },
-	                            { id: 'Sunrise', name: 'الشروق', time: timings.Sunrise }, // الشروق ليس صلاة لكنه وقت مهم
-	                            { id: 'Dhuhr', name: 'الظهر', time: timings.Dhuhr },
-	                            { id: 'Asr', name: 'العصر', time: timings.Asr },
-	                            { id: 'Maghrib', name: 'المغرب', time: timings.Maghrib },
-	                            { id: 'Isha', name: 'العشاء', time: timings.Isha }
-	                        ];
+try {
+    const date = new Date();
+    const timestamp = Math.floor(date.getTime() / 1000);
+    // جلب المواقيت للخليل
+    const res = await fetch(`https://api.aladhan.com/v1/timings/${timestamp}?latitude=${lat}&longitude=${long}&method=1`);
+    const data = await res.json();
+    
+    const timings = data.data.timings;
+    const hijri = data.data.date.hijri;
+    document.getElementById('hijriDate').innerText = `${hijri.day} ${hijri.month.ar} ${hijri.year} هـ`;
+    
+    // 1. تخزين أوقات الصلاة
+    let prayers = [
+        { id: 'Fajr', name: 'الفجر', time: timings.Fajr },
+        { id: 'Sunrise', name: 'الشروق', time: timings.Sunrise },
+        { id: 'Dhuhr', name: 'الظهر', time: timings.Dhuhr },
+        { id: 'Asr', name: 'العصر', time: timings.Asr },
+        { id: 'Maghrib', name: 'المغرب', time: timings.Maghrib },
+        { id: 'Isha', name: 'العشاء', time: timings.Isha }
+    ];
 
-	                        // رسم البطاقات
-	                        renderPrayerCards();
-	                        
-	                        // بدء دورة حساب الصلاة القادمة
-	                        startDynamicPrayerCountdown();
+    // 2. منطق التمييز الذكي (Next Prayer)
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    let nextFound = false;
 
-	                    } catch (e) {
-	                        console.error("Prayer API Error", e);
-	                        document.getElementById('hijriDate').innerText = "خطأ في الاتصال بالخادم";
-	                    }
+    globalPrayerData = prayers.map(p => {
+        const [h, m] = p.time.split(':').map(Number);
+        const prayerMinutes = h * 60 + m;
+        
+        // تصفير أي تمييز سابق
+        p.isNext = false; 
+
+        // أول صلاة وقتها أكبر من وقتنا الحالي هي "الجاي"
+        if (!nextFound && prayerMinutes > currentMinutes) {
+            p.isNext = true;
+            nextFound = true;
+        }
+        return p;
+    });
+
+    // حالة خاصة: إذا الوقت بعد العشاء، الصلاة الجاي هي الفجر
+    if (!nextFound) {
+        globalPrayerData[0].isNext = true;
+    }
+
+    // 3. رسم البطاقات وبدء العد التنازلي
+    renderPrayerCards(); 
+    startDynamicPrayerCountdown();
+
+} catch (error) {
+    console.error("حدث خطأ في جلب البيانات:", error);
+}						 
 	                }
 
 	                function renderPrayerCards(activeId = '') {
@@ -341,9 +363,6 @@
 	                    
 	                    if(labelEl) {
 	                        if(nextPrayer.id === 'Maghrib') {
-	                            labelEl.innerText = `الوقت المتبقي لرفع أذان المغرب (الإفطار)`;
-	                            sectionEl.classList.add('maghrib-active');
-	                        } else {
 	                            labelEl.innerText = `الوقت المتبقي لرفع أذان ${nextPrayer.name}`;
 	                            sectionEl.classList.remove('maghrib-active');
 	                        }
@@ -418,45 +437,59 @@
 	                // ==========================================
 	                // [11] WEATHER API (HARDCODED TO HEBRON)
 	                // ==========================================
-	                async function fetchWeather() {
-	                    // تثبيت إحداثيات مدينة الخليل كما طلبت
-	                    const lat = 31.5326; 
-	                    const long = 35.0998;
-	                    
-	                    try {
-	                        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max&timezone=auto`);
-	                        const data = await res.json();
-	                        
-	                        const curr = data.current;
-	                        document.getElementById('w-temp').innerText = `${Math.round(curr.temperature_2m)}°C`;
-	                        document.getElementById('w-wind').innerText = `${curr.wind_speed_10m} km/h`;
-	                        document.getElementById('w-hum').innerText = `${curr.relative_humidity_2m}%`;
-	                        
-	                        const code = curr.weather_code;
-	                        const desc = code < 3 ? "سماء صافية / غيوم متفرقة" : (code < 50 ? "ضباب خفيف" : "أجواء ماطرة / عاصفة");
-	                        document.getElementById('w-desc').innerText = desc;
+async function updateWeatherSystem() {
+    const lat = "31.5326"; 
+    const lon = "35.0998";
+    const apiKey = "95213cb0c3d0aeb490b82a58075a8999"; // مفتاحك الجديد
+    
+    // روابط البيانات (الحالي + التوقعات)
+    const currentUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}&lang=ar`;
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}&lang=ar`;
 
-	                        const daily = data.daily;
-	                        let html = '';
-	                        for(let i=0; i<5; i++) {
-	                            const d = new Date(daily.time[i]);
-	                            const dayName = d.toLocaleDateString('ar-EG', {weekday:'short'});
-	                            html += `
-	                                <div class="w-item" style="min-width:70px;">
-	                                    <div style="font-size:0.8rem; opacity:0.7;">${dayName}<\/div>
-	                                    <div style="font-weight:bold; font-size:1.2rem; color:var(--ramadan-gold);">${Math.round(daily.temperature_2m_max[i])}°<\/div>
-	                                <\/div>
-	                            `;
-	                        }
-	                        document.getElementById('forecast-container').innerHTML = html;
-	                        document.getElementById('w-date').innerText = new Date().toLocaleDateString('ar-EG', {weekday:'long', day:'numeric', month:'long'});
-	                    } catch(e) { 
-	                        console.log("Weather error:", e);
-	                        document.getElementById('w-desc').innerText = "تعذر جلب بيانات الطقس";
-	                    }
-	                }
+    try {
+        // 1. جلب وتحديث البطاقة الكبيرة (Current Weather)
+        const resCurrent = await fetch(currentUrl);
+        const dataCurr = await resCurrent.json();
+        
+        if(dataCurr.cod === 200) {
+            document.querySelector('.temp-main').innerText = `${Math.round(dataCurr.main.temp)}°`;
+            document.querySelector('.weather-desc').innerText = dataCurr.weather[0].description;
+            document.querySelector('.humidity-val').innerText = `${dataCurr.main.humidity}%`;
+            document.querySelector('.wind-val').innerText = `${dataCurr.wind.speed} م/ث`;
+            // تحديث الأيقونة الكبيرة
+            const bigIcon = dataCurr.weather[0].icon;
+            document.querySelector('.big-weather-icon').src = `https://openweathermap.org/img/wn/${bigIcon}@4x.png`;
+        }
 
-	                // ==========================================
+        // 2. جلب وتحديث شريط الساعات (Hourly Forecast)
+        const resForecast = await fetch(forecastUrl);
+        const dataFore = await resForecast.json();
+
+        const wrapper = document.getElementById('hourly-wrapper');
+        if (wrapper && dataFore.list) {
+            wrapper.innerHTML = '';
+            // عرض أول 15 ساعة لتفعيل خاصية السحب
+            dataFore.list.slice(0, 15).forEach(hour => {
+                const time = new Date(hour.dt * 1000).getHours() + ":00";
+                const temp = Math.round(hour.main.temp);
+                const icon = hour.weather[0].icon;
+                
+                wrapper.innerHTML += `
+                    <div class="hourly-item">
+                        <span class="h-time">${time}</span>
+                        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="icon">
+                        <span class="h-temp">${temp}°</span>
+                    </div>
+                `;
+            });
+        }
+        console.log("Omar System: All Weather Data Synced! ✅");
+    } catch (error) {
+        console.error("Weather Update Failed:", error);
+    }
+}
+
+                    // ==========================================
 	                // [12] MATCH HISTORY
 	                // ==========================================
 	                function renderMatches() {
@@ -468,8 +501,7 @@
 	                        {t1: "كريم", t2: "عمر", s: "3 - 3", st: "انتهت", d: "الجمعه 20 فبراير"},      
 	                        {t1: "عمر", t2: "كريم", s: "6 - 8", st: "انتهت", d: "الجمعه 27 فبراير"},
 	                        {t1: "خضر", t2: "كريم", s: "13 - 7", st: "انتهت", d: "الجمعه 6 مارس"},
-						    {t1: "عمر", t2: "كريم", s: "9 - 6", st: "(لقاء ودي) انتهت", d: "الخميس 12 مارس"},
-	                        {t1: "عمر & كريم", t2: "كريم التميمي", s: "8 - 7", st: "انتهت", d: "الجمعه 13 مارس"},
+	                                      {t1: "عمر", t2: "كريم", s: "-  -", st: "محتملة", d: "الجمعه 13 مارس"},
 
 	                    ];
 	                    document.getElementById('matchHistoryContainer').innerHTML = matches.map(m => `
@@ -516,18 +548,18 @@
 	            setupPlayers() {
 	                // يمكنك تعديل الأسماء والمراكز المبدئية هنا
 	                const teamA = [
-	                    { id: 'R1', name: 'خضر', x: 8, y: 50, color: 'team-red', team: 'home' },
-	                    { id: 'R2', name: 'يوسف', x: 25, y: 25, color: 'team-red', team: 'home' },
-	                    { id: 'R3', name: 'محمد علي', x: 25, y: 75, color: 'team-red', team: 'home' },
+	                    { id: 'R1', name: 'ارقم', x: 8, y: 50, color: 'team-red', team: 'home' },
+	                    { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
+	                    { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
 	                    { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
-	                    { id: 'R5', name: 'كريم', x: 45, y: 70, color: 'team-red', team: 'home' },
+	                    { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
 	                ];
 	                const teamB = [
-	                    { id: 'B1', name: 'كريم', x: 92, y: 50, color: 'team-blue', team: 'away' },
-	                    { id: 'B2', name: 'احمد', x: 75, y: 25, color: 'team-blue', team: 'away' },
-	                    { id: 'B3', name: 'عمر نجار', x: 75, y: 75, color: 'team-blue', team: 'away' },
-	                    { id: 'B4', name: 'قيس', x: 60, y: 30, color: 'team-blue', team: 'away' },
-	                    { id: 'B5', name: 'نجار', x: 55, y: 70, color: 'team-blue', team: 'away' },
+	                    { id: 'B1', name: 'محمد', x: 92, y: 50, color: 'team-blue', team: 'away' },
+	                    { id: 'B2', name: 'سنقرط', x: 75, y: 25, color: 'team-blue', team: 'away' },
+	                    { id: 'B3', name: 'احمد', x: 75, y: 75, color: 'team-blue', team: 'away' },
+	                    { id: 'B4', name: 'كريم', x: 60, y: 30, color: 'team-blue', team: 'away' },
+	                    { id: 'B5', name: 'خضر', x: 55, y: 70, color: 'team-blue', team: 'away' },
 	                ];
 	                [...teamA, ...teamB].forEach(p => this.createPlayer(p));
 	            }
@@ -850,22 +882,30 @@ updateTacticalRole(el, x, y) {
 	                // [MAIN] EXECUTION
 	                // ==========================================
 	         window.onload = () => {
-	            // 1. كود إخفاء الشاحنة بعد 4 ثواني
-	            setTimeout(() => {
-	                const preloader = document.getElementById('master-truck-preloader');
-	                if (preloader) {
-	                    preloader.style.opacity = '0';
-	                    preloader.style.visibility = 'hidden';
-	                    setTimeout(() => preloader.remove(), 800);
-	                }
-	            }, 4000);
+
+				function applyDynamicTheme() {
+    const hour = new Date().getHours();
+    const body = document.body;
+
+    // من الـ 6 الصبح (6) لحد الـ 6 المغرب (18)
+    if (hour >= 6 && hour < 18) {
+        body.classList.remove('night-mode');
+        body.classList.add('day-mode');
+        console.log("Omar System: Day Mode Activated 🌞");
+    } else {
+        body.classList.remove('day-mode');
+        body.classList.add('night-mode');
+        console.log("Omar System: Night Mode Activated 🌙");
+    }
+}
 
 	            // 2. تشغيل محركات وأنظمة الموقع (الأكواد الأصلية)
 	            new FutsalTacticalEngine();
 	            initShootingStars();
 	            initTilt();
 	            initPrayersSystem(); 
-	            fetchWeather();
+              updateWeatherSystem();
+              applyDynamicTheme();
 	            renderStats();
 	            renderMatches();
 	            
