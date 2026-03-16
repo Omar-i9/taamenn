@@ -742,21 +742,23 @@ body.day-mode .lantern-wire {
 /* ================================================================
    [12] الطقس (WEATHER) - تحسينات العرض المربوط بالخليل
    ================================================================ */
-
-/* 1. البطاقة الكبيرة (Hero Card) */
 .weather-card-hero {
-    background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+    /* خلفية زجاجية متفاعلة مع الثيم (نهار/ليل) */
+    background: var(--glass-bg);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     padding: 40px;
     border-radius: 30px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: transform 0.4s ease;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: transform 0.4s ease, border-color 0.4s ease;
+    margin-bottom: 20px;
 }
 
 /* حركة الغيوم كخلفية شفافة داخل البطاقة */
@@ -768,14 +770,14 @@ body.day-mode .lantern-wire {
     right: -30px;
     top: -30px;
     font-size: 18rem;
-    color: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.03); /* شفافية عالية جداً لتعطي لمسة احترافية */
     pointer-events: none;
-    animation: cloudFloat 10s infinite alternate ease-in-out;
+    animation: cloudFloat 15s infinite alternate ease-in-out;
 }
 
 @keyframes cloudFloat {
-    from { transform: translate(0, 0); }
-    to { transform: translate(-20px, 20px); }
+    from { transform: translate(0, 0) rotate(0deg); }
+    to { transform: translate(-30px, 30px) rotate(5deg); }
 }
 
 .weather-main-info {
@@ -788,21 +790,26 @@ body.day-mode .lantern-wire {
     font-size: 5.5rem; 
     margin: 0; 
     font-family: 'Orbitron', sans-serif;
-    background: linear-gradient(to bottom, #ffffff, var(--accent-color));
+    background: linear-gradient(to bottom, var(--text-color), var(--accent-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.3));
+    filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.2));
+    line-height: 1;
 }
 
 .weather-desc {
     font-size: 1.4rem;
     color: var(--accent-color);
+    font-weight: 600;
     text-transform: capitalize;
     margin-bottom: 15px;
     display: block;
 }
 
-/* 2. تفاصيل الطقس (الرطوبة، الرياح) */
+/* ================================================================
+   [2] تفاصيل الطقس (W-Items)
+   ================================================================
+*/
 .weather-details { 
     display: flex; 
     gap: 15px; 
@@ -815,54 +822,65 @@ body.day-mode .lantern-wire {
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.05);
     padding: 15px 20px; 
     border-radius: 20px; 
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
     min-width: 100px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .w-item:hover {
     transform: translateY(-8px);
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--glass-bg);
     border-color: var(--accent-color);
-    box-shadow: 0 10px 20px rgba(0, 210, 255, 0.2);
+    box-shadow: 0 10px 20px rgba(0, 210, 255, 0.1);
 }
 
 .w-item i {
     font-size: 1.6rem;
     color: var(--accent-color);
     margin-bottom: 10px;
-    filter: drop-shadow(0 0 5px var(--accent-color));
 }
 
-/* 3. شريط الساعات المتحرك (Hourly Forecast) */
+.w-item span {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+/* ================================================================
+   [3] قسم التوقعات الساعية (Hourly Forecast Section)
+   ================================================================
+*/
+.weather-hourly-section {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 25px;
+    margin-top: 20px;
+    border: 1px solid var(--glass-border);
+}
+
 #hourly-wrapper {
     display: flex;
-    overflow-x: auto;
+    overflow-x: auto; /* تمكين السحب الأفقي */
     gap: 15px;
-    padding: 25px 5px;
-    margin-top: 30px;
-    scrollbar-width: none; 
+    padding: 15px 5px;
+    scrollbar-width: none; /* إخفاء الشريط لفايرفوكس */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     cursor: grab;
 }
 
 #hourly-wrapper:active { cursor: grabbing; }
-
-#hourly-wrapper::-webkit-scrollbar {
-    display: none;
-}
+#hourly-wrapper::-webkit-scrollbar { display: none; }
 
 .hourly-item {
-    min-width: 95px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    min-width: 100px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: 20px;
-    padding: 15px 10px;
+    padding: 20px 10px;
     text-align: center;
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
@@ -874,36 +892,51 @@ body.day-mode .lantern-wire {
 
 .hourly-item:hover {
     transform: scale(1.05) translateY(-5px);
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.1);
     border-color: var(--accent-color);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-.hourly-item .h-time {
-    font-size: 0.9rem;
-    color: #ccc;
-    font-weight: 500;
+.h-time { 
+    color: var(--accent-color); 
+    font-size: 0.9rem; 
+    font-weight: 600;
+    margin-bottom: 8px; 
 }
 
 .hourly-item img {
-    width: 55px;
-    height: 55px;
-    margin: 5px 0;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+    width: 50px;
+    height: 50px;
+    margin: 8px 0;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
 }
 
-.hourly-item .h-temp {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #fff;
+.h-temp { 
+    font-weight: 900; 
+    color: var(--text-color); 
+    font-size: 1.2rem; 
     font-family: 'Orbitron', sans-serif;
 }
 
-/* تحسين استجابة الجوال */
+/* ================================================================
+   [4] تحسين استجابة الجوال (Responsive)
+   ================================================================
+*/
 @media (max-width: 768px) {
     .weather-card-hero { padding: 25px; }
     .weather-main-info h2 { font-size: 3.5rem; }
-    .w-item { flex: 1; min-width: 80px; }
+    .weather-desc { font-size: 1.1rem; }
+    
+    .w-item { 
+        flex: 1; 
+        min-width: 80px; 
+        padding: 12px 10px;
+    }
+    
+    .hourly-item {
+        min-width: 85px;
+        padding: 15px 8px;
+    }
 }
 	                /* ================================================================
 	                   [13] أرشيف الأمجاد - كأس دوري الأبطال (CHAMPIONS LEAGUE 3D CSS)
