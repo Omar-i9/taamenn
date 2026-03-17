@@ -81,7 +81,7 @@
             <div class="stat-icon"><i class="fas fa-fire-alt"></i></div>
             <div class="stat-content">
                 <span class="stat-label">هداف البطولة</span>
-                <span class="stat-value" id="top-scorer">عمر الخليل (12 هدف)</span>
+                <span class="stat-value" id="top-scorer">خضر (4 أهداف)</span>
             </div>
         </div>
 
@@ -89,7 +89,7 @@
             <div class="stat-icon"><i class="fas fa-shield-halved"></i></div>
             <div class="stat-content">
                 <span class="stat-label">الفريق المسيطر</span>
-                <span class="stat-value" id="best-team">فريق النخبة A</span>
+                <span class="stat-value" id="best-team">فريق عمر & كريم</span>
             </div>
         </div>
     </div>
@@ -152,21 +152,37 @@
             </div>
         </div>
 
-        <div id="stats-view" style="display: none;">
-            <div class="stats-tables-wrapper">
-                <h3 class="table-label elite">📊 سجلات فريق النخبة</h3>
-                <div class="stats-table-container">
-                    <table class="stats-table">
-                        <thead>
-                            <tr><th>اللاعب</th><th>الأهداف</th><th>الأسيست</th><th>التقييم</th></tr>
-                        </thead>
-                        <tbody id="eliteTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<div id="stats-view" class="stats-container" style="display: none;">
+    <div class="stats-card-glass glowing-border scroll-reveal">
+        <h3 class="team-title"><i class="fas fa-shield-alt"></i> فريق النخبة</h3>
+        <table class="elite-table">
+            <thead>
+                <tr>
+                    <th>اللاعب</th>
+                    <th>الأهداف</th>
+                    <th>الأسيست</th>
+                    <th>التقييم</th>
+                </tr>
+            </thead>
+            <tbody id="eliteTableBody"></tbody>
+        </table>
     </div>
 
+    <div class="stats-card-glass glowing-border-blue scroll-reveal">
+        <h3 class="team-title"><i class="fas fa-bolt"></i> فريق التحدي</h3>
+        <table class="elite-table">
+            <thead>
+                <tr>
+                    <th>اللاعب</th>
+                    <th>الأهداف</th>
+                    <th>الأسيست</th>
+                    <th>التقييم</th>
+                </tr>
+            </thead>
+            <tbody id="challengeTableBody"></tbody>
+        </table>
+    </div>
+</div>
     <div class="page" id="cannon">
         <h2 class="section-title">توقيت النخبة</h2>
         <div class="cannon-section tilt-card" id="dynamicTimerSection">
