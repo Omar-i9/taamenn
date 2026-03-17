@@ -89,7 +89,7 @@
             <div class="stat-icon"><i class="fas fa-shield-halved"></i></div>
             <div class="stat-content">
                 <span class="stat-label">الفريق المسيطر</span>
-                <span class="stat-value" id="best-team">فريق عمر & كريم</span>
+                <span class="stat-value" id="best-team">فريق النخبة A</span>
             </div>
         </div>
     </div>
@@ -107,13 +107,13 @@
     </div>
 
 
-        <div class="dhikr-section tilt-card">
-            <h4 class="dhikr-title">✨ نفحات</h4>
-            <p id="dhikrDisplay">اللهم إنك عفو كريم تحب العفو فاعفُ عنا.</p>
-            <p id="dhikrDisplay">اللهم اغفر لي ولوالديَّ وللمؤمنين يوم يقوم الحساب 🤲</p>
-            <p id="dhikrDisplay">أستغفرُ اللهَ العظيمَ الذي لا إلهَ إلا هوَ الحيُّ القيومُ وأتوبُ إليه 🤍</p>
-        </div>
-    </div>
+<div class="dhikr-section tilt-card">
+    <h4 class="dhikr-title">✨ نفحات</h4>
+    <p class="dhikr-display">اللهم إنك عفو كريم تحب العفو فاعفُ عنا.</p>
+    <p class="dhikr-display">اللهم اغفر لي ولوالديَّ وللمؤمنين يوم يقوم الحساب 🤲</p>
+    <p class="dhikr-display">أستغفرُ اللهَ العظيمَ الذي لا إلهَ إلا هوَ الحيُّ القيومُ وأتوبُ إليه 🤍</p>
+</div>
+</div>
 	    <div class="interactive-hero-card scroll-reveal" id="card">
         <div class="card-inner">
             <div class="weather-mini-info">
@@ -161,6 +161,7 @@
                     <th>اللاعب</th>
                     <th>الأهداف</th>
                     <th>الأسيست</th>
+                    <th>المساهمات</th>
                     <th>التقييم</th>
                 </tr>
             </thead>
@@ -176,6 +177,7 @@
                     <th>اللاعب</th>
                     <th>الأهداف</th>
                     <th>الأسيست</th>
+                    <th>المساهمات</th>
                     <th>التقييم</th>
                 </tr>
             </thead>
@@ -210,22 +212,26 @@
             </div>
     </div>
 
-    <div class="page" id="weather">
-        <h2 class="section-title">أجواء الملعب (الخليل)</h2>
-        <div class="weather-card-hero tilt-card">
-            <div class="weather-main-info">
-                <div id="w-date">...</div>
-                <h2 id="w-temp">--°C</h2>
-                <div id="w-desc">جاري التحميل...</div>
-            </div>
-            <div class="weather-details">
-                <div class="w-item"><i class="fas fa-wind"></i><span id="w-wind">--</span><small>الرياح</small></div>
-                <div class="w-item"><i class="fas fa-tint"></i><span id="w-hum">--</span><small>الرطوبة</small></div>
-            </div>
+<div class="page" id="weather">
+    <h2 class="section-title">أجواء الملعب (الخليل)</h2>
+    <div class="weather-card-hero tilt-card">
+        <div class="weather-main-info">
+            <div id="w-date">...</div>
+            <h2 id="w-temp">--°C</h2>
+            <div id="w-desc">جاري التحميل...</div>
         </div>
-        <div class="weather-hourly-section">
+        <div class="weather-details">
+            <div class="w-item"><i class="fas fa-wind"></i><span id="w-wind">--</span><small>الرياح</small></div>
+            <div class="w-item"><i class="fas fa-tint"></i><span id="w-hum">--</span><small>الرطوبة</small></div>
+        </div>
+    </div>
+    <div class="weather-hourly-section">
+        <div class="hourly-scroll-container" id="hourly-wrapper"></div>
+    </div>
+</div> ```
+      <div class="weather-hourly-section">
             <div class="hourly-scroll-container" id="hourly-wrapper"></div>
-        </div>
+        </div>ش
     </div>
 
     <div id="library-modal" class="tactic-overlay" style="display: none;">
