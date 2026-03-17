@@ -1078,6 +1078,61 @@ function takeScreenshot() {
     });
 }
 
+//--------------------------------
+// 1. نظام الظهور عند السكرول (Scroll Reveal)
+const observerOptions = { threshold: 0.2 };
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+
+// 2. تعبئة بيانات الصفحة الرئيسية (مثال)
+function updateHomeStats() {
+    // هون بنجيب أول لاعب من جدول الإحصائيات
+    const topScorerEl = document.getElementById('top-scorer');
+    const bestTeamEl = document.getElementById('best-team');
+    
+    if(topScorerEl) topScorerEl.innerText = "عمر الخليل (12 هدف)"; 
+    if(bestTeamEl) bestTeamEl.innerText = "فريق النخبة A";
+}
+
+// 3. عداد الحجز المبسط
+function updateHomeBookingTimer() {
+    const countdownEl = document.getElementById('match-countdown');
+    const badgeEl = document.getElementById('booking-badge');
+    
+    // مثال: موعد المباراة القادمة
+    const nextMatch = new Date();
+    nextMatch.setHours(22, 0, 0); // الساعة 10 بالليل
+
+    const now = new Date();
+    const diff = nextMatch - now;
+
+    if (diff > 0) {
+        const hh = String(Math.floor(diff / 3600000)).padStart(2, '0');
+        const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+        if(countdownEl) countdownEl.innerText = `${hh}:${mm}:00`;
+        if(badgeEl) {
+            badgeEl.innerText = "محجوز";
+            badgeEl.style.background = "#ff4444";
+            badgeEl.style.color = "#fff";
+        }
+    }
+}
+
+// تشغيل الوظائف عند التحميل
+window.addEventListener('DOMContentLoaded', () => {
+    updateHomeStats();
+    setInterval(updateHomeBookingTimer, 1000);
+});
+
+//----------------
+
 // ==========================================
 // [14] التهيئة والتشغيل الأساسي (INITIALIZATION)
 // ==========================================
@@ -1091,23 +1146,21 @@ window.onload = () => {
     initPrayersSystem(); 
     updateWeatherSystem();
     applyDynamicTheme();
+
+    // 2. تحديثات الساعة والحجز (النظام الجديد الموحد)
+    // ملاحظة: شطبنا نظام setInterval القديم اللي كان تحت في "رقم 4"
+    setInterval(updateHeaderClock, 1000); // الساعة اللي فوق (نظام 12 ساعة)
+    setInterval(updateBookingTimer, 1000); // عداد الجمعة
     
-    // 2. تعبئة الجداول والأرشيف
+    // تشغيل فوري عشان ما ننتظر ثانية
+    updateHeaderClock();
+    updateBookingTimer();
+    
+    // 3. تعبئة الجداول والأرشيف
     renderStats();
     renderMatches();
     
-    // 3. تشغيل العدادات الزمنية الدورية
-    setInterval(updateBookingTimer, 1000);
-    updateBookingTimer();
-    setInterval(rotateDhikr, 10000);
-
-    // 4. تشغيل الساعة الرقمية في ההיدر
-    setInterval(() => {
-        const clockEl = document.getElementById('header-clock');
-        if (clockEl) clockEl.innerText = new Date().toLocaleTimeString('en-GB', { hour12: false });
-    }, 1000);
-
-    // 5. تأثير الهيدر العلوي عند النزول (Scrolled State)
+    // 4. تأثير الهيدر العلوي عند النزول
     window.addEventListener('scroll', () => {
         const header = document.getElementById('topHeader');
         if (header) {
@@ -1115,4 +1168,66 @@ window.onload = () => {
             else header.classList.remove('scrolled');
         }
     });
+
+    // 5. تفعيل حركة الماوس للبطاقة التفاعلية (اللي طلبته)
+    const mouseCard = document.getElementById('mouse-move-card');
+    if (mouseCard) {
+        window.addEventListener('mousemove', (e) => {
+            let x = (window.innerWidth / 2 - e.pageX) / 25;
+            let y = (window.innerHeight / 2 - e.pageY) / 25;
+            mouseCard.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+        });
+    }
+};
+
+// 1. دالة تنسيق الوقت (بتحول من نظام 24 لنظام 12 ساعة بالعربي)
+function format12Hour(hours) {
+    const ampm = hours >= 12 ? 'مساءً' : 'صباحاً';
+    let h = hours % 12;
+    h = h ? h : 12; // إذا كانت الساعة 0 (نص الليل) بخليها 12
+    return { hours: h, ampm: ampm };
+}
+
+// 2. دالة تحديث الساعة العلوية (اللي بتناديها من الـ setInterval)
+function updateHeaderClock() {
+    const clockEl = document.getElementById('header-clock');
+    if (!clockEl) return;
+
+    const now = new Date();
+    const timeInfo = format12Hour(now.getHours());
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    const secs = String(now.getSeconds()).padStart(2, '0');
+    
+    // هيك بتطلع مثلاً: 10:30:05 مساءً
+    clockEl.innerText = `${timeInfo.hours}:${mins}:${secs} ${timeInfo.ampm}`;
+}
+
+// 3. دالة حساب وقت الحجز (كل يوم جمعة الساعة 5 مساءً)
+function updateBookingTimer() {
+    const countdownEl = document.getElementById('match-countdown');
+    if (!countdownEl) return;
+
+    const now = new Date();
+    let target = new Date();
+    
+    // حساب كم يوم باقي للجمعة (الجمعة ترتيبها 5 في أيام الأسبوع)
+    let dayDiff = (5 - now.getDay() + 7) % 7;
+    
+    target.setDate(now.getDate() + dayDiff);
+    target.setHours(17, 0, 0, 0); // الساعة 5 مساءً (توقيت الحجز)
+
+    // إذا إحنا يوم جمعة والساعة صارت بعد 5، نحسب للجمعة الجاي
+    if (dayDiff === 0 && now > target) {
+        target.setDate(target.getDate() + 7);
+    }
+
+    const diff = target - now;
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+    const mins = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+    const secs = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+
+    // عرض العداد: أيام : ساعات : دقائق : ثواني
+    countdownEl.innerText = `${days}d ${hours}:${mins}:${secs}`;
 };
