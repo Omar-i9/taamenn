@@ -1131,7 +1131,8 @@ body.day-mode .lantern-wire {
     transform: translateY(40px);
     transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.scroll-reveal.visible { opacity: 1; transform: translateY(0); }/* ================================================================
+.scroll-reveal.visible { opacity: 1; transform: translateY(0); }
+/* ================================================================
    [12] المدفع والتوقيت (CANNON & PRAYERS)
    ================================================================ */
 /* تنسيق حاوية الكروت */
@@ -1633,3 +1634,29 @@ body.day-mode .lantern-wire {
     text-align: center;
 }
 
+/* 1. إخفاء كل الصفحات بشكل افتراضي */
+.page {
+    display: none !important; /* إخفاء تام */
+    visibility: hidden;
+    opacity: 0;
+}
+
+/* 2. إظهار الصفحة النشطة فقط */
+.page.active {
+    display: block !important; /* إظهار إجباري */
+    visibility: visible;
+    opacity: 1;
+    animation: fadeIn 0.4s ease-in-out; /* حركة خفيفة للدخول */
+}
+
+/* حركة دخول ناعمة */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 3. تأكد إن المواقيت والطقس مش ماخدين لون شفاف */
+#cannon, #weather {
+    color: white !important;
+    min-height: 100vh; /* عشان تاخد مساحة الشاشة */
+}
