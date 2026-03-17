@@ -134,28 +134,36 @@ let activeSelectedTactic = null;
 // [4] نظام التوجيه والإشعارات (NAVIGATION & NOTIFICATIONS)
 // ==========================================
 function showNotification(pageId) {
-    const container = document.getElementById('notification-container');
-    if (!container) return;
+    // 1. بندور على الحاوية، إذا مش موجودة بنعملها فوراً
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        document.body.appendChild(container);
+    }
 
+    // 2. بنجيب رسالة عشوائية من مصفوفة الرسائل عندك
     const messages = systemMessages[pageId] || ["مرحباً بك في تأمين 26"];
     const randomMsg = messages[Math.floor(Math.random() * messages.length)];
     
+    // 3. بنعمل "الكارد الزجاجي"
     const toast = document.createElement('div');
-    toast.className = 'toast-notification';
+    toast.className = 'glass-toast'; // هاد الكلاس اللي عطيته لك بالـ CSS
     toast.innerHTML = `
-        <i class="fas fa-bell toast-icon"></i>
+        <i class="fas fa-bolt-lightning toast-icon" style="color:#ffd700;"></i>
         <span>${randomMsg}</span>
     `;
     
     container.appendChild(toast);
 
-    setTimeout(() => { toast.classList.add('show'); }, 100);
+    // 4. الحركات (تظهر وتختفي)
+    setTimeout(() => { toast.style.opacity = '1'; toast.style.transform = 'translateX(0)'; }, 100);
     setTimeout(() => {
-        toast.classList.remove('show');
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
         setTimeout(() => { toast.remove(); }, 500); 
     }, 4000);
 }
-
 function navigate(pageId, btnElement = null) {
     // 1. إخفاء كل الصفحات
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -312,21 +320,30 @@ function renderStats() {
     const eliteBody = document.getElementById('eliteTableBody');
     const challengeBody = document.getElementById('challengeTableBody');
     
+    // دالة بناء الصفوف عشان تطابق التصميم اللي بالصورة
     const createRows = (data) => data.map(p => `
         <tr>
             <td style="font-weight:bold; color:var(--ramadan-gold); text-align:right;">${p.name}</td>
-            <td>${p.g}</td>
-            <td>${p.a}</td>
-            <td>${p.g + p.a}</td>
-            <td><i class="fas fa-star" style="color:orange; font-size:0.8rem;"></i> ${p.r}</td>
+            <td style="color: #fff;">${p.g}</td>
+            <td style="color: #fff;">${p.a}</td>
+            <td style="color: #fff;">${p.g + p.a}</td> <td style="color: #ffd700;">
+                <i class="fas fa-star" style="font-size:0.7rem; margin-left:3px;"></i>${p.r}
+            </td>
         </tr>
     `).join('');
 
-    if (eliteBody) eliteBody.innerHTML = createRows(statsElite);
-    if (challengeBody) challengeBody.innerHTML = createRows(statsChallenge);
-    console.log("Omar System: Stats Rendered Successfully 📊");
-}
+    // تعبئة جدول النخبة
+    if (eliteBody) {
+        eliteBody.innerHTML = createRows(statsElite);
+    }
 
+    // تعبئة جدول التحدي
+    if (challengeBody) {
+        challengeBody.innerHTML = createRows(statsChallenge);
+    }
+    
+    console.log("Omar System: Stats Synchronized Successfully! ✅");
+}
 function renderMatches() {
     const archiveContainer = document.getElementById('matchHistoryContainer');
     if (!archiveContainer) return;
@@ -645,7 +662,7 @@ async function updateWeatherSystem() {
 	            setupPlayers() {
 	                // يمكنك تعديل الأسماء والمراكز المبدئية هنا
 	                const teamA = [
-	                    { id: 'R1', name: 'ارقم', x: 8, y: 50, color: 'team-red', team: 'home' },
+	                    { id: 'R1', name: 'محمد علي', x: 8, y: 50, color: 'team-red', team: 'home' },
 	                    { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
 	                    { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
 	                    { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
@@ -1118,9 +1135,9 @@ function updateHomeBookingTimer() {
         const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
         if(countdownEl) countdownEl.innerText = `${hh}:${mm}:00`;
         if(badgeEl) {
-            badgeEl.innerText = "محجوز";
-            badgeEl.style.background = "#ff4444";
-            badgeEl.style.color = "#fff";
+            badgeEl.innerText = "مؤجل";
+            badgeEl.style.background = "#d2ff20";
+            badgeEl.style.color = "#000000";
         }
     }
 }
