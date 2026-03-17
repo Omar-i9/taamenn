@@ -164,30 +164,32 @@ function showNotification(pageId) {
         setTimeout(() => { toast.remove(); }, 500); 
     }, 4000);
 }
-function navigate(pageId, btnElement = null) {
-    // 1. إخفاء كل الصفحات
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    
-    // 2. إزالة الأكتيف من روابط الهيدر العلوي فقط (لأننا أزلنا السفلي)
-    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+// دالة التنقل المصلحة
+function navigate(pageId, element) {
+    try {
+        // 1. إخفاء كل الصفحات
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+            page.style.display = 'none';
+        });
 
-    // 3. تفعيل الصفحة المطلوبة
-    const targetPage = document.getElementById(pageId);
-    if (targetPage) {
-        targetPage.classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        showNotification(pageId);
-    }
+        // 2. إظهار الصفحة المطلوبة
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+            targetPage.style.display = 'block';
+        }
 
-    // 4. تفعيل الزر في الهيدر
-    if (btnElement) {
-        btnElement.classList.add('active');
-    } else {
-        const correspondingBtn = document.querySelector(`.nav-link[onclick*="'${pageId}'"]`);
-        if (correspondingBtn) correspondingBtn.classList.add('active');
+        // 3. تحديث شكل الأزرار
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        if (element) element.classList.add('active');
+
+    } catch (error) {
+        console.error("Navigation Error: ", error);
     }
 }
-
 // ==========================================
 // [5] نظام الثيم الذكي (DAY / NIGHT THEME)
 // ==========================================
@@ -320,30 +322,104 @@ function renderStats() {
     const eliteBody = document.getElementById('eliteTableBody');
     const challengeBody = document.getElementById('challengeTableBody');
     
-    // دالة بناء الصفوف عشان تطابق التصميم اللي بالصورة
+    // بناء الصفوف
     const createRows = (data) => data.map(p => `
         <tr>
             <td style="font-weight:bold; color:var(--ramadan-gold); text-align:right;">${p.name}</td>
             <td style="color: #fff;">${p.g}</td>
             <td style="color: #fff;">${p.a}</td>
-            <td style="color: #fff;">${p.g + p.a}</td> <td style="color: #ffd700;">
+            <td style="color: #fff;">${p.g + p.a}</td> 
+            <td style="color: #ffd700;">
                 <i class="fas fa-star" style="font-size:0.7rem; margin-left:3px;"></i>${p.r}
             </td>
         </tr>
     `).join('');
 
-    // تعبئة جدول النخبة
-    if (eliteBody) {
-        eliteBody.innerHTML = createRows(statsElite);
-    }
+    if (eliteBody) eliteBody.innerHTML = createRows(statsElite);
+    if (challengeBody) challengeBody.innerHTML = createRows(statsChallenge);
 
-    // تعبئة جدول التحدي
-    if (challengeBody) {
-        challengeBody.innerHTML = createRows(statsChallenge);
-    }
+    // نداء الدالة بالاسم الجديد والموحد
+    updateFieldIcons(); 
     
-    console.log("Omar System: Stats Synchronized Successfully! ✅");
+    console.log("Omar System: Stats & Field Synchronized! ✅");
 }
+
+// الدالة اللي بتوزع الأيقونات وتعمل التوهج
+function updateFieldIcons() {
+    // تحديد الـ MVP من كل فريق بناءً على التقييم r
+    const mvpElite = statsElite.reduce((prev, current) => (prev.r > current.r) ? prev : current);
+    const mvpChallenge = statsChallenge.reduce((prev, current) => (prev.r > current.r) ? prev : current);
+
+    document.querySelectorAll('.player-token').forEach(token => {
+        const playerName = token.getAttribute('data-name');
+        const pData = [...statsElite, ...statsChallenge].find(p => p.name === playerName);
+
+        if (pData) {
+            // تنظيف قديم
+            token.classList.remove('mvp-glow');
+            token.querySelectorAll('.goal-badge, .assist-badge').forEach(b => b.remove());
+
+            // إضافة توهج الـ MVP
+            if (playerName === mvpElite.name || playerName === mvpChallenge.name) {
+                token.classList.add('mvp-glow');
+            }
+
+            // أيقونة الأهداف أعلى اليمين
+            if (pData.g > 0) {
+                const gBadge = document.createElement('span');
+                gBadge.className = 'goal-badge';
+                gBadge.innerHTML = '⚽';
+                token.appendChild(gBadge);
+            }
+
+            // أيقونة الأسيست أعلى اليسار
+            if (pData.a > 0) {
+                const aBadge = document.createElement('span');
+                aBadge.className = 'assist-badge';
+                aBadge.innerHTML = '🦶';
+                token.appendChild(aBadge);
+            }
+        }
+    });
+}
+// دالة فرعية لتحديث أيقونات الملعب والتوهج
+function updateFieldIcons() {
+    const mvpElite = statsElite.reduce((prev, curr) => (curr.r > prev.r ? curr : prev));
+    const mvpChallenge = statsChallenge.reduce((prev, curr) => (curr.r > prev.r ? curr : prev));
+
+    document.querySelectorAll('.player-token').forEach(token => {
+        const playerName = token.getAttribute('data-name');
+        const pData = [...statsElite, ...statsChallenge].find(p => p.name === playerName);
+
+        if (pData) {
+            // تنظيف أي أيقونات قديمة مضافة "داخل" التوكن
+            token.classList.remove('mvp-glow');
+            token.querySelectorAll('.goal-badge, .assist-badge').forEach(b => b.remove());
+
+            // إضافة التوهج للـ MVP
+            if (playerName === mvpElite.name || playerName === mvpChallenge.name) {
+                token.classList.add('mvp-glow');
+            }
+
+            // إضافة أيقونة الأهداف ⚽ داخل اللاعب
+            if (pData.g > 0) {
+                const gBadge = document.createElement('span');
+                gBadge.className = 'goal-badge';
+                gBadge.innerHTML = '⚽';
+                token.appendChild(gBadge); // هون السر: ضفناها للتوكن نفسه
+            }
+
+            // إضافة أيقونة الأسيست 🦶 داخل اللاعب
+            if (pData.a > 0) {
+                const aBadge = document.createElement('span');
+                aBadge.className = 'assist-badge';
+                aBadge.innerHTML = '🦶';
+                token.appendChild(aBadge); // هيك رح تلحق اللاعب وين ما تحركه
+            }
+        }
+    });
+}
+
 function renderMatches() {
     const archiveContainer = document.getElementById('matchHistoryContainer');
     if (!archiveContainer) return;
@@ -381,8 +457,7 @@ async function initPrayersSystem() {
     try {
         const date = new Date();
         const timestamp = Math.floor(date.getTime() / 1000);
-        const res = await fetch(`https://api.aladhan.com/v1/timings/${timestamp}?latitude=${lat}&longitude=${long}&method=1`);
-        const data = await res.json();
+const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${long}&method=1`);        const data = await res.json();
         
         const timings = data.data.timings;
         const hijri = data.data.date.hijri;
@@ -1163,6 +1238,7 @@ window.onload = () => {
     initPrayersSystem(); 
     updateWeatherSystem();
     applyDynamicTheme();
+    updateFieldIcons();
 
     // 2. تحديثات الساعة والحجز (النظام الجديد الموحد)
     // ملاحظة: شطبنا نظام setInterval القديم اللي كان تحت في "رقم 4"
