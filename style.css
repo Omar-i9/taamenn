@@ -1489,3 +1489,117 @@ body.day-mode .lantern-wire {
     color: #fff !important; /* خليها تضوي أبيض بالصلاة الجاية */
     filter: drop-shadow(0 0 10px var(--ramadan-gold));
 }
+/* الفواصل */
+.section-divider {
+    text-align: center;
+    margin: 40px 0 20px;
+    border-bottom: 1px solid var(--glass-border);
+    line-height: 0.1em;
+}
+.section-divider span {
+    background: var(--main-bg);
+    padding: 0 15px;
+    color: var(--ramadan-gold);
+    font-weight: bold;
+}
+
+/* كروت الإحصائيات الشفافة */
+.quick-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.glass-stat-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    font-size: 1.8rem;
+    color: var(--ramadan-gold);
+}
+
+.stat-label { font-size: 0.8rem; color: #aaa; display: block; }
+.stat-value { font-size: 1.1rem; font-weight: bold; color: #fff; }
+
+/* حاوية الحجز الفخمة */
+.booking-status-container {
+  width: 100%; /* هذا الرقم اللي بخليه يفرش بعرض الموقع */
+    max-width: 100%; /* تأكيد إنه ما يلتزم بحجم أقصى أصغر */
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 0; /*  اختياري: إذا بدك الزوايا تضل دائرية خليها، إذا بدك إياها ملزقة بالشاشة تماماً خليها 0 */
+  
+
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid var(--glass-border);
+    margin-top: 20px;
+    text-align: center;
+}
+
+.status-badge {
+    background: var(--ramadan-gold);
+    color: #000;
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* تأثير الظهور عند السكرول */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ترتيب الإحصائيات بشكل عمودي منفصل */
+.quick-stats-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* البطاقة الكبيرة التفاعلية */
+.interactive-hero-card {
+    height: 200px;
+    background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(58, 123, 213, 0.1));
+    border: 1px solid var(--glass-border);
+    border-radius: 25px;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    perspective: 1000px;
+    transition: transform 0.1s ease-out; /* حركة سريعة مع الماوس */
+}
+
+.card-inner h3 { font-family: 'Orbitron'; font-size: 2rem; color: var(--ramadan-gold); }
+
+/* تأثير الوقت والعد التنازلي */
+.countdown-main {
+    font-size: 2.2rem;
+    font-family: 'Orbitron', sans-serif;
+    color: #fff;
+    text-shadow: 0 0 20px var(--accent-color);
+}
