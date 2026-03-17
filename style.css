@@ -990,62 +990,148 @@ body.day-mode .lantern-wire {
 }
 
 /* ================================================================
-   [11] جداول الإحصائيات (STATS TABLES)
+   [11] نظام الإحصائيات الشامل - عرض كامل (FULL WIDTH SYSTEM)
    ================================================================ */
-.stats-tables-wrapper {
-    margin-bottom: 50px;
+
+/* إلغاء أي قيود على العرض في الصفحة نفسها */
+#stats-page, .stats-tables-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 10px !important;
+    box-sizing: border-box;
 }
 
-.table-label {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    font-family: 'Reem Kufi', sans-serif;
+/* الكارد الزجاجي - لازم يفرش بعرض الشاشة */
+.stats-table-container, .stats-card-glass {
+    width: 100% !important;
+    display: block;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    overflow-x: auto; /* عشان الجوال */
+}
+
+/* الجدول - السر في table-layout: auto أو fixed */
+.stats-table, .elite-table {
+    width: 100% !important;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+/* تنسيق العناوين (اللاعب، الأهداف...) */
+.stats-table th, .elite-table th {
+    color: #ffd700; /* ذهبي رمضان */
+    padding: 15px 5px;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+/* تنسيق الخلايا (الأرقام) */
+.stats-table td, .elite-table td {
+    padding: 15px 5px;
+    color: #fff;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* العمود الأول (الأسماء) - هاد اللي لازم يفرش ويضل عاليمين */
+.stats-table td:first-child, .elite-table td:first-child,
+.stats-table th:first-child, .elite-table th:first-child {
+    text-align: right !important;
+    padding-right: 20px !important;
+    width: 35% !important; /* نعطي الاسم مساحة عشان الجدول يفرش */
+    color: #ffd700;
+}
+
+/* تأثير اللمعان عند المرور */
+.stats-card-glass:hover {
+    border-color: rgba(255, 215, 0, 0.6);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
+}
+/* ================================================================
+   [17] العناصر التفاعلية والإشعارات (INTERACTIVE & UI)
+   ================================================================ */
+
+/* بطاقة الهيرو التفاعلية - تفرش بالعرض */
+.interactive-hero-card {
+    width: 100%;
+    height: 220px;
+    background: linear-gradient(135deg, rgba(0, 210, 255, 0.15), rgba(255, 215, 0, 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    margin: 30px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    perspective: 1000px;
+    overflow: hidden;
+}
+
+.card-inner h3 { font-family: 'Orbitron'; font-size: 2.2rem; color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+
+/* نظام الإشعارات الزجاجي */
+#notification-container {
+    position: fixed;
+    top: 25px;
+    left: 25px; /* غيرتها لليسار عشان ما تغطي على أزرار الهيدر */
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.glass-toast {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    border-radius: 18px;
+    padding: 18px 28px;
+    color: #fff;
+    font-weight: bold;
     display: flex;
     align-items: center;
     gap: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: slideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.table-label.elite { color: var(--accent-cyan); }
-.table-label.challenge { color: var(--danger-red); }
-
-.stats-table-container {
-    background: var(--glass-bg);
-    border-radius: 20px;
-    padding: 25px;
-    border: 1px solid var(--glass-border);
-    overflow-x: auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
+/* أنيميشن التوهج والظهور */
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
-.stats-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    min-width: 600px; 
+@keyframes glowPulse {
+    0%, 100% { border-color: rgba(255, 215, 0, 0.3); box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+    50% { border-color: rgba(255, 215, 0, 0.8); box-shadow: 0 0 25px rgba(255, 215, 0, 0.4); }
 }
 
-.stats-table th { 
-    padding: 18px; 
-    color: var(--ramadan-gold); 
-    border-bottom: 2px solid rgba(255,255,255,0.1); 
-    font-size: 1.1rem; 
-    text-align: center;
-}
-.stats-table th:first-child { text-align: right; }
+.glass-toast { animation: slideIn 0.5s ease-out, glowPulse 2s infinite; }
 
-.stats-table td { 
-    padding: 18px; 
-    border-bottom: 1px solid rgba(255,255,255,0.05); 
-    text-align: center; 
-    font-size: 1.05rem;
-}
-.stats-table td:first-child { text-align: right; font-weight: bold; }
-
-.stats-table tr:hover td { 
-    background: rgba(255,255,255,0.08); 
+/* عناصر إضافية */
+.status-badge {
+    background: #ffd700;
+    color: #000;
+    padding: 6px 18px;
+    border-radius: 50px;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.9rem;
 }
 
-/* ================================================================
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scroll-reveal.visible { opacity: 1; transform: translateY(0); }/* ================================================================
    [12] المدفع والتوقيت (CANNON & PRAYERS)
    ================================================================ */
 /* تنسيق حاوية الكروت */
@@ -1547,59 +1633,3 @@ body.day-mode .lantern-wire {
     text-align: center;
 }
 
-.status-badge {
-    background: var(--ramadan-gold);
-    color: #000;
-    padding: 5px 15px;
-    border-radius: 20px;
-    display: inline-block;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-/* تأثير الظهور عند السكرول */
-.scroll-reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s ease-out;
-}
-
-.scroll-reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* ترتيب الإحصائيات بشكل عمودي منفصل */
-.quick-stats-vertical {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin: 20px 0;
-}
-
-/* البطاقة الكبيرة التفاعلية */
-.interactive-hero-card {
-    height: 200px;
-    background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(58, 123, 213, 0.1));
-    border: 1px solid var(--glass-border);
-    border-radius: 25px;
-    margin-top: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    overflow: hidden;
-    position: relative;
-    perspective: 1000px;
-    transition: transform 0.1s ease-out; /* حركة سريعة مع الماوس */
-}
-
-.card-inner h3 { font-family: 'Orbitron'; font-size: 2rem; color: var(--ramadan-gold); }
-
-/* تأثير الوقت والعد التنازلي */
-.countdown-main {
-    font-size: 2.2rem;
-    font-family: 'Orbitron', sans-serif;
-    color: #fff;
-    text-shadow: 0 0 20px var(--accent-color);
-}
