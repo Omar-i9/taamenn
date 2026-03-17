@@ -53,23 +53,59 @@
             </div>
         </div>
 
-        <div class="grid-menu">
-            <div class="menu-card tilt-card" onclick="navigate('radar')">
-                <div class="card-icon-wrapper"><i class="fas fa-users-viewfinder"></i></div>
-                <h3>الميدان التفاعلي</h3>
-                <p>صمم تكتيكك، حمل صورتك، وقد فريقك نحو المجد.</p>
-            </div>
-            <div class="menu-card tilt-card" onclick="navigate('cannon')">
-                <div class="card-icon-wrapper"><i class="fas fa-bullhorn"></i></div>
-                <h3>توقيت النخبة</h3>
-                <p>مواقيت الصلاة الدقيقة للخليل وعداد الإفطار.</p>
-            </div>
-            <div class="menu-card tilt-card" onclick="navigate('matches')">
-                <div class="card-icon-wrapper"><i class="fas fa-trophy"></i></div>
-                <h3>أرشيف الأمجاد</h3>
-                <p>تصفح نتائج المباريات السابقة وليالي دوري الأبطال.</p>
+<div class="grid-menu">
+    <div class="menu-card tilt-card" onclick="navigate('radar')">
+        <div class="card-icon-wrapper"><i class="fas fa-users-viewfinder"></i></div>
+        <h3>الميدان التفاعلي</h3>
+        <p>صمم تكتيكك، حمل صورتك، وقد فريقك نحو المجد.</p>
+    </div>
+    <div class="menu-card tilt-card" onclick="navigate('cannon')">
+        <div class="card-icon-wrapper"><i class="fas fa-bullhorn"></i></div>
+        <h3>توقيت النخبة</h3>
+        <p>مواقيت الصلاة الدقيقة للخليل وعداد الإفطار.</p>
+    </div>
+    <div class="menu-card tilt-card" onclick="navigate('weather')">
+        <div class="card-icon-wrapper"><i class="fas fa-cloud-showers-heavy"></i></div>
+        <h3>حالة الطقس</h3>
+        <p>توقعات الأجواء في ملعب الخليل تحديث بلحظة.</p>
+    </div>
+</div>
+
+<div class="home-stats-section">
+    <div class="section-divider scroll-reveal">
+        <span><i class="fas fa-chart-line"></i> النظرة السريعة</span>
+    </div>
+
+    <div class="quick-stats-vertical">
+        <div class="glass-stat-card scroll-reveal">
+            <div class="stat-icon"><i class="fas fa-fire-alt"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">هداف البطولة</span>
+                <span class="stat-value" id="top-scorer">عمر الخليل (12 هدف)</span>
             </div>
         </div>
+
+        <div class="glass-stat-card scroll-reveal">
+            <div class="stat-icon"><i class="fas fa-shield-halved"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">الفريق المسيطر</span>
+                <span class="stat-value" id="best-team">فريق النخبة A</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="booking-status-container glass-effect scroll-reveal">
+        <div class="booking-header">
+            <i class="fas fa-calendar-check"></i>
+            <h4>موعد الملحمة الأسبوعية</h4>
+        </div>
+        <div class="booking-details">
+            <div class="status-badge" id="booking-badge">جاري الحساب...</div>
+            <p id="booking-timer-text">المباراة القادمة يوم الجمعة الساعة 5 مساءً</p>
+            <div class="countdown-main" id="match-countdown">--:--:--:--</div>
+        </div>
+    </div>
+
 
         <div class="dhikr-section tilt-card">
             <h4 class="dhikr-title">✨ نفحات</h4>
@@ -78,6 +114,18 @@
             <p id="dhikrDisplay">أستغفرُ اللهَ العظيمَ الذي لا إلهَ إلا هوَ الحيُّ القيومُ وأتوبُ إليه 🤍</p>
         </div>
     </div>
+	    <div class="interactive-hero-card scroll-reveal" id="card">
+        <div class="card-inner">
+            <div class="weather-mini-info">
+                <i class="fas fa-bolt-lightning"></i>
+                <span>حالة الملعب الآن: مثالية</span>
+            </div>
+            <h3>تأمين 2026</h3>
+            <p>حيث تُصنع الأساطير وتُكتب الأمجاد</p>
+        </div>
+    </div>
+</div>
+
 
     <div class="page" id="radar">
         <h2 class="section-title">التحليل الفني والتحركات</h2>
