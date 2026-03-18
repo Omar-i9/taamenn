@@ -1783,10 +1783,10 @@ body.day-mode .lantern-wire {
     top: 80px;
     right: -350px; /* مخفية */
     width: 280px;
-    background: rgba(255, 255, 255, 0.05); /* شفافة جداً */
+    background: rgba(7, 1, 1, 0.847); /* شفافة جداً */
     backdrop-filter: blur(30px); /* التغبيش اللي طلبته */
     -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(28, 5, 5, 0.1);
     border-radius: 20px;
     padding: 20px;
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -1802,7 +1802,7 @@ body.day-mode .lantern-wire {
 
 /* البطاقات المتوهجة داخل القائمة */
 .nav-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.234);
     margin-bottom: 12px;
     padding: 15px;
     border-radius: 15px;
@@ -1849,7 +1849,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(0, 5, 10, 0.8);
+    background: rgba(0, 5, 10, 0.896);
     backdrop-filter: blur(10px);
 }
 
