@@ -1224,7 +1224,23 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 //----------------
+function toggleMenu() {
+    const menu = document.getElementById('navMenu');
+    menu.classList.toggle('active');
+    
+    // أنيميشن خفيف لزر الهامبرغر نفسه (اختياري)
+    const spans = document.querySelectorAll('.hamburger span');
+    // بتقدر تضيف هون كود يخلي الزر يصير X لما يفتح
+}
 
+// إغلاق القائمة لو ضغط المستخدم بره المنيو
+document.addEventListener('click', (e) => {
+    const menu = document.getElementById('navMenu');
+    const hamburger = document.querySelector('.hamburger');
+    if (!menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {
+        menu.classList.remove('active');
+    }
+});
 // ==========================================
 // [14] التهيئة والتشغيل الأساسي (INITIALIZATION)
 // ==========================================
