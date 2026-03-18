@@ -1,0 +1,21 @@
+{
+  "name": "تأمين 2026",
+  "short_name": "تأمين",
+  "description": "منصة تأمين الرياضية للمحترفين",
+  "start_url": "/taamenn/",
+  "display": "standalone",
+  "background_color": "#00050a",
+  "theme_color": "#ffd700",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
