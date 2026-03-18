@@ -1295,222 +1295,278 @@ body.day-mode .lantern-wire {
 /* ================================================================
    [14] تأثيرات 3D وأرشيف الأمجاد (CHAMPIONS LEAGUE)
    ================================================================ */
-.cl-theme-container {
-    background: radial-gradient(circle at center, #001f4d 0%, #000a1a 100%);
-    border-radius: 30px;
-    padding: 60px;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.1);
+/* ================================================================
+   🏆 UCL TROPHY PLATINUM CSS RE-DESIGN
+   ================================================================ */
+
+:root {
+    --ucl-navy: #000510;
+    --ucl-blue-deep: #001f4d;
+    --ucl-silver-light: #f8fafc;
+    --ucl-silver-mid: #cbd5e0;
+    --ucl-silver-dark: #4a5568;
+    --ucl-chrome-reflect: linear-gradient(135deg, #ffffff 0%, #cbd5e0 25%, #718096 50%, #e2e8f0 75%, #ffffff 100%);
+    --ucl-glow: rgba(0, 210, 255, 0.4);
 }
-.cl-theme-container {
-    background: radial-gradient(circle at center, #001f4d 0%, #000a1a 100%);
-    border-radius: 30px;
-    padding: 60px;
+
+/* 1. الحاوية الرئيسية (البطاقة) */
+.cl-champions-card {
     position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 650px;
+    background: radial-gradient(circle at center, var(--ucl-blue-deep) 0%, var(--ucl-navy) 100%);
+    border-radius: 40px;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 40px;
+    margin: 20px auto;
 }
-	                .cl-theme-container {
-	                    background: radial-gradient(circle at center, #001f4d 0%, #000a1a 100%);
-	                    border-radius: 30px;
-	                    padding: 40px;
-	                    position: relative;
-	                    overflow: hidden;
-	                    border: 1px solid rgba(255,255,255,0.1);
-	                    margin-bottom: 40px;
-	                }
-	                
-	                /* نجوم دوري الأبطال في الخلفية */
-	                .cl-bg-stars {
-	                    position: absolute;
-	                    top: 0; left: 0; width: 100%; height: 100%;
-	                    background-image: radial-gradient(#ffffff 1px, transparent 1px);
-	                    background-size: 50px 50px;
-	                    opacity: 0.05;
-	                    z-index: 1;
-	                }
 
-	                .cl-trophy-wrapper {
-	                    position: relative;
-	                    width: 100%;
-	                    height: 350px;
-	                    display: flex;
-	                    justify-content: center;
-	                    align-items: center;
-	                    z-index: 5;
-	                    perspective: 1000px;
-	                    margin-bottom: 30px;
-	                }
+/* 2. الخلفية المتحركة (نجوم تتحرك ببطء) */
+.cl-stars-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(white 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.1;
+    animation: starsSlide 100s linear infinite;
+}
 
-	                /* الحاوية الرئيسية للكأس */
-	                .cl-trophy {
-	                    position: relative;
-	                    width: 160px;
-	                    height: 280px;
-	                    animation: floatTrophy 4s ease-in-out infinite;
-	                    transform-style: preserve-3d;
-	                }
+@keyframes starsSlide {
+    from { background-position: 0 0; }
+    to { background-position: 1000px 1000px; }
+}
 
-	                @keyframes floatTrophy {
-	                    0%, 100% { transform: translateY(0) rotateY(0deg); }
-	                    50% { transform: translateY(-15px) rotateY(10deg); }
-	                }
+.cl-nebula-glow {
+    position: absolute;
+    width: 150%; height: 150%;
+    background: radial-gradient(circle, rgba(0, 81, 255, 0.15) 0%, transparent 70%);
+    top: -25%; left: -25%;
+    filter: blur(50px);
+    animation: nebulaMove 15s ease-in-out infinite;
+}
 
-	                /* القاعدة (Base) */
-	                .trophy-base {
-	                    position: absolute;
-	                    bottom: 0;
-	                    left: 50%;
-	                    transform: translateX(-50%);
-	                    width: 90px;
-	                    height: 30px;
-	                    background: linear-gradient(to right, #4a5568, #a0aec0, #cbd5e0, #a0aec0, #4a5568);
-	                    border-radius: 10px 10px 5px 5px;
-	                    box-shadow: inset 0 -5px 10px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.6);
-	                    z-index: 2;
-	                }
-	                
-	                .trophy-base::after {
-	                    content: '';
-	                    position: absolute;
-	                    top: -10px;
-	                    left: 50%;
-	                    transform: translateX(-50%);
-	                    width: 60px;
-	                    height: 10px;
-	                    background: linear-gradient(to right, #718096, #e2e8f0, #718096);
-	                    border-radius: 5px 5px 0 0;
-	                }
+@keyframes nebulaMove {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-50px, 30px) scale(1.1); }
+}
 
-	                /* الجذع (Stem) */
-	                .trophy-stem {
-	                    position: absolute;
-	                    bottom: 30px;
-	                    left: 50%;
-	                    transform: translateX(-50%);
-	                    width: 30px;
-	                    height: 50px;
-	                    background: linear-gradient(to right, #718096 0%, #ffffff 50%, #718096 100%);
-	                    z-index: 2;
-	                    border-radius: 5px;
-	                }
+/* 3. مشهد الكأس العائم */
+.cl-trophy-scene {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    z-index: 10;
+}
 
-	                /* الوعاء الرئيسي (The Bowl) */
-	                .trophy-bowl {
-	                    position: absolute;
-	                    bottom: 80px;
-	                    left: 50%;
-	                    transform: translateX(-50%);
-	                    width: 120px;
-	                    height: 140px;
-	                    background: linear-gradient(135deg, #a0aec0 0%, #ffffff 40%, #e2e8f0 60%, #718096 100%);
-	                    border-radius: 10px 10px 60px 60px;
-	                    z-index: 3;
-	                    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2), inset 10px 10px 20px rgba(255,255,255,0.8);
-	                    overflow: hidden;
-	                }
+.cl-trophy-container {
+    position: relative;
+    animation: floatAnimation 5s ease-in-out infinite;
+    transform-style: preserve-3d;
+}
 
-	                /* الخطوط الفضية على الوعاء */
-	                .trophy-bowl::before {
-	                    content: '';
-	                    position: absolute;
-	                    top: 20px; left: 10%; width: 80%; height: 2px;
-	                    background: rgba(255,255,255,0.6);
-	                    box-shadow: 0 40px 0 rgba(255,255,255,0.4), 0 80px 0 rgba(255,255,255,0.3);
-	                }
+@keyframes floatAnimation {
+    0%, 100% { transform: translateY(0) rotateY(-5deg); }
+    50% { transform: translateY(-25px) rotateY(15deg); }
+}
 
-	                /* الفتحة العلوية للكأس */
-	                .trophy-top {
-	                    position: absolute;
-	                    top: 60px;
-	                    left: 50%;
-	                    transform: translateX(-50%);
-	                    width: 140px;
-	                    height: 30px;
-	                    background: linear-gradient(to bottom, #e2e8f0, #718096);
-	                    border-radius: 50%;
-	                    z-index: 4;
-	                    box-shadow: inset 0 -5px 10px rgba(0,0,0,0.3);
-	                }
-	                
-	                .trophy-top::after {
-	                    content: '';
-	                    position: absolute;
-	                    top: 5px; left: 50%; transform: translateX(-50%);
-	                    width: 120px; height: 15px;
-	                    background: #2d3748; /* التجويف الداخلي المظلم */
-	                    border-radius: 50%;
-	                }
+/* 4. تفاصيل الكأس (The Big Ears) */
+.ucl-trophy {
+    position: relative;
+    width: 180px;
+    height: 280px;
+}
 
-	                /* الأذنين المميزتين (The Big Ears) */
-	                .trophy-handle {
-	                    position: absolute;
-	                    top: 70px;
-	                    width: 60px;
-	                    height: 110px;
-	                    border: 12px solid #cbd5e0;
-	                    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-	                    z-index: 1;
-	                    box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.4);
-	                }
+/* الوعاء الرئيسي للجسم */
+.ucl-bowl {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130px;
+    height: 160px;
+    background: var(--ucl-chrome-reflect);
+    border-radius: 10px 10px 70px 70px;
+    box-shadow: 
+        inset -15px -15px 30px rgba(0,0,0,0.4),
+        inset 15px 15px 30px rgba(255,255,255,0.7);
+    overflow: hidden;
+    z-index: 5;
+}
 
-	                .handle-left {
-	                    left: -30px;
-	                    border-right-color: transparent;
-	                    border-bottom-color: transparent;
-	                    transform: rotate(-15deg);
-	                }
-	                
-	                /* تأثير اللمعان على المقبض الأيسر */
-	                .handle-left::after {
-	                    content: ''; position: absolute; top: 10px; left: -5px; width: 5px; height: 40px; background: rgba(255,255,255,0.8); border-radius: 5px; transform: rotate(10deg);
-	                }
+/* المقابض (الأذنين) */
+.ucl-handle {
+    position: absolute;
+    top: 50px;
+    width: 80px;
+    height: 140px;
+    border: 14px solid #cbd5e0;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    z-index: 1;
+    background: transparent;
+}
 
-	                .handle-right {
-	                    right: -30px;
-	                    border-left-color: transparent;
-	                    border-bottom-color: transparent;
-	                    transform: rotate(15deg);
-	                }
+.ucl-handle-left {
+    left: -45px;
+    transform: rotate(-20deg);
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    box-shadow: inset 5px 5px 10px rgba(255,255,255,0.8), -5px 5px 15px rgba(0,0,0,0.4);
+}
 
-	                /* توهج خلف الكأس */
-	                .trophy-glow {
-	                    position: absolute;
-	                    top: 50%; left: 50%;
-	                    transform: translate(-50%, -50%);
-	                    width: 200px; height: 200px;
-	                    background: radial-gradient(circle, rgba(0, 195, 255, 0.4) 0%, transparent 70%);
-	                    z-index: 0;
-	                    animation: pulseGlow 3s infinite alternate;
-	                }
+.ucl-handle-right {
+    right: -45px;
+    transform: rotate(20deg);
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+    box-shadow: inset -5px 5px 10px rgba(255,255,255,0.8), 5px 5px 15px rgba(0,0,0,0.4);
+}
 
-	                @keyframes pulseGlow {
-	                    0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); }
-	                    100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-	                }
+/* الرقبة والحافة */
+.ucl-rim {
+    position: absolute;
+    top: 35px; left: 50%;
+    transform: translateX(-50%);
+    width: 145px; height: 35px;
+    background: linear-gradient(to bottom, #f8fafc, #718096);
+    border-radius: 50%;
+    z-index: 6;
+    border-bottom: 2px solid rgba(0,0,0,0.3);
+}
 
-	                .cl-title {
-	                    text-align: center;
-	                    font-family: 'Reem Kufi', sans-serif;
-	                    font-size: 2.5rem;
-	                    color: #fff;
-	                    text-shadow: 0 0 15px var(--accent-cyan);
-	                    z-index: 5;
-	                    position: relative;
-	                    margin-bottom: 10px;
-	                }
-	                
-	                .cl-subtitle {
-	                    text-align: center;
-	                    color: var(--cl-dark-silver);
-	                    letter-spacing: 3px;
-	                    margin-bottom: 30px;
-	                    z-index: 5;
-	                    position: relative;
-	                }
+.ucl-rim::after {
+    content: '';
+    position: absolute;
+    top: 5px; left: 50%; transform: translateX(-50%);
+    width: 130px; height: 20px;
+    background: #000;
+    border-radius: 50%;
+}
 
+/* القاعدة والجذع */
+.ucl-stem {
+    position: absolute;
+    bottom: 50px; left: 50%;
+    transform: translateX(-50%);
+    width: 40px; height: 40px;
+    background: linear-gradient(to right, #718096, #ffffff, #718096);
+    z-index: 4;
+}
 
+.ucl-base-tier-1 {
+    position: absolute;
+    bottom: 20px; left: 50%;
+    transform: translateX(-50%);
+    width: 100px; height: 35px;
+    background: var(--ucl-chrome-reflect);
+    border-radius: 10px;
+    z-index: 3;
+}
+
+.ucl-base-tier-2 {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 130px; height: 25px;
+    background: #1a202c;
+    border-radius: 5px 5px 15px 15px;
+    z-index: 2;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+/* الظل تحت الكأس */
+.ucl-shadow {
+    position: absolute;
+    bottom: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 120px; height: 20px;
+    background: rgba(0,0,0,0.5);
+    filter: blur(10px);
+    border-radius: 50%;
+    animation: shadowScale 5s ease-in-out infinite;
+}
+
+@keyframes shadowScale {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
+    50% { transform: translateX(-50%) scale(0.6); opacity: 0.3; }
+}
+
+/* توهج الكأس */
+.cl-trophy-aura {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, var(--ucl-glow) 0%, transparent 70%);
+    z-index: 0;
+    animation: auraPulse 3s infinite alternate;
+}
+
+@keyframes auraPulse {
+    from { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
+    to { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* 5. النصوص السفلية */
+.cl-content {
+    text-align: center;
+    margin-top: 20px;
+    z-index: 20;
+}
+
+.cl-title {
+    font-family: 'Orbitron', sans-serif;
+    color: #fff;
+    font-size: 2.2rem;
+    letter-spacing: 5px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+}
+
+.cl-divider {
+    color: #ffd700;
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.cl-slogan {
+    color: var(--ucl-silver-mid);
+    font-size: 0.9rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+/* إضافات "الكروم" النهائية */
+.ucl-reflection-main {
+    position: absolute;
+    top: 0; left: 20%;
+    width: 20%; height: 100%;
+    background: rgba(255,255,255,0.3);
+    transform: skewX(-20deg);
+}
+
+.ucl-reflection-shine {
+    position: absolute;
+    top: 10px; right: 10%;
+    width: 10px; height: 40px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 20px;
+    filter: blur(2px);
+}
 /* ================================================================
    [15] الإشعارات (NOTIFICATIONS)
    ================================================================ */
