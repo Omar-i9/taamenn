@@ -1942,3 +1942,75 @@ header {
     border-color: gold;
     background: rgba(255, 215, 0, 0.1);
 }
+
+/* تمييز أيقونة الصالة الملكية */
+.nav-card[onclick*="royal-hall"] .icon {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
+    text-shadow: 0 0 10px gold;
+}
+.royal-container {
+    padding: 30px;
+    border-radius: 25px;
+    text-align: center;
+    margin: 20px auto;
+    max-width: 600px;
+    border: 1px solid var(--border-gold);
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(2, 4, 10, 0.95));
+}
+
+.royal-icon {
+    font-size: 3rem;
+    color: var(--ramadan-gold);
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 10px gold);
+}
+
+.royal-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 3px;
+    color: var(--ramadan-gold);
+}
+
+.history-card, .platform-info {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: 20px;
+    text-align: right; /* عشان المحتوى عربي */
+    border-right: 4px solid var(--ramadan-gold);
+}
+
+.royal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.royal-btn {
+    text-decoration: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: 0.4s;
+}
+
+.join-btn {
+    background: linear-gradient(90deg, #25D366, #128C7E);
+    color: white;
+}
+
+.support-btn {
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--ramadan-gold);
+    border: 1px solid var(--ramadan-gold);
+}
+
+.royal-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
