@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
+	<link rel="manifest" href="manifest.json">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log("App Ready! ✅"))
+      .catch(err => console.log("App Failed ❌", err));
+  }
+</script>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
     <meta content="تأمين 2026 - المنصة الرياضية الرمضانية الشاملة" name="description">
