@@ -749,7 +749,7 @@ async function updateWeatherSystem() {
 	                // يمكنك تعديل الأسماء والمراكز المبدئية هنا
 	                const teamA = [
 	                    { id: 'R1', name: 'محمد علي', x: 8, y: 50, color: 'team-red', team: 'home' },
-	                    { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
+	                    { id: 'R2', name: 'عمر', x: 25, y: 25, color: 'team-red', team: 'home' },
 	                    { id: 'R3', name: 'ارقم', x: 25, y: 75, color: 'team-red', team: 'home' },
 	                    { id: 'R4', name: 'عمرو', x: 40, y: 30, color: 'team-red', team: 'home' },
 	                    { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
