@@ -64,19 +64,17 @@ const systemMessages = {
 const statsElite = [
     { name: "يوسف", g: 8, a: 3, r: 9.9 },
     { name: "عمر", g: 5, a: 6, r: 9.7 },
-    { name: "هاني", g: 2, a: 4, r: 8.9 },
-    { name: "مؤيد", g: 1, a: 2, r: 8.8 },
+    { name: "عمرو", g: 2, a: 4, r: 8.9 },
     { name: "أرقم", g: 0, a: 1, r: 7.9 },
-    { name: "علي", g: 3, a: 0, r: 8.5 }
+    { name: "محمد علي", g: 3, a: 0, r: 8.5 }
 ];
 
 const statsChallenge = [
-    { name: "خضر", g: 7, a: 2, r: 9.8 },
+    { name: "محمد", g: 7, a: 2, r: 9.8 },
     { name: "كريم", g: 4, a: 5, r: 9.5 },
     { name: "سنقرط", g: 1, a: 3, r: 8.7 },
-    { name: "أحمد", g: 1, a: 1, r: 8.1 },
-    { name: "محمد", g: 0, a: 2, r: 8.0 },
-    { name: "إبراهيم", g: 2, a: 0, r: 8.4 }
+    { name: "مؤيد", g: 0, a: 2, r: 8.0 },
+    { name: "ابو جعبري", g: 2, a: 0, r: 8.4 }
 ];
 
 const matchHistoryArchive = [
