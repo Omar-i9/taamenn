@@ -1283,6 +1283,7 @@ window.onload = () => {
 
     // 1. تشغيل المحركات الأساسية
     new FutsalTacticalEngine();
+	showNotification('home');
     initShootingStars();
     initTilt();
     initPrayersSystem(); 
@@ -1374,3 +1375,14 @@ function updateBookingTimer() {
     // عرض العداد: أيام : ساعات : دقائق : ثواني
     countdownEl.innerText = `${days}d ${hours}:${mins}:${secs}`;
 };
+function navigate(pageId, element) {
+    try {
+        // ... (كود إخفاء وإظهار الصفحات) ...
+
+        // أضف هذا السطر هنا ليظهر الإشعار فور تغيير الصفحة
+        showNotification(pageId); 
+
+    } catch (error) {
+        console.error("Navigation Error: ", error);
+    }
+}
