@@ -165,10 +165,11 @@ function showNotification(pageId) {
 // دالة التنقل المصلحة
 function navigate(pageId, element) {
     try {
-        // 1. إخفاء كل الصفحات
-        document.querySelectorAll('.page').forEach(page => {
+        // 1. إخفاء كل الصفحات دفعة واحدة
+        const allPages = document.querySelectorAll('.page');
+        allPages.forEach(page => {
             page.classList.remove('active');
-            page.style.display = 'none';
+            page.style.display = 'none'; // تأمين إضافي للإخفاء
         });
 
         // 2. إظهار الصفحة المطلوبة
@@ -176,16 +177,28 @@ function navigate(pageId, element) {
         if (targetPage) {
             targetPage.classList.add('active');
             targetPage.style.display = 'block';
+            
+            // 💡 اللمسة الاحترافية: التمرير لأعلى الصفحة الجديدة
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 🔔 تشغيل الإشعار المرتبط بهذه الصفحة
+            if (typeof showNotification === "function") {
+                showNotification(pageId);
+            }
+        } else {
+            console.warn(`عذراً يسطا، الصفحة "${pageId}" غير موجودة في الـ HTML.`);
         }
 
-        // 3. تحديث شكل الأزرار
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        if (element) element.classList.add('active');
+        // 3. تحديث حالة أزرار التنقل (Header)
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => link.classList.remove('active'));
+        
+        if (element) {
+            element.classList.add('active');
+        }
 
     } catch (error) {
-        console.error("Navigation Error: ", error);
+        console.error("Omar System Navigation Error: ", error);
     }
 }
 // ==========================================
@@ -1375,14 +1388,3 @@ function updateBookingTimer() {
     // عرض العداد: أيام : ساعات : دقائق : ثواني
     countdownEl.innerText = `${days}d ${hours}:${mins}:${secs}`;
 };
-function navigate(pageId, element) {
-    try {
-        // ... (كود إخفاء وإظهار الصفحات) ...
-
-        // أضف هذا السطر هنا ليظهر الإشعار فور تغيير الصفحة
-        showNotification(pageId); 
-
-    } catch (error) {
-        console.error("Navigation Error: ", error);
-    }
-}
