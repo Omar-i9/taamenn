@@ -63,7 +63,7 @@ body {
 
 /* تحكم ثيم النهار */
 body.day-mode {
-    --text-color: #001c4d;
+    --text-color: #ffffff;
     --glass-bg: rgba(255, 255, 255, 0.2);
     --glass-border: rgba(43, 73, 5, 0.814);
     --header-bg: rgba(0, 0, 0, 0.85);
