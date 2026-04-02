@@ -14,17 +14,17 @@ const systemMessages = {
     'home': [
         "أهلاً بعودتك أيها البطل! 🏆",
         "هل أنت مستعد للمجد اليوم؟ 🔥",
-        "انت مجدداً؟",
+        "رمضان شهر العبادة.. والرياضة! 🌙",
         "الملعب يشتاق لأقدام الأبطال ⚽",
         "ركّز على هدفك، النصر قادم ✨",
         "تأمين 2026: حيث تولد الأساطير ⚔️"
     ],
     'cannon': [
-        "لا تنسى صلاتك!",
+        "صم وافطر على خير 🍲",
         "تقبل الله منا ومنكم صالح الأعمال 🤲",
         "الوقت يمضي.. استغله في الطاعات ⏳",
-        "لا تنس الدعاء لي ولك 🌙",
-        "قيام الليل هو أجمل لحظات اليوم ❤️",
+        "لا تنس الدعاء عند الإفطار 🌙",
+        "أذان المغرب هو أجمل لحظات اليوم ❤️",
         "مواقيت الخليل دقيقة عبر الأقمار الصناعية 🛰️"
     ],
     'radar': [
@@ -33,7 +33,7 @@ const systemMessages = {
         "التمركز الصحيح هو مفتاح الفوز 🔑",
         "هل أنت ضمن تشكيلة النخبة؟ ⭐",
         "حلل أداءك لترتفع بمستواك 📈",
-        "استخدم وضع التكتيكات لتطوير لعبك 🛡️"
+        "استخدم مكتبة التكتيكات لتطوير لعبك 🛡️"
     ],
     'matches': [
         "التاريخ يكتبه المنتصرون 📜",
@@ -64,17 +64,19 @@ const systemMessages = {
 const statsElite = [
     { name: "يوسف", g: 8, a: 3, r: 9.9 },
     { name: "عمر", g: 5, a: 6, r: 9.7 },
-    { name: "عمرو", g: 2, a: 4, r: 8.9 },
+    { name: "هاني", g: 2, a: 4, r: 8.9 },
+    { name: "مؤيد", g: 1, a: 2, r: 8.8 },
     { name: "أرقم", g: 0, a: 1, r: 7.9 },
-    { name: "محمد علي", g: 3, a: 0, r: 8.5 }
+    { name: "علي", g: 3, a: 0, r: 8.5 }
 ];
 
 const statsChallenge = [
-    { name: "محمد", g: 7, a: 2, r: 9.8 },
+    { name: "خضر", g: 7, a: 2, r: 9.8 },
     { name: "كريم", g: 4, a: 5, r: 9.5 },
     { name: "سنقرط", g: 1, a: 3, r: 8.7 },
-    { name: "مؤيد", g: 0, a: 2, r: 8.0 },
-    { name: "ابو جعبري", g: 2, a: 0, r: 8.4 }
+    { name: "أحمد", g: 1, a: 1, r: 8.1 },
+    { name: "محمد", g: 0, a: 2, r: 8.0 },
+    { name: "إبراهيم", g: 2, a: 0, r: 8.4 }
 ];
 
 const matchHistoryArchive = [
@@ -165,11 +167,10 @@ function showNotification(pageId) {
 // دالة التنقل المصلحة
 function navigate(pageId, element) {
     try {
-        // 1. إخفاء كل الصفحات دفعة واحدة
-        const allPages = document.querySelectorAll('.page');
-        allPages.forEach(page => {
+        // 1. إخفاء كل الصفحات
+        document.querySelectorAll('.page').forEach(page => {
             page.classList.remove('active');
-            page.style.display = 'none'; // تأمين إضافي للإخفاء
+            page.style.display = 'none';
         });
 
         // 2. إظهار الصفحة المطلوبة
@@ -177,28 +178,16 @@ function navigate(pageId, element) {
         if (targetPage) {
             targetPage.classList.add('active');
             targetPage.style.display = 'block';
-            
-            // 💡 اللمسة الاحترافية: التمرير لأعلى الصفحة الجديدة
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            // 🔔 تشغيل الإشعار المرتبط بهذه الصفحة
-            if (typeof showNotification === "function") {
-                showNotification(pageId);
-            }
-        } else {
-            console.warn(`عذراً يسطا، الصفحة "${pageId}" غير موجودة في الـ HTML.`);
         }
 
-        // 3. تحديث حالة أزرار التنقل (Header)
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => link.classList.remove('active'));
-        
-        if (element) {
-            element.classList.add('active');
-        }
+        // 3. تحديث شكل الأزرار
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        if (element) element.classList.add('active');
 
     } catch (error) {
-        console.error("Omar System Navigation Error: ", error);
+        console.error("Navigation Error: ", error);
     }
 }
 // ==========================================
@@ -1272,35 +1261,22 @@ window.addEventListener('DOMContentLoaded', () => {
 //----------------
 function toggleMenu() {
     const menu = document.getElementById('navMenu');
-    if (menu) {
-        menu.classList.toggle('active');
-    }
+    menu.classList.toggle('active');
+    
+    // أنيميشن خفيف لزر الهامبرغر نفسه (اختياري)
+    const spans = document.querySelectorAll('.hamburger span');
+    // بتقدر تضيف هون كود يخلي الزر يصير X لما يفتح
 }
 
 // إغلاق القائمة لو ضغط المستخدم بره المنيو
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('navMenu');
-    // هون كان الغلط! صلحنا الاسم عشان يطابق الـ HTML
-    const hamburger = document.querySelector('.hamburger-glow'); 
-
-    // إذا المنيو موجودة، والزر موجود، والضغطة برا المنيو وبرا الزر، والمنيو فاتحة -> سكرها!
-    if (menu && hamburger && !menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {
-        menu.classList.remove('active');
+    const hamburger = document.querySelector('.hamburger');
+if (menu && hamburger && !menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {        menu.classList.remove('active');
     }
 });
 //________________________________________
-// بنمسك الزر والقائمة
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('nav-menu');
 
-// بنعمل مراقب للضغط (Click Event)
-hamburger.addEventListener('click', () => {
-  // toggle بتعني: إذا الكلاس موجود شيله، وإذا مش موجود ضيفه
-  navMenu.classList.toggle('active');
-  
-  // حركة اختيارية: تخلي زر الهامبرغر يصير X لما تفتح المنيو
-  hamburger.classList.toggle('open');
-});
 // ==========================================
 // [14] التهيئة والتشغيل الأساسي (INITIALIZATION)
 // ==========================================
@@ -1309,7 +1285,6 @@ window.onload = () => {
 
     // 1. تشغيل المحركات الأساسية
     new FutsalTacticalEngine();
-	showNotification('home');
     initShootingStars();
     initTilt();
     initPrayersSystem(); 
