@@ -1282,7 +1282,7 @@ function toggleMenu() {
 // إغلاق القائمة لو ضغط المستخدم بره المنيو
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('navMenu');
-const hamburger = document.querySelector('.hamburger-glow');
+const hamburger = document.querySelector('.hamburger');
   if (menu && hamburger && !menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {        menu.classList.remove('active');
     }
 });
