@@ -741,14 +741,14 @@ async function updateWeatherSystem() {
 	                    { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
 	                    { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
 	                    { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
-	                    { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
+	                    { id: 'R5', name: 'عبد السلام', x: 45, y: 70, color: 'team-red', team: 'home' },
 	                ];
 	                const teamB = [
-	                    { id: 'B1', name: 'محمد', x: 92, y: 50, color: 'team-blue', team: 'away' },
-	                    { id: 'B2', name: 'سنقرط', x: 75, y: 25, color: 'team-blue', team: 'away' },
-	                    { id: 'B3', name: 'احمد', x: 75, y: 75, color: 'team-blue', team: 'away' },
-	                    { id: 'B4', name: 'كريم', x: 60, y: 30, color: 'team-blue', team: 'away' },
-	                    { id: 'B5', name: 'خضر', x: 55, y: 70, color: 'team-blue', team: 'away' },
+	                    { id: 'B1', name: 'خضر', x: 92, y: 50, color: 'team-blue', team: 'away' },
+	                    { id: 'B2', name: 'عمرو', x: 75, y: 25, color: 'team-blue', team: 'away' },
+	                    { id: 'B3', name: 'كريم', x: 75, y: 75, color: 'team-blue', team: 'away' },
+	                    { id: 'B4', name: 'ارقم', x: 60, y: 30, color: 'team-blue', team: 'away' },
+	                    { id: 'B5', name: 'محمد ناصر الدين', x: 55, y: 70, color: 'team-blue', team: 'away' },
 	                ];
 	                [...teamA, ...teamB].forEach(p => this.createPlayer(p));
 	            }
