@@ -1289,7 +1289,18 @@ document.addEventListener('click', (e) => {
     }
 });
 //________________________________________
+// بنمسك الزر والقائمة
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('nav-menu');
 
+// بنعمل مراقب للضغط (Click Event)
+hamburger.addEventListener('click', () => {
+  // toggle بتعني: إذا الكلاس موجود شيله، وإذا مش موجود ضيفه
+  navMenu.classList.toggle('active');
+  
+  // حركة اختيارية: تخلي زر الهامبرغر يصير X لما تفتح المنيو
+  hamburger.classList.toggle('open');
+});
 // ==========================================
 // [14] التهيئة والتشغيل الأساسي (INITIALIZATION)
 // ==========================================
