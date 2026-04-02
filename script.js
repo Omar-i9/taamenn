@@ -64,19 +64,17 @@ const systemMessages = {
 const statsElite = [
     { name: "يوسف", g: 8, a: 3, r: 9.9 },
     { name: "عمر", g: 5, a: 6, r: 9.7 },
-    { name: "هاني", g: 2, a: 4, r: 8.9 },
-    { name: "مؤيد", g: 1, a: 2, r: 8.8 },
+    { name: "عمرو", g: 2, a: 4, r: 8.9 },
     { name: "أرقم", g: 0, a: 1, r: 7.9 },
-    { name: "علي", g: 3, a: 0, r: 8.5 }
+    { name: "محمد علي", g: 3, a: 0, r: 8.5 }
 ];
 
 const statsChallenge = [
-    { name: "خضر", g: 7, a: 2, r: 9.8 },
+    { name: "محمد", g: 7, a: 2, r: 9.8 },
     { name: "كريم", g: 4, a: 5, r: 9.5 },
     { name: "سنقرط", g: 1, a: 3, r: 8.7 },
-    { name: "أحمد", g: 1, a: 1, r: 8.1 },
-    { name: "محمد", g: 0, a: 2, r: 8.0 },
-    { name: "إبراهيم", g: 2, a: 0, r: 8.4 }
+    { name: "مؤيد", g: 0, a: 2, r: 8.0 },
+    { name: "ابو جعبري", g: 2, a: 0, r: 8.4 }
 ];
 
 const matchHistoryArchive = [
@@ -167,10 +165,11 @@ function showNotification(pageId) {
 // دالة التنقل المصلحة
 function navigate(pageId, element) {
     try {
-        // 1. إخفاء كل الصفحات
-        document.querySelectorAll('.page').forEach(page => {
+        // 1. إخفاء كل الصفحات دفعة واحدة
+        const allPages = document.querySelectorAll('.page');
+        allPages.forEach(page => {
             page.classList.remove('active');
-            page.style.display = 'none';
+            page.style.display = 'none'; // تأمين إضافي للإخفاء
         });
 
         // 2. إظهار الصفحة المطلوبة
@@ -178,16 +177,28 @@ function navigate(pageId, element) {
         if (targetPage) {
             targetPage.classList.add('active');
             targetPage.style.display = 'block';
+            
+            // 💡 اللمسة الاحترافية: التمرير لأعلى الصفحة الجديدة
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 🔔 تشغيل الإشعار المرتبط بهذه الصفحة
+            if (typeof showNotification === "function") {
+                showNotification(pageId);
+            }
+        } else {
+            console.warn(`عذراً يسطا، الصفحة "${pageId}" غير موجودة في الـ HTML.`);
         }
 
-        // 3. تحديث شكل الأزرار
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        if (element) element.classList.add('active');
+        // 3. تحديث حالة أزرار التنقل (Header)
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => link.classList.remove('active'));
+        
+        if (element) {
+            element.classList.add('active');
+        }
 
     } catch (error) {
-        console.error("Navigation Error: ", error);
+        console.error("Omar System Navigation Error: ", error);
     }
 }
 // ==========================================
@@ -1261,18 +1272,20 @@ window.addEventListener('DOMContentLoaded', () => {
 //----------------
 function toggleMenu() {
     const menu = document.getElementById('navMenu');
-    menu.classList.toggle('active');
-    
-    // أنيميشن خفيف لزر الهامبرغر نفسه (اختياري)
-    const spans = document.querySelectorAll('.hamburger span');
-    // بتقدر تضيف هون كود يخلي الزر يصير X لما يفتح
+    if (menu) {
+        menu.classList.toggle('active');
+    }
 }
 
 // إغلاق القائمة لو ضغط المستخدم بره المنيو
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('navMenu');
-    const hamburger = document.querySelector('.hamburger');
-if (menu && hamburger && !menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {        menu.classList.remove('active');
+    // هون كان الغلط! صلحنا الاسم عشان يطابق الـ HTML
+    const hamburger = document.querySelector('.hamburger-glow'); 
+
+    // إذا المنيو موجودة، والزر موجود، والضغطة برا المنيو وبرا الزر، والمنيو فاتحة -> سكرها!
+    if (menu && hamburger && !menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {
+        menu.classList.remove('active');
     }
 });
 //________________________________________
@@ -1285,6 +1298,7 @@ window.onload = () => {
 
     // 1. تشغيل المحركات الأساسية
     new FutsalTacticalEngine();
+	showNotification('home');
     initShootingStars();
     initTilt();
     initPrayersSystem(); 
