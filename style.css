@@ -1771,7 +1771,7 @@ body.day-mode .lantern-wire {
 }
 
 .hamburger-glow span {
-    width: 30px;
+    width: 35px;
     height: 5px;
     background: #ffd700;
     border-radius: 5px;
@@ -1783,10 +1783,10 @@ body.day-mode .lantern-wire {
     top: 80px;
     right: -350px; /* مخفية */
     width: 280px;
-    background: rgba(255, 255, 255, 0.05); /* شفافة جداً */
-    backdrop-filter: blur(15px); /* التغبيش اللي طلبته */
+    background: rgba(7, 1, 1, 0.847); /* شفافة جداً */
+    backdrop-filter: blur(30px); /* التغبيش اللي طلبته */
     -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(28, 5, 5, 0.1);
     border-radius: 20px;
     padding: 20px;
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -1802,7 +1802,7 @@ body.day-mode .lantern-wire {
 
 /* البطاقات المتوهجة داخل القائمة */
 .nav-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.234);
     margin-bottom: 12px;
     padding: 15px;
     border-radius: 15px;
@@ -1849,7 +1849,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(0, 5, 10, 0.8);
+    background: rgba(0, 5, 10, 0.896);
     backdrop-filter: blur(10px);
 }
 
@@ -1865,4 +1865,152 @@ header {
     margin: 0 !important;
     display: flex;
     align-items: center;
+}
+
+
+.tactic-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.9) !important; /* سواد كامل عشان نكشف المحتوى */
+    display: none; /* رح نغيرها بـ Flex */
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 9999999 !important;
+}
+
+.tactic-modal-content {
+    background: #1a1a1a !important; /* لون واضح */
+    border: 3px solid #ffcc00 !important;
+    padding: 25px !important;
+    border-radius: 15px !important;
+    width: 80% !important;
+    max-width: 400px !important;
+    color: white !important;
+    display: block !important; /* تأكيد الإظهار */
+}
+
+.tactics-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    margin-top: 20px !important;
+}
+
+.tactic-overlay {
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: none; /* سيتحول إلى flex بواسطة JS */
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+}
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.close-btn:hover {
+    color: #ff4444; /* بيقلب أحمر عند اللمس */
+    transform: scale(1.2);
+}
+
+/* ستايل الكارت بتاع الخطة جوه المربع */
+.tactic-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.tactic-card:hover {
+    border-color: gold;
+    background: rgba(255, 215, 0, 0.1);
+}
+
+/* تمييز أيقونة الصالة الملكية */
+.nav-card[onclick*="royal-hall"] .icon {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
+    text-shadow: 0 0 10px gold;
+}
+.royal-container {
+    padding: 30px;
+    border-radius: 25px;
+    text-align: center;
+    margin: 20px auto;
+    max-width: 600px;
+    border: 1px solid var(--border-gold);
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(2, 4, 10, 0.95));
+}
+
+.royal-icon {
+    font-size: 3rem;
+    color: var(--ramadan-gold);
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 10px gold);
+}
+
+.royal-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 3px;
+    color: var(--ramadan-gold);
+}
+
+.history-card, .platform-info {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: 20px;
+    text-align: right; /* عشان المحتوى عربي */
+    border-right: 4px solid var(--ramadan-gold);
+}
+
+.royal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.royal-btn {
+    text-decoration: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: 0.4s;
+}
+
+.join-btn {
+    background: linear-gradient(90deg, #25D366, #128C7E);
+    color: white;
+}
+
+.support-btn {
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--ramadan-gold);
+    border: 1px solid var(--ramadan-gold);
+}
+
+.royal-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }

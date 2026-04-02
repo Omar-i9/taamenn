@@ -11,63 +11,66 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&family=Tajawal:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-  <div class="nav-container">
-    <div class="hamburger-glow" onclick="toggleMenu()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-    
 </head>
-<body class="night-mode">
+<body>
+  <body class="night-mode">
     <div id="notification-container"></div>
     <div id="sky-background"></div>
     <div class="stars-container" id="starsContainer"></div>
-    
-    <header class="main-header" id="topHeader">
-        <div class="header-container">
-            <div class="header-right">
-                <div class="logo-area" onclick="navigate('home')">
-                    <img src="favicon.png" alt="Logo" class="nav-logo">
-                    <span class="logo-text">تأمين <span class="gold-text">2026</span></span>
-                </div>
-            </div>
-            
-<nav class="glass-nav" id="navMenu">
-        <div class="nav-header">قائمة التميز</div>
-        <div class="nav-cards-container">
-            <div class="nav-card" onclick="navigate('home'); toggleMenu()">
-                <span class="icon">🏠</span>
-                <span class="text">الرئيسية</span>
-            </div>
-            <div class="nav-card" onclick="navigate('cannon'); toggleMenu()">
-                <span class="icon">🌙</span>
-                <span class="text">المدفع</span>
-            </div>
-            <div class="nav-card" onclick="navigate('radar'); toggleMenu()">
-                <span class="icon">📊</span>
-                <span class="text">الرادار</span>
-            </div>
-            <div class="nav-card" onclick="navigate('matches'); toggleMenu()">
-                <span class="icon">📜</span>
-                <span class="text">الأرشيف</span>
-            </div>
-            <div class="nav-card" onclick="navigate('weather'); toggleMenu()">
-                <span class="icon">🌤️</span>
-                <span class="text">الطقس</span>
-            </div>
-        </div>
-    </nav>
-</div>
-            <div class="header-left">
-                <div id="header-clock" class="digital-clock">00:00:00</div>
-                <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-        </div>
-    </header>
 
+    <header class="main-header" id="topHeader">
+        </header>
+<header class="main-header" id="topHeader">
+    <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 15px;">
+        
+        <div class="header-right">
+            <div class="logo-area" onclick="navigate('home')" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <img src="favicon.png" alt="Logo" class="nav-logo">
+                <span class="logo-text">تأمين <span class="gold-text">2026</span></span>
+            </div>
+        </div>
+
+        <div class="header-left" style="display: flex; align-items: center; gap: 15px;">
+            
+            <div id="header-clock" class="digital-clock">00:00:00</div>
+            
+            <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:inherit; font-size:1.1rem;">
+                <i class="fas fa-moon"></i>
+            </button>
+
+            <div class="nav-container" style="position: relative; display: flex; align-items: center;">
+                <div class="hamburger-glow" onclick="toggleMenu()" style="cursor: pointer;">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <nav class="glass-nav" id="navMenu">
+                    <div class="nav-header">قائمة التميز</div>
+                    <div class="nav-cards-container">
+                        <div class="nav-card" onclick="navigate('home'); toggleMenu()">
+                            <span class="icon">🏠</span><span class="text">الرئيسية</span>
+                        </div>
+                        <div class="nav-card" onclick="navigate('cannon'); toggleMenu()">
+                            <span class="icon">🌙</span><span class="text">المدفع</span>
+                        </div>
+                        <div class="nav-card" onclick="navigate('radar'); toggleMenu()">
+                            <span class="icon">📊</span><span class="text">الرادار</span>
+                        </div>
+                        <div class="nav-card" onclick="navigate('matches'); toggleMenu()">
+                            <span class="icon">📜</span><span class="text">الأرشيف</span>
+                        </div>
+                        <div class="nav-card" onclick="navigate('weather'); toggleMenu()">
+                            <span class="icon">🌤️</span><span class="text">الطقس</span>
+                        </div>
+                        <div class="nav-card" onclick="navigate('royal-hall'); toggleMenu()">
+    <span class="icon">👑</span>
+    <span class="text">الصالة الملكية</span>
+</div>
+                    </div>
+                </nav>
+            </div> </div> </div>
+</header>
     <div class="page active" id="home">
         <div class="hero-section">
             <div class="hero-overlay"></div>
@@ -158,10 +161,7 @@
         <div class="radar-controls">
             <button class="radar-btn active" onclick="toggleRadarMode('pitch', this)"><i class="fas fa-futbol"></i> الملعب</button>
             <button class="radar-btn" onclick="toggleRadarMode('stats', this)"><i class="fas fa-table"></i> الإحصائيات</button>
-            <button class="radar-btn special-gold" onclick="openTacticsLibrary()">
-                <i class="fas fa-chess-board"></i> مكتبة التكتيكات (تجريبي)
-            </button>
-            <button onclick="takeScreenshot()" class="radar-btn screenshot-btn">
+            <button onclick="takeScreenshot()" class="radar-btn screenshot-btn special-gold">
                 <i class="fas fa-camera"></i> حفظ التشكيلة
             </button> 
         </div>
@@ -298,6 +298,38 @@
         <div class="hourly-scroll-container" id="hourly-wrapper"></div>
     </div>
 </div>
+
+<section id="royal-hall" class="page-section" style="display: none;">
+    <div class="royal-container glass-effect">
+        <div class="royal-header">
+            <i class="fas fa-crown royal-icon"></i>
+            <h1>تأمين 2026</h1>
+            <p class="subtitle">حيث تُصنع الأمجاد وتُكتب التواريخ</p>
+        </div>
+
+        <div class="royal-content">
+            <div class="history-card">
+                <h3><i class="fas fa-history"></i> تاريخنا وإرثنا</h3>
+                <p>تأمين ليست مجرد اسم، بل هي كيان رياضي وُلد من قلب الحارة وترعرع في الملاعب المحلية. من عام لآخر، كنا وما زلنا الرقم الصعب في كل تحدٍ نخوضه.</p>
+            </div>
+
+            <div class="platform-info">
+                <h3><i class="fas fa-laptop-code"></i> منصتنا الجديدة</h3>
+                <p>هذا الموقع هو بيتكم الجديد، تم تطويره بـ "سيستم عمر" ليكون المرجع الأول لكل لاعب ومتابع في منظومة تأمين، لتسهيل التكتيكات وطريقة بناء لعبة الفريق، متابعة الطقس، وحفظ الإحصائيات.</p>
+            </div>
+        </div>
+
+        <div class="royal-actions">
+            <a href="https://whatsapp.com/channel/0029VbC5YTSB4hdPRDfjyA3c" target="_blank" class="royal-btn join-btn">
+                <i class="fab fa-whatsapp"></i> انضم للمجموعة
+            </a>
+            <a href="https://wa.me/972594054750" target="_blank" class="royal-btn support-btn">
+                <i class="fas fa-headset"></i> الدعم الفني
+            </a>
+        </div>
+    </div>
+</section>
+
 <div id="library-modal" class="tactic-overlay" style="display: none;">
           <div class="weather-hourly-section">
             <div class="hourly-scroll-container" id="hourly-wrapper"></div>
@@ -306,5 +338,26 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
-</body>
+<div id="library-modal" class="tactic-overlay" style="display: none;">
+    <div class="tactic-modal-content glass-effect">
+<div class="modal-header">
+    <h3 style="color: #ffcc00;"><i class="fas fa-chess-board"></i> مكتبة التكتيكات</h3>
+    <button onclick="closeLibrary()" class="close-modal-btn">&times;</button>
+</div>
+      <div id="tacticGrid" class="tactics-grid"></div> 
+    </div>
+</div>
+<div id="team-selector-modal" class="tactic-overlay" style="display: none; position: fixed; z-index: 9999999;">
+    <div class="tactic-modal-content glass-effect">
+        <h3 style="color:#ffcc00;">تطبيق التكتيك على:</h3>
+        <div id="tactic-instructions" style="display:none; padding:10px; background:rgba(255,255,255,0.05); margin:10px 0; border-radius:10px;">
+             <p id="instruction-text" style="font-size:0.9rem;"></p>
+        </div>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+            <button onclick="applyTacticToTeam('A')" style="background:#ff4444; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">فريق النخبة (R)</button>
+            <button onclick="applyTacticToTeam('B')" style="background:#4444ff; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">فريق التحدي (B)</button>
+        </div>
+    </div>
+</div>
+</body> 
 </html>

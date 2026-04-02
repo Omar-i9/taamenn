@@ -14,17 +14,17 @@ const systemMessages = {
     'home': [
         "أهلاً بعودتك أيها البطل! 🏆",
         "هل أنت مستعد للمجد اليوم؟ 🔥",
-        "رمضان شهر العبادة.. والرياضة! 🌙",
+        "انت مجدداً؟",
         "الملعب يشتاق لأقدام الأبطال ⚽",
         "ركّز على هدفك، النصر قادم ✨",
         "تأمين 2026: حيث تولد الأساطير ⚔️"
     ],
     'cannon': [
-        "صم وافطر على خير 🍲",
+        "لا تنسى صلاتك!",
         "تقبل الله منا ومنكم صالح الأعمال 🤲",
         "الوقت يمضي.. استغله في الطاعات ⏳",
-        "لا تنس الدعاء عند الإفطار 🌙",
-        "أذان المغرب هو أجمل لحظات اليوم ❤️",
+        "لا تنس الدعاء لي ولك 🌙",
+        "قيام الليل هو أجمل لحظات اليوم ❤️",
         "مواقيت الخليل دقيقة عبر الأقمار الصناعية 🛰️"
     ],
     'radar': [
@@ -33,7 +33,7 @@ const systemMessages = {
         "التمركز الصحيح هو مفتاح الفوز 🔑",
         "هل أنت ضمن تشكيلة النخبة؟ ⭐",
         "حلل أداءك لترتفع بمستواك 📈",
-        "استخدم مكتبة التكتيكات لتطوير لعبك 🛡️"
+        "استخدم وضع التكتيكات لتطوير لعبك 🛡️"
     ],
     'matches': [
         "التاريخ يكتبه المنتصرون 📜",
@@ -1070,20 +1070,55 @@ updateTacticalRole(el, x, y) {
 // ==========================================
 // [12] مكتبة التكتيكات (TACTICS LIBRARY MODALS)
 // ==========================================
+// دالة فتح المكتبة - عمر ديزاين 2026
 function openTacticsLibrary() {
+    const modal = document.getElementById('library-modal');
     const grid = document.getElementById('tacticGrid');
-    if(!grid) return;
-    
+
+    if (!modal || !grid) return;
+
+    // بناء الكروت من المصفوفة الموجودة في أول السكربت
     grid.innerHTML = futsalTactics.map(t => `
-        <div class="tactic-item" onclick="prepareTactic('${t.id}')">
+        <div class="tactic-card" onclick="prepareTactic('${t.id}')">
+            <div style="font-size: 2.5rem;">${t.icon}</div>
+            <div style="color: gold; font-weight: bold; margin-top: 5px;">${t.name}</div>
+        </div>
+    `).join('');
+
+    // إظهار المودال بقوة
+    modal.style.display = 'flex';
+}
+
+function closeLibrary() {
+    const modal = document.getElementById('library-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        // إذا كنت بتعمل غبش لعناصر تانية (زي الهيدر أو المين) شيله هون
+        document.body.style.overflow = 'auto'; // يرجع السكرول للشاشة
+    }
+}
+function openTacticsLibrary() {
+    // 1. لازم نعرّف المتغيرات أول شي عشان السكربت ما يضيع
+    const modal = document.getElementById('library-modal'); 
+    const grid = document.getElementById('tacticGrid');
+
+    // 2. فحص أمان (عشان لو الـ IDs غلط ما يضرب السكربت)
+    if (!modal || !grid) {
+        console.error("يا عمر، الـ IDs مش موجودة بالـ HTML! شيك على library-modal و tacticGrid");
+        return;
+    }
+
+    // 3. بناء المحتوى من مصفوفة التكتيكات
+    grid.innerHTML = futsalTactics.map(t => `
+        <div class="tactic-card" onclick="prepareTactic('${t.id}')">
             <div style="font-size: 2.5rem; margin-bottom:10px;">${t.icon}</div>
-            <strong style="color:var(--ramadan-gold); font-size:1.1rem; display:block;">${t.name}</strong>
+            <strong style="color:#ffcc00; font-size:1.1rem; display:block;">${t.name}</strong>
         </div>
     `).join('');
     
-    document.getElementById('library-modal').style.display = 'flex';
+    // 4. إظهار المودال (استخدمنا المتغير modal اللي عرفناه فوق)
+    modal.style.setProperty('display', 'flex', 'important');
 }
-
 function prepareTactic(id) {
     activeSelectedTactic = futsalTactics.find(t => t.id === id);
     const insText = document.getElementById('instruction-text');
@@ -1237,10 +1272,11 @@ function toggleMenu() {
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('navMenu');
     const hamburger = document.querySelector('.hamburger');
-    if (!menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {
-        menu.classList.remove('active');
+if (menu && hamburger && !menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {        menu.classList.remove('active');
     }
 });
+//________________________________________
+
 // ==========================================
 // [14] التهيئة والتشغيل الأساسي (INITIALIZATION)
 // ==========================================
