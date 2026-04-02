@@ -4,13 +4,20 @@
 		<link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <meta content="تأمين 2026 - المنصة الرياضية الرمضانية الشاملة" name="description">
+    <meta content="تأمين 2026 - المنصة الرياضية الشاملة" name="description">
     <meta content="#050a1f" name="theme-color">
-    <title>تأمين 2026 | الإصدار ألــفـا (GDMi)</title>
+    <title>تأمين 2026 | الإصدار ألــفـا</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&family=Tajawal:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
+  <div class="nav-container">
+    <div class="hamburger-glow" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
 </head>
 <body class="night-mode">
     <div id="notification-container"></div>
@@ -26,14 +33,32 @@
                 </div>
             </div>
             
-            <nav class="header-nav-links">
-                <a href="javascript:void(0)" onclick="navigate('home', this)" class="nav-link active"><i class="fas fa-home"></i> الرئيسية</a>
-                <a href="javascript:void(0)" onclick="navigate('radar', this)" class="nav-link"><i class="fas fa-futbol"></i> الملعب</a>
-                <a href="javascript:void(0)" onclick="navigate('weather', this)" class="nav-link"><i class="fas fa-cloud-sun"></i> الطقس</a>
-                <a href="javascript:void(0)" onclick="navigate('cannon', this)" class="nav-link"><i class="fas fa-mosque"></i> المواقيت</a>
-                <a href="javascript:void(0)" onclick="navigate('matches', this)" class="nav-link"><i class="fas fa-trophy"></i> الأرشيف</a>
-            </nav>
-
+<nav class="glass-nav" id="navMenu">
+        <div class="nav-header">قائمة التميز</div>
+        <div class="nav-cards-container">
+            <div class="nav-card" onclick="navigate('home'); toggleMenu()">
+                <span class="icon">🏠</span>
+                <span class="text">الرئيسية</span>
+            </div>
+            <div class="nav-card" onclick="navigate('cannon'); toggleMenu()">
+                <span class="icon">🌙</span>
+                <span class="text">المدفع</span>
+            </div>
+            <div class="nav-card" onclick="navigate('radar'); toggleMenu()">
+                <span class="icon">📊</span>
+                <span class="text">الرادار</span>
+            </div>
+            <div class="nav-card" onclick="navigate('matches'); toggleMenu()">
+                <span class="icon">📜</span>
+                <span class="text">الأرشيف</span>
+            </div>
+            <div class="nav-card" onclick="navigate('weather'); toggleMenu()">
+                <span class="icon">🌤️</span>
+                <span class="text">الطقس</span>
+            </div>
+        </div>
+    </nav>
+</div>
             <div class="header-left">
                 <div id="header-clock" class="digital-clock">00:00:00</div>
                 <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()">
