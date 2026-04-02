@@ -2187,3 +2187,65 @@ header {
     border-radius: 18px;
   }
 }
+/* إعدادات عامة للـ Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0a0f1a;
+  padding: 1rem 2rem;
+  position: relative;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+}
+
+.nav-links li {
+  margin-left: 20px;
+}
+
+/* زر الهامبرغر: مخفي بشكل افتراضي (للكمبيوتر) */
+.hamburger {
+  display: none; 
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.line {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  transition: 0.3s;
+}
+
+/* --- شغل الموبايل (شاشات أصغر من 768px) --- */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex; /* يظهر الزر عالموبايل فقط */
+  }
+
+  .nav-links {
+    display: none; /* القائمة مخفية بالبداية */
+    flex-direction: column;
+    position: absolute;
+    top: 100%; /* تظهر تحت النيفبار بالظبط */
+    left: 0;
+    width: 100%;
+    background-color: #111827;
+    text-align: center;
+    padding: 1rem 0;
+    border-bottom: 2px solid #3b82f6;
+  }
+
+  .nav-links li {
+    margin: 15px 0;
+  }
+
+  /* الكلاس اللي رح نضيفه بالجافا سكريبت عشان تظهر القائمة */
+  .nav-links.active {
+    display: flex;
+  }
+}
