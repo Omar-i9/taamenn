@@ -78,7 +78,7 @@ const statsChallenge = [
 ];
 
 const matchHistoryArchive = [
-  	                        {t1: "كريم", t2: "عمر", s: "6 - 9", st: "انتهت", d: "الجمعه 16 يناير"},
+  	                      {t1: "كريم", t2: "عمر", s: "6 - 9", st: "انتهت", d: "الجمعه 16 يناير"},
 	                        {t1: "عمر", t2: "كريم", s: "7 - 10", st: "انتهت", d: "الجمعه 23 يناير"},
 	                        {t1: "كريم التميمي", t2: "عمر & كريم", s: "8 - 7", st: "انتهت", d: "الجمعه 30 يناير"},
 	                        {t1: "خضر", t2: "عمر & كريم", s: "4 - 5", st: "انتهت", d: "الجمعه 13 فبراير"},
@@ -86,9 +86,7 @@ const matchHistoryArchive = [
 	                        {t1: "عمر", t2: "كريم", s: "6 - 8", st: "انتهت", d: "الجمعه 27 فبراير"},
 	                        {t1: "خضر", t2: "كريم", s: "13 - 7", st: "انتهت", d: "الجمعه 6 مارس"},
 	                        {t1: "عمر", t2: "كريم", s: "5 - 7", st: "انتهت", d: " (ودية) الخميس 12 مارس"},
-  	                        {t1: "عمر & كريم", t2: "كريم التميمي", s: "9 - 7", st: "انتهت", d: "الجمعه 13 مارس"},
-	                        {t1: "عمر", t2: "كريم", s: "8 - 7", st: "انتهت", d: "الثلاثاء 25 مارس"},
-  	                        {t1: "عمر & كريم", t2: "كريم التميمي", s: "8 - 7", st: "انتهت", d: "الجمعه 27 مارس"},
+  	                      {t1: "عمر & كريم", t2: "كريم التميمي", s: "9 - 7", st: "انتهت", d: "الجمعه 13 مارس"},
 
 
 ];
@@ -751,17 +749,17 @@ async function updateWeatherSystem() {
 	                // يمكنك تعديل الأسماء والمراكز المبدئية هنا
 	                const teamA = [
 	                    { id: 'R1', name: 'محمد علي', x: 8, y: 50, color: 'team-red', team: 'home' },
-	                    { id: 'R2', name: 'عمر', x: 25, y: 25, color: 'team-red', team: 'home' },
-	                    { id: 'R3', name: 'ارقم', x: 25, y: 75, color: 'team-red', team: 'home' },
-	                    { id: 'R4', name: 'عمرو', x: 40, y: 30, color: 'team-red', team: 'home' },
+	                    { id: 'R2', name: 'مؤيد', x: 25, y: 25, color: 'team-red', team: 'home' },
+	                    { id: 'R3', name: 'هاني', x: 25, y: 75, color: 'team-red', team: 'home' },
+	                    { id: 'R4', name: 'عمر', x: 40, y: 30, color: 'team-red', team: 'home' },
 	                    { id: 'R5', name: 'يوسف', x: 45, y: 70, color: 'team-red', team: 'home' },
 	                ];
 	                const teamB = [
 	                    { id: 'B1', name: 'محمد', x: 92, y: 50, color: 'team-blue', team: 'away' },
 	                    { id: 'B2', name: 'سنقرط', x: 75, y: 25, color: 'team-blue', team: 'away' },
-	                    { id: 'B3', name: 'ابو جعبري', x: 75, y: 75, color: 'team-blue', team: 'away' },
+	                    { id: 'B3', name: 'احمد', x: 75, y: 75, color: 'team-blue', team: 'away' },
 	                    { id: 'B4', name: 'كريم', x: 60, y: 30, color: 'team-blue', team: 'away' },
-	                    { id: 'B5', name: 'مؤيد', x: 55, y: 70, color: 'team-blue', team: 'away' },
+	                    { id: 'B5', name: 'خضر', x: 55, y: 70, color: 'team-blue', team: 'away' },
 	                ];
 	                [...teamA, ...teamB].forEach(p => this.createPlayer(p));
 	            }
@@ -1284,8 +1282,8 @@ function toggleMenu() {
 // إغلاق القائمة لو ضغط المستخدم بره المنيو
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('navMenu');
-    const hamburger = document.querySelector('.hamburger');
-if (menu && hamburger && !menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {        menu.classList.remove('active');
+const hamburger = document.querySelector('.hamburger-glow');
+  if (menu && hamburger && !menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('active')) {        menu.classList.remove('active');
     }
 });
 //________________________________________
