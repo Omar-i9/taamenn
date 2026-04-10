@@ -1247,7 +1247,7 @@ function updateHomeBookingTimer() {
         const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
         if(countdownEl) countdownEl.innerText = `${hh}:${mm}:00`;
         if(badgeEl) {
-            badgeEl.innerText = "مؤجل";
+            badgeEl.innerText = "قادمة";
             badgeEl.style.background = "#d2ff20";
             badgeEl.style.color = "#000000";
         }
