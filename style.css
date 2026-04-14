@@ -758,13 +758,28 @@ body.day-mode .lantern-wire {
 
              /* القائمة المتقدمة التي تظهر عند الضغط المزدوج على اللاعب */
 .tactical-advanced-menu {
-    direction: rtl;
-    font-family: inherit;
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff;
 }
 
-.tactical-advanced-menu input,
+.tactical-advanced-menu label {
+    color: #e5e7eb;
+}
+
+
+.tactical-advanced-menu input {
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+}
+
 .tactical-advanced-menu select {
-    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    background: #111827;
+    color: #ffffff;
+}
+
+.tactical-advanced-menu select option {
+    background: #111827;
+    color: #ffffff;
 }
 
 .tactical-advanced-menu input:focus,
