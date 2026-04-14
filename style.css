@@ -757,20 +757,45 @@ body.day-mode .lantern-wire {
 	         }
 
              /* القائمة المتقدمة التي تظهر عند الضغط المزدوج على اللاعب */
-             .tactical-advanced-menu {
-                position: absolute;
-                background: radial-gradient(circle at top, rgba(56,189,248,0.28), rgba(15,23,42,0.98));
-                border: 1px solid var(--glass-border);
-                border-radius: 14px;
-                padding: 14px 16px 12px;
-                min-width: 280px;
-                z-index: 1200;
-                box-shadow: 0 18px 45px rgba(0,0,0,0.8);
-                font-family: 'Tajawal', sans-serif;
-                direction: rtl;
-                backdrop-filter: blur(16px);
-             }
+.tactical-advanced-menu {
+    direction: rtl;
+    font-family: inherit;
+}
 
+.tactical-advanced-menu input,
+.tactical-advanced-menu select {
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.tactical-advanced-menu input:focus,
+.tactical-advanced-menu select:focus {
+    border-color: rgba(255, 215, 0, 0.75);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.12);
+    background: rgba(255,255,255,0.09);
+}
+
+.tactical-advanced-menu .tam-btn {
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tactical-advanced-menu .tam-save {
+    background: #ffd86a;
+    color: #111;
+}
+
+.tactical-advanced-menu .tam-clear {
+    background: rgba(255,255,255,0.10);
+    color: #fff;
+}
+
+.tactical-advanced-menu .tam-close {
+    background: rgba(255, 80, 80, 0.18);
+    color: #fff;
+}
              .tam-header {
                 font-weight: 800;
                 font-size: 0.95rem;
