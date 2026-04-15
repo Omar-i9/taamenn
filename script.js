@@ -707,8 +707,7 @@ function updateBookingTimer() {
     const badgeEl = document.getElementById("booking-badge");
     const timerTextEl = document.getElementById("booking-timer-text");
 
-    const isBookingOpen = day === 5 && hour >= 20 && hour < 21;
-
+    const isBookingOpen = day === 5 && hour >= 17 && hour < 18;
     if (isBookingOpen) {
         if (badgeEl) {
             badgeEl.innerText = "مفتوح الآن";
@@ -716,7 +715,7 @@ function updateBookingTimer() {
             badgeEl.style.color = "#000";
         }
         if (timerTextEl) {
-            timerTextEl.innerText = "الحجز مفتوح الآن حتى الساعة 9 مساءً";
+            timerTextEl.innerText = "الحجز مفتوح الآن حتى الساعة 6 مساءً";
         }
         if (countdownEl) {
             countdownEl.innerText = "00:00:00:00";
