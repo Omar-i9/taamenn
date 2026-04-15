@@ -264,42 +264,24 @@ function navigate(pageId, element = null, persist = true) {
    ========================================================= */
 
 function toggleTheme() {
-    const body = document.body;
-    const btnIcon = document.querySelector("#themeBtn i");
+    document.body.classList.remove('day-mode');
+    document.body.classList.add('night-mode');
 
-    const nextIsDay = body.classList.contains("night-mode");
-    body.classList.toggle("night-mode", !nextIsDay);
-    body.classList.toggle("day-mode", nextIsDay);
+    const btnIcon = document.querySelector('#themeBtn i');
+    if (btnIcon) btnIcon.className = 'fas fa-moon';
 
-    if (btnIcon) {
-        btnIcon.classList.toggle("fa-moon", !nextIsDay);
-        btnIcon.classList.toggle("fa-sun", nextIsDay);
-    }
-
-    localStorage.setItem("taamen-theme", nextIsDay ? "day" : "night");
-    setThemeColorMeta(nextIsDay ? "#edf3ff" : "#050a1f");
-
-    showNotification("home", nextIsDay ? "تم تفعيل الوضع النهاري" : "تم تفعيل الوضع الليلي", {
-        icon: nextIsDay ? "fa-sun" : "fa-moon"
-    });
+    localStorage.setItem('taamen-theme', 'night');
 }
 
 function applyDynamicTheme() {
-    const saved = localStorage.getItem("taamen-theme");
-    const hour = new Date().getHours();
-    const isDay = saved ? saved === "day" : (hour >= 6 && hour < 18);
+    document.body.classList.remove('day-mode');
+    document.body.classList.add('night-mode');
 
-    document.body.classList.toggle("day-mode", isDay);
-    document.body.classList.toggle("night-mode", !isDay);
+    const btnIcon = document.querySelector('#themeBtn i');
+    if (btnIcon) btnIcon.className = 'fas fa-moon';
 
-    const btnIcon = document.querySelector("#themeBtn i");
-    if (btnIcon) {
-        btnIcon.className = isDay ? "fas fa-sun" : "fas fa-moon";
-    }
-
-    setThemeColorMeta(isDay ? "#edf3ff" : "#050a1f");
+    localStorage.setItem('taamen-theme', 'night');
 }
-
 /* =========================================================
    [5] الهامبرجر والقائمة
    ========================================================= */
@@ -518,19 +500,6 @@ function updateFieldIcons() {
             token.classList.add("mvp-glow");
         }
 
-        if (pData.g > 0) {
-            const gBadge = document.createElement("span");
-            gBadge.className = "goal-badge";
-            gBadge.innerHTML = "⚽";
-            token.appendChild(gBadge);
-        }
-
-        if (pData.a > 0) {
-            const aBadge = document.createElement("span");
-            aBadge.className = "assist-badge";
-            aBadge.innerHTML = "🦶";
-            token.appendChild(aBadge);
-        }
     });
 }
 
