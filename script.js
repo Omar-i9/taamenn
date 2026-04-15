@@ -905,7 +905,7 @@ class FutsalTacticalEngine {
         this.is3D = true;
         this.activeMenu = null;
         this.teamSwitchMenu = null;
-        this.captainByTeam = { home: null, away: null, bench: null };
+        this.captainByTeam = { home: null, away: null};
 
         if (this.pitch) this.init();
     }
@@ -949,7 +949,6 @@ class FutsalTacticalEngine {
     getTeamClass(team) {
         if (team === "home") return "team-red";
         if (team === "away") return "team-blue";
-        return "team-bench";
     }
 
     getPlayerNumber(playerId) {
@@ -977,30 +976,14 @@ class FutsalTacticalEngine {
             { x: 55, y: 70 }
         ];
 
-        const bench = [
-            { x: 15, y: 8 },
-            { x: 30, y: 8 },
-            { x: 45, y: 8 },
-            { x: 60, y: 8 },
-            { x: 75, y: 8 }
-        ];
-
         if (team === "home") return home[index] || home[0];
         if (team === "away") return away[index] || away[0];
-        return bench[index] || bench[0];
     }
 
     applyTeamVisual(playerNode, team) {
-        playerNode.classList.remove("team-red", "team-blue", "team-bench");
+        playerNode.classList.remove("team-red", "team-blue");
         playerNode.classList.add(this.getTeamClass(team));
 
-        if (team === "bench") {
-            playerNode.style.filter = "saturate(.82) brightness(.95)";
-            playerNode.style.opacity = "0.94";
-        } else {
-            playerNode.style.filter = "";
-            playerNode.style.opacity = "";
-        }
     }
 
     setupPlayers() {
@@ -1020,13 +1003,7 @@ class FutsalTacticalEngine {
             { id: "B5", name: "خضر", x: 55, y: 70, color: "team-blue", team: "away" }
         ];
 
-        const teamC = [
-            { id: "S1", name: "بديل 1", x: 15, y: 8, color: "team-bench", team: "bench" },
-            { id: "S2", name: "بديل 2", x: 30, y: 8, color: "team-bench", team: "bench" },
-            { id: "S3", name: "بديل 3", x: 45, y: 8, color: "team-bench", team: "bench" }
-        ];
-
-        [...teamA, ...teamB, ...teamC].forEach(p => this.createPlayer(p));
+        [...teamA, ...teamB].forEach(p => this.createPlayer(p));
     }
 
     createPlayer(config) {
@@ -1149,7 +1126,6 @@ class FutsalTacticalEngine {
             <div style="font-weight:800; margin-bottom:10px; color:#ffd86a;">نقل اللاعب: ${safeText(playerId)}</div>
             <button type="button" data-team="home" style="width:100%; margin-bottom:8px;">إلى النخبة</button>
             <button type="button" data-team="away" style="width:100%; margin-bottom:8px;">إلى التحدي</button>
-            <button type="button" data-team="bench" style="width:100%;">إلى الاحتياط</button>
         `;
 
         menu.querySelectorAll("button").forEach(btn => {
@@ -1387,9 +1363,6 @@ class FutsalTacticalEngine {
         const instrInput = menu.querySelector("#tam-instr");
 
         const updateCaptainState = (newRole) => {
-            if (teamKey === "bench" && newRole === "كابتن") {
-                return false;
-            }
 
             if (newRole === "كابتن") {
                 const currentCaptainId = this.captainByTeam[teamKey];
@@ -1419,10 +1392,6 @@ class FutsalTacticalEngine {
 
             const captainOk = updateCaptainState(roleText);
             if (!captainOk) {
-                alert(teamKey === "bench"
-                    ? "لا يمكن تعيين كابتن للاحتياط."
-                    : "هذا الفريق يملك كابتن بالفعل. أزل الكابتن الحالي أولاً ثم عيّن لاعباً جديداً."
-                );
                 roleInput.value = teamRoleEl && teamRoleEl.textContent ? teamRoleEl.textContent : "";
                 return;
             }
@@ -1602,17 +1571,6 @@ class FutsalTacticalEngine {
         const team = el.dataset.team;
         const badge = el.querySelector(".role-badge-bottom");
 
-        if (team === "bench") {
-            if (badge && badge.innerText !== "SUB") {
-                badge.innerText = "SUB";
-                badge.classList.add("role-glow");
-                setTimeout(() => badge.classList.remove("role-glow"), 500);
-            }
-            if (this.coordLabel) {
-                this.coordLabel.innerText = `المركز: احتياط (${Math.round(x)}%, ${Math.round(y)}%)`;
-            }
-            return;
-        }
 
         let role = "";
 
