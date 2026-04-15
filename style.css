@@ -1,1403 +1,1406 @@
 /* ================================================================
-   [1] المتغيرات العامة (CSS VARIABLES) - تحديث الثيم الديناميكي
+   TAAMEN 2026 — CLEAN DARK / DAY THEME SYSTEM
+   ألوان أغمق، أبسط، أهدأ، مع حياة بصرية أفضل
    ================================================================ */
-:root {
-    /* ألوان المود الافتراضي (ليل) */
-    --main-bg: #000510;
-    --text-color: #ffffff;
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    
-    /* هوية دوري الأبطال والمنصة */
-    --accent-color: #00d2ff; 
-    --secondary-accent: #3a7bd5;
-    --accent-cyan: #00f2fe;
-    --font-main: 'Tajawal', sans-serif;
-    
-    /* ألوان رمضان وتأمين 2026 */
-    --ramadan-gold: #ffd700;
-    --border-gold: rgba(255, 215, 0, 0.5);
-    --gold-glow: 0 0 15px rgba(255, 215, 0, 0.6);
-    --night-blue: #02040a;
-    
-    /* ألوان الحالات (Status) */
-    --success-green: #2ecc71;
-    --danger-red: #ff3b3b;
-    --warning-yellow: #f1c40f;
 
-    /* إعدادات الحركة (Transitions) */
-    --transition-fast: 0.3s ease;
-    --transition-smooth: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    
-    /* إعدادات الهيدر العلوي */
-    --header-height: 80px;
-    --header-bg: rgba(5, 10, 31, 0.85);
+:root {
+    /* الأساس */
+    --font-main: 'Tajawal', sans-serif;
+    --font-display: 'Orbitron', sans-serif;
+
+    /* الخلفيات */
+    --bg-0: #050816;
+    --bg-1: #071225;
+    --bg-2: #0c1730;
+    --bg-soft: rgba(255, 255, 255, 0.04);
+    --bg-panel: rgba(10, 15, 28, 0.78);
+    --bg-panel-strong: rgba(8, 12, 22, 0.92);
+
+    /* النصوص */
+    --text-main: #f5f7fb;
+    --text-muted: #b7c0d1;
+    --text-soft: #8b95aa;
+
+    /* الهوية */
+    --accent: #55d6ff;
+    --accent-2: #7c8cff;
+    --gold: #e7c75f;
+    --gold-soft: rgba(231, 199, 95, 0.16);
+    --green: #36d399;
+    --red: #ff5f6d;
+    --yellow: #ffd166;
+
+    /* الحدود والظلال */
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --shadow-1: 0 10px 30px rgba(0, 0, 0, 0.28);
+    --shadow-2: 0 20px 50px rgba(0, 0, 0, 0.42);
+    --shadow-glow: 0 0 18px rgba(85, 214, 255, 0.18);
+
+    /* الشريط العلوي */
+    --header-h: 80px;
+    --header-bg: rgba(6, 10, 18, 0.82);
+
+    /* الحركة */
+    --t-fast: 180ms ease;
+    --t-mid: 280ms cubic-bezier(.2,.8,.2,1);
+    --t-smooth: 450ms cubic-bezier(.22,1,.36,1);
+
+    /* الملعب */
+    --pitch-green: #12452b;
+    --pitch-green-2: #0f3c24;
+    --pitch-line: rgba(255,255,255,0.75);
+    --pitch-shadow: 0 40px 100px rgba(0,0,0,0.55);
 }
 
 /* ================================================================
-   [2] التنسيقات الأساسية (RESET & BASE)
+   RESET / BASE
    ================================================================ */
+
 * {
-    margin: 0; 
-    padding: 0;
     box-sizing: border-box;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-    margin: 0; 
-    padding: 0;
+    margin: 0;
     min-height: 100vh;
+    padding-top: var(--header-h);
     font-family: var(--font-main);
-    color: var(--text-color);
+    color: var(--text-main);
     overflow-x: hidden;
-    background: radial-gradient(circle at 50% 0%, #001c4d 0%, #000510 100%);
-    transition: background 1.5s ease-in-out, color 0.8s ease-in-out;
-    position: relative;
-    z-index: 0;
-    /* مسافة للهيدر العلوي */
-    padding-top: var(--header-height); 
+    background:
+        radial-gradient(circle at top, #0d1730 0%, var(--bg-0) 48%, #02040a 100%);
+    transition: background 700ms ease, color 300ms ease;
 }
 
-/* تحكم ثيم النهار */
-body.day-mode {
-    --text-color: #001c4d;
-    --glass-bg: rgba(255, 255, 255, 0.2);
-    --glass-border: rgba(43, 73, 5, 0.814);
-    --header-bg: rgba(0, 0, 0, 0.85);
-    background: linear-gradient(135deg, #1569b2 0%, #105fcf 100%) !important;
+body::selection {
+    background: rgba(85, 214, 255, 0.28);
+    color: #fff;
 }
 
-/* تحكم ثيم الليل */
-body.night-mode {
-    --text-color: #ffffff;
-    --glass-bg: rgba(0, 0, 0, 0.3);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --header-bg: rgba(5, 10, 31, 0.85);
-    background: radial-gradient(circle at 50% 0%, #001c4d 0%, #000510 100%) !important;
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
 }
 
-/* السكرول بار (Scrollbar) */
-::-webkit-scrollbar { 
-    width: 10px; 
+a {
+    color: inherit;
+    text-decoration: none;
 }
-::-webkit-scrollbar-track { 
-    background: var(--night-blue); 
+
+img {
+    max-width: 100%;
+    display: block;
 }
-::-webkit-scrollbar-thumb { 
-    background: var(--glass-border); 
-    border-radius: 5px; 
-    border: 2px solid var(--night-blue);
+
+::-webkit-scrollbar {
+    width: 10px;
 }
-::-webkit-scrollbar-thumb:hover { 
-    background: var(--accent-color); 
-}	                
+
+::-webkit-scrollbar-track {
+    background: #040712;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.14);
+    border-radius: 999px;
+    border: 2px solid #040712;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(85, 214, 255, 0.55);
+}
 
 /* ================================================================
-   [3] شريط التنقل العلوي الجديد (TOP HEADER GLASSMORPHISM)
+   THEMES
    ================================================================ */
-.main-header {
-    position: fixed;
-    top: 0; 
-    left: 0; 
-    width: 100%;
-    height: var(--header-height);
-    background: var(--header-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--glass-border);
-    z-index: 9000;
-    transition: all var(--transition-smooth);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+
+body.night-mode {
+    --text-main: #f5f7fb;
+    --text-muted: #b7c0d1;
+    --text-soft: #8b95aa;
+    --bg-panel: rgba(10, 15, 28, 0.78);
+    --bg-panel-strong: rgba(8, 12, 22, 0.92);
+    --header-bg: rgba(6, 10, 18, 0.82);
+    background:
+        radial-gradient(circle at top, #13234b 0%, #060b16 44%, #02040a 100%);
 }
 
-/* تأثير عند النزول بالصفحة (Scrolled State) */
+body.day-mode {
+    --text-main: #10182a;
+    --text-muted: #3a4761;
+    --text-soft: #56627a;
+    --bg-panel: rgba(255, 255, 255, 0.68);
+    --bg-panel-strong: rgba(255, 255, 255, 0.85);
+    --header-bg: rgba(248, 250, 255, 0.78);
+    --border: rgba(10, 20, 40, 0.08);
+    --border-strong: rgba(10, 20, 40, 0.12);
+    background:
+        radial-gradient(circle at top, #dbe8ff 0%, #edf3ff 45%, #f7f9fd 100%);
+}
+
+/* ================================================================
+   GLOBAL SURFACES
+   ================================================================ */
+
+.glass-panel,
+.tilt-card,
+.prayer-unit,
+.hourly-item,
+.stats-table-container,
+.stats-card-glass,
+.weather-card-hero,
+.booking-status-container,
+.royal-container,
+.tactic-modal-content,
+.tactic-card,
+.nav-card,
+.glass-toast {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+/* ================================================================
+   HEADER
+   ================================================================ */
+
+.main-header,
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-h);
+    background: var(--header-bg);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+    z-index: 9999;
+    box-shadow: var(--shadow-1);
+    transition: height var(--t-mid), background var(--t-mid), box-shadow var(--t-mid);
+}
+
 .main-header.scrolled {
-    height: 65px;
-    background: rgba(0, 0, 0, 0.95);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    height: 66px;
+    background: rgba(4, 8, 15, 0.92);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.42);
+}
+
+body.day-mode .main-header.scrolled,
+body.day-mode header {
+    background: rgba(245, 248, 255, 0.88);
 }
 
 .header-container {
-    max-width: 1400px;
+    max-width: 1440px;
     margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     height: 100%;
-    padding: 0 30px;
+    padding: 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
 }
 
-/* اللوجو */
 .logo-area {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 14px;
     cursor: pointer;
 }
 
 .nav-logo {
-    width: 45px;
-    height: 45px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    box-shadow: var(--gold-glow);
-    transition: transform 0.3s ease;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 24px rgba(231,199,95,0.18);
+    transition: transform var(--t-mid), box-shadow var(--t-mid);
 }
 
 .logo-area:hover .nav-logo {
-    transform: rotate(360deg);
+    transform: rotate(18deg) scale(1.03);
 }
 
 .logo-text {
     font-family: 'Reem Kufi', sans-serif;
-    font-size: 1.8rem;
+    font-size: 1.55rem;
     font-weight: 700;
-    color: var(--text-color);
-    letter-spacing: 1px;
+    color: var(--text-main);
+    letter-spacing: .5px;
 }
 
 .gold-text {
-    color: var(--ramadan-gold);
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    color: var(--gold);
+    text-shadow: 0 0 12px rgba(231, 199, 95, 0.22);
 }
 
-/* روابط الهيدر */
 .header-nav-links {
     display: flex;
-    gap: 30px;
+    align-items: center;
+    gap: 10px;
+    overflow: auto;
+    scrollbar-width: none;
+}
+
+.header-nav-links::-webkit-scrollbar {
+    display: none;
 }
 
 .nav-link {
-    color: var(--text-color);
-    text-decoration: none;
-    font-size: 1.1rem;
-    font-weight: 500;
-    opacity: 0.7;
-    transition: all 0.3s ease;
-    display: flex;
+    color: var(--text-main);
+    opacity: 0.72;
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 15px;
-    border-radius: 12px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    transition: transform var(--t-fast), background var(--t-fast), color var(--t-fast), opacity var(--t-fast);
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
     opacity: 1;
-    color: var(--ramadan-gold);
-    background: rgba(255, 215, 0, 0.1);
-    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.05);
+    color: var(--gold);
+    background: rgba(231, 199, 95, 0.08);
+    transform: translateY(-1px);
 }
 
-.nav-link i {
-    font-size: 1.2rem;
-}
-
-/* أدوات الهيدر (ساعة وزر الثيم) */
 .header-left {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
 }
 
 .digital-clock {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
     font-weight: 700;
-    color: var(--accent-cyan);
-    background: rgba(0, 242, 254, 0.1);
-    padding: 8px 15px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 242, 254, 0.2);
-    letter-spacing: 2px;
+    color: var(--accent);
+    background: rgba(85, 214, 255, 0.08);
+    padding: 9px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(85, 214, 255, 0.12);
+    letter-spacing: 1.5px;
 }
 
-.theme-toggle-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--glass-border);
-    color: var(--ramadan-gold);
-    width: 45px;
-    height: 45px;
+.theme-toggle-btn,
+.theme-toggle {
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    justify-content: center;
+    border: 1px solid var(--border-strong);
+    background: rgba(255,255,255,0.06);
+    color: var(--gold);
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform var(--t-fast), background var(--t-fast), box-shadow var(--t-fast), color var(--t-fast);
 }
 
-.theme-toggle-btn:hover {
-    background: var(--ramadan-gold);
-    color: #000;
-    box-shadow: var(--gold-glow);
-    transform: translateY(-3px);
+.theme-toggle-btn:hover,
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    background: rgba(231, 199, 95, 0.12);
+    box-shadow: var(--shadow-glow);
+    color: var(--gold);
 }
 
 /* ================================================================
-   [4] المنيو السفلي (للموبايل والاستخدام السريع)
+   PAGE LAYOUT
    ================================================================ */
+
+.page {
+    display: none !important;
+    opacity: 0;
+    visibility: hidden;
+    padding-top: 22px;
+}
+
+.page.active {
+    display: block !important;
+    opacity: 1;
+    visibility: visible;
+    animation: pageIn 360ms ease;
+}
+
+@keyframes pageIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.grid-menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 22px;
+    padding: 20px;
+}
+
+/* ================================================================
+   HERO
+   ================================================================ */
+
+.hero-section {
+    text-align: center;
+    margin-bottom: 56px;
+    padding: 56px 20px;
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at center, rgba(85, 214, 255, 0.06) 0%, transparent 70%),
+        radial-gradient(circle at top, rgba(231, 199, 95, 0.08) 0%, transparent 56%);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-1);
+}
+
+.hero-title {
+    font-family: 'Reem Kufi', sans-serif;
+    font-size: clamp(3rem, 6vw, 5.6rem);
+    line-height: 1.08;
+    margin-bottom: 8px;
+    color: var(--text-main);
+    text-shadow: 0 10px 35px rgba(0,0,0,0.22);
+}
+
+.hero-title .accent,
+.hero-title .gold-text {
+    color: var(--gold);
+}
+
+.hero-subtitle {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 6px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.hero-status-bar {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+}
+
+.hero-status-bar span {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    padding: 10px 18px;
+    border-radius: 999px;
+    color: var(--text-main);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-1);
+}
+
+/* ================================================================
+   CARDS
+   ================================================================ */
+
+.tilt-card {
+    border-radius: 24px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--t-smooth), box-shadow var(--t-smooth), border-color var(--t-smooth);
+}
+
+.tilt-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-2);
+    border-color: rgba(231, 199, 95, 0.28);
+}
+
+.card-icon-wrapper {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+}
+
+.tilt-card i {
+    font-size: 2.8rem;
+    color: var(--gold);
+}
+
+.tilt-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+
+.tilt-card p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* ================================================================
+   NAV / QUICK ACTIONS
+   ================================================================ */
+
 .main-nav {
     position: fixed;
-    bottom: 25px; 
+    bottom: 18px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(15, 12, 41, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 10px 20px;
-    border-radius: 40px;
-    display: flex; 
-    gap: 15px;
+    background: rgba(8, 12, 22, 0.78);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 10px 14px;
+    display: flex;
+    gap: 10px;
     z-index: 8000;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-2);
 }
 
 .nav-item {
-    width: 55px;
-    height: 55px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    display: flex; 
-    align-items: center; 
+    color: rgba(255,255,255,0.68);
+    display: flex;
+    align-items: center;
     justify-content: center;
-    color: rgba(255,255,255,0.5);
-    font-size: 1.4rem;
-    position: relative;
+    font-size: 1.3rem;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    transition: transform var(--t-fast), background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast);
 }
 
-.nav-item:hover, .nav-item.active {
-    color: var(--night-blue);
-    background: var(--ramadan-gold);
-    transform: translateY(-10px) scale(1.1);
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+.nav-item:hover,
+.nav-item.active {
+    background: var(--gold);
+    color: #0d1220;
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 10px 24px rgba(231, 199, 95, 0.28);
 }
 
 .nav-item::after {
     content: attr(title);
     position: absolute;
-    top: -45px; 
+    top: -42px;
     left: 50%;
-    transform: translateX(-50%) scale(0);
-    background: rgba(0,0,0,0.9);
-    color: var(--ramadan-gold);
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    white-space: nowrap;
+    transform: translateX(-50%) scale(0.96);
+    background: rgba(0,0,0,0.88);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 0.75rem;
     opacity: 0;
-    transition: 0.3s;
     pointer-events: none;
-    border: 1px solid var(--border-gold);
+    transition: opacity var(--t-fast), transform var(--t-fast);
+    white-space: nowrap;
 }
 
 .nav-item:hover::after {
+    opacity: 1;
     transform: translateX(-50%) scale(1);
-    opacity: 1;
 }
 
 /* ================================================================
-   [5] خلفية السماء والبيئة (ATMOSPHERE)
+   STATS
    ================================================================ */
-#sky-background {
-    position: fixed;
-    top: 0; 
-    left: 0;
-    width: 100%; 
-    height: 100%;
-    z-index: -10;
-    transition: opacity 1s;
-}
 
-body.day-mode #sky-background { 
-    opacity: 0; 
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0; 
-    left: 0; 
-    width: 200%; 
-    height: 100%;
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 2s ease-in-out;
-}
-
-body.day-mode::before {
-    opacity: 0.4;
-    background: url('https://www.transparenttextures.com/patterns/clouds.png') repeat;
-    animation: moveClouds 120s linear infinite;
-}
-
-.stars-container, .moon-container, .lantern-wire {
-    transition: opacity 1s, transform 1s;
-}
-
-body.day-mode .stars-container, 
-body.day-mode .moon-container, 
-body.day-mode .lantern-wire {
-    opacity: 0;
-    transform: translateY(-50px);
-    pointer-events: none;
-}
-
-.star {
-    position: absolute; 
-    background: #fff; 
-    border-radius: 50%;
-    opacity: 0.8; 
-    box-shadow: 0 0 8px #fff;
-    animation: twinkle var(--d) infinite alternate;
-}
-
-.moon {
-    position: absolute;
-    top: 100px;
-    right: 10%;
-    width: 100px; 
-    height: 100px;
-    background: radial-gradient(circle at 30% 30%, #fff, var(--ramadan-gold));
-    border-radius: 50%;
-    box-shadow: 0 0 80px rgba(255, 215, 0, 0.3);
-    animation: moonPulse 6s infinite alternate;
-    z-index: -5;
-}
-.shooting-star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    box-shadow: 0 0 10px white;
-    border-radius: 50%;
-    opacity: 0;
-    animation: star-move linear forwards;
-}
-@keyframes star-move {
-    0% { transform: translate(0, 0) scale(0); opacity: 0; }
-    50% { opacity: 1; }
-    100% { transform: translate(-200px, 200px) scale(1); opacity: 0; }
-}
-/* ================================================================
-   [6] حاوية الصفحات (PAGE LAYOUT)
-   ================================================================ */
-/* منع التداخل وإخفاء الصفحات غير النشطة */
-.page {
-    display: none; /* الكل مخفي افتراضياً */
-    opacity: 0;
-    transition: opacity 0.4s ease-in-out;
-    padding-top: 80px; /* عشان ما تدخل الصفحة تحت الهيدر اللي فوق */
-}
-
-.page.active {
-    display: block !important; /* اظهر فقط الصفحة النشطة */
-    opacity: 1;
-}
-
-/* تنظيف الهيدر عشان ما يغطي على المحتوى */
-.main-header {
-    position: fixed;
-    top: 0;
+.stats-table-container,
+.stats-card-glass {
     width: 100%;
-    z-index: 9999; /* خليه دائماً فوق الكل */
-    background: rgba(5, 10, 31, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--glass-border);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: var(--shadow-1);
+    overflow-x: auto;
 }
 
-/* تصليح أماكن الكروت عشان ما تطير */
-.grid-menu {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-/* ================================================================
-   [7] الصفحة الرئيسية المطورة (HERO SECTION & STATUS)
-   ================================================================ */
-.hero-section { 
-    text-align: center; 
-    margin-bottom: 80px; 
-    position: relative;
-    padding: 60px 20px;
-    background: radial-gradient(circle at center, rgba(255,215,0,0.05) 0%, transparent 70%);
-    border-radius: 30px;
+.stats-table,
+.elite-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
 }
 
-.hero-title {
-    font-family: 'Reem Kufi', sans-serif;
-    font-size: 6rem;
-    background: linear-gradient(180deg, var(--ramadan-gold) 0%, #ffffff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 10px 30px rgba(255, 215, 0, 0.4));
-    margin-bottom: 10px;
-    line-height: 1.2;
-}
-
-.hero-subtitle {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 10px;
-    color: rgba(255,255,255,0.8);
-    margin-top: 15px;
-    text-transform: uppercase;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
-
-/* شريط حالة النظام (الجديد) */
-.hero-status-bar {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 40px;
-}
-
-.hero-status-bar span {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    padding: 10px 25px;
-    border-radius: 50px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-
-#system-status { color: var(--success-green); }
-#weather-status { color: var(--accent-cyan); }
-
-/* قسم النفحات (Dhikr) */
-.dhikr-section {
-    margin-top: 60px;
+.stats-table th,
+.elite-table th {
+    color: var(--gold);
+    padding: 14px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
     text-align: center;
-    border-color: var(--ramadan-gold) !important;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), transparent) !important;
 }
 
-.dhikr-title {
-    color: var(--ramadan-gold);
-    margin-bottom: 20px;
-    font-family: 'Reem Kufi', sans-serif;
-    font-size: 1.8rem;
+.stats-table td,
+.elite-table td {
+    padding: 13px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    text-align: center;
+    color: var(--text-main);
 }
 
-#dhikrDisplay {
-    font-size: 1.6rem;
-    line-height: 1.8;
-    color: #fff;
-    font-weight: 500;
+.stats-table tr:hover td,
+.elite-table tr:hover td {
+    background: rgba(255,255,255,0.04);
 }
 
 /* ================================================================
-   [8] البطاقات التفاعلية (CARDS & TILT)
+   HERO QUICK STATS
    ================================================================ */
-.grid-menu {
+
+.quick-stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 35px;
-    margin-bottom: 50px;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 14px;
 }
 
-.tilt-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 30px;
-    padding: 40px 30px;
-    position: relative;
-    overflow: hidden;
-    transform-style: preserve-3d;
-    transform: perspective(1000px);
-    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s, border-color 0.3s;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-}
-
-.tilt-card:hover {
-    box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 0 30px rgba(255, 215, 0, 0.08);
-    border-color: rgba(255, 215, 0, 0.5);
-    transform: perspective(1000px) translateY(-10px);
-}
-
-.card-icon-wrapper {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 25px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
+.glass-stat-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transform: translateZ(40px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    gap: 14px;
+    box-shadow: var(--shadow-1);
 }
 
-.tilt-card i {
-    font-size: 3.5rem;
-    color: var(--ramadan-gold);
+.stat-icon {
+    font-size: 1.6rem;
+    color: var(--gold);
 }
 
-.tilt-card h3 {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
-    transform: translateZ(30px);
-    color: #fff;
+.stat-label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-soft);
 }
 
-.tilt-card p {
-    color: #bbb;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    transform: translateZ(20px);
+.stat-value {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-main);
 }
 
 /* ================================================================
-   [9] صفحة الرادار والملعب (RADAR, PITCH & CONTROLS)
+   TOASTS
    ================================================================ */
-.special-gold {
-    background: linear-gradient(135deg, #ffd700, #ff8c00) !important;
-    color: #000 !important;
-    border: none !important;
-    box-shadow: 0 5px 20px rgba(255, 140, 0, 0.4);
-    animation: pulse-gold-btn 2s infinite;
+
+#notification-container {
+    position: fixed;
+    top: 92px;
+    right: 18px;
+    z-index: 100000;
+    width: min(360px, calc(100vw - 24px));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
 }
 
-.screenshot-btn {
-    background: rgba(255, 255, 255, 0.1);
+.glass-toast {
+    border-radius: 16px;
+    padding: 14px 18px;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid rgba(231, 199, 95, 0.18);
+    animation: toastIn 280ms ease;
 }
-.screenshot-btn:hover {
-    background: var(--accent-cyan);
-    color: #000;
-    box-shadow: 0 0 15px var(--accent-cyan);
-    border-color: var(--accent-cyan);
+
+@keyframes toastIn {
+    from { transform: translateX(18px); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
 }
 
-	                .radar-controls {
-	                    display: flex;
-	                    justify-content: center;
-	                    gap: 15px;
-	                    margin-bottom: 30px;
-	                    flex-wrap: wrap;
-	                }
+/* ================================================================
+   PRAYERS
+   ================================================================ */
 
-	                .radar-btn {
-	                    background: rgba(255, 255, 255, 0.05);
-	                    border: 1px solid var(--border-gold);
-	                    color: #fff;
-	                    padding: 10px 25px;
-	                    border-radius: 20px;
-	                    cursor: pointer;
-	                    transition: var(--transition);
-	                    font-family: 'Tajawal', sans-serif;
-	                    display: flex;
-	                    align-items: center; gap: 8px;
-	                }
+.prayers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    padding: 18px;
+}
 
-	                .radar-btn.active, .radar-btn:hover {
-	                    background: var(--ramadan-gold);
-	                    color: #000;
-	                    box-shadow: 0 0 15px var(--ramadan-gold);
-	                }
+.prayer-unit {
+    border-radius: 18px;
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: transform var(--t-mid), border-color var(--t-mid), box-shadow var(--t-mid);
+}
 
-	         /* متغيرات الملعب التكتيكي الجديد (يمكن وضعها هنا أو في :root) */
-	         :root {
-	            --pitch-color: #14532d;
-	            --pitch-line-color: rgba(255, 255, 255, 0.8);
-	            --gold-glow-pitch: 0 0 20px rgba(250, 204, 21, 0.6);
-	         }
+.prayer-unit:hover {
+    transform: translateY(-4px);
+    border-color: rgba(231, 199, 95, 0.28);
+}
 
-	         /* حاوية الملعب الجديد */
-	         #tactical-pitch-wrapper {
-	            position: relative;
-	            width: 100%;
-	            height: 650px;
-	            perspective: 1500px;
-	            margin-bottom: 50px;
-	         }
+.prayer-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(231, 199, 95, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
 
-	         #tactical-futsal-pitch {
-	            position: relative;
-	            width: 100%;
-	            height: 100%;
-	            background-color: var(--pitch-color);
-	            border: 5px solid var(--pitch-line-color);
-	            border-radius: 4px;
-	            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-	            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-	            overflow: hidden;
-	            transform: rotateX(20deg); /* الوضع الافتراضي 3D */
-	         }
+.prayer-icon-wrapper i {
+    font-size: 1.35rem;
+    color: var(--gold);
+}
 
-	         #tactical-futsal-pitch.is-2d { transform: rotateX(0deg); }
+.active-next,
+.active-maghrib {
+    border-color: rgba(231, 199, 95, 0.42);
+    box-shadow: 0 0 0 1px rgba(231,199,95,0.1), 0 0 20px rgba(231,199,95,0.12);
+    transform: translateY(-4px);
+    background: linear-gradient(180deg, rgba(231, 199, 95, 0.08), rgba(255,255,255,0.02));
+}
 
-	         /* خطوط الملعب الخماسي */
-	         .tp-midline { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--pitch-line-color); transform: translateX(-50%); }
-	         .tp-center-circle { position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; border: 4px solid var(--pitch-line-color); border-radius: 50%; transform: translate(-50%, -50%); }
-	         .tp-penalty-arc { position: absolute; width: 140px; height: 240px; border: 4px solid var(--pitch-line-color); top: 50%; transform: translateY(-50%); }
-	         .tp-penalty-arc.home { left: -70px; border-radius: 0 120px 120px 0; }
-	         .tp-penalty-arc.away { right: -70px; border-radius: 120px 0 0 120px; }
+.cannon-section {
+    text-align: center;
+    padding: 42px 24px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    box-shadow: var(--shadow-1);
+}
 
-	         /* الأيقونات التكتيكية للاعبين */
-	         .player-node {
-	        	    position: absolute; width: 50px; height: 50px; border-radius: 50%; cursor: grab; z-index: 50;
-	        	    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;
-	        	    color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.5); touch-action: none;
-	        	    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
-	        	    font-family: 'Orbitron', sans-serif;
-                    overflow: visible !important;
-	        	 }
-	         .player-node:active { cursor: grabbing; transform: scale(1.2); box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 100 !important; }
-	         .player-node:hover { transform: scale(1.1); z-index: 60; }
+.cannon-section.maghrib-active {
+    border-color: rgba(231, 199, 95, 0.35);
+    background: linear-gradient(180deg, rgba(231,199,95,0.12), rgba(255,255,255,0.02));
+}
 
-	         .team-red { background: #ff3b3b; border: 2px solid #fff; }
-	         .team-blue { background: #3b82ff; border: 2px solid #fff; }
+.countdown-main {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 4.8rem);
+    color: var(--text-main);
+    letter-spacing: 4px;
+    margin: 24px 0;
+    direction: ltr;
+}
 
-	         /* تفاصيل اللاعب (الاسم والمركز والأدوار/التعليمات) */
-             .player-name-center {
-                position: relative;
-                z-index: 10;
-                font-size: 12px;           /* خط أوضح للاسم */
-                font-weight: bold;
-                font-family: 'Tajawal', sans-serif;
-                padding: 0 4px;            /* حافة خفيفة حول الاسم */
-             }
+/* ================================================================
+   WEATHER
+   ================================================================ */
 
-             .role-badge-bottom {
-                position: absolute;
-                bottom: -26px;              /* أبعدناه أكثر عن الدائرة */
-                left: 50%;
-                transform: translateX(-50%);
-                display: inline-block;
-                font-size: 12px;            /* تكبير خط المركز */
-                background: var(--ramadan-gold);
-                color: #000;
-                padding: 2px 10px;          /* أنحف طولياً، أوسع عرضياً */
-                border-radius: 10px;
-                font-weight: 900;
-                transition: all 0.3s ease;
-                font-family: 'Tajawal', sans-serif;
-             }
+.weather-card-hero {
+    border-radius: 28px;
+    padding: 34px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
 
-	         .team-role-top-right {
-                position: absolute;
-                top: -28px;                 /* أعلى يمين الدائرة مع مسافة أمان */
-                right: -20px;               /* أبعدناه عن مركز الدائرة */
-                background: linear-gradient(135deg, #facc15, #f59e0b); /* ذهبي متوهج */
-                color: #1f2933;
-                padding: 2px 10px;          /* نحيف طولياً، أعرض عرضياً */
-                border-radius: 4px;         /* مستطيل أنيق */
-                font-size: 12px;            /* خط موحد 12px */
-                font-weight: 900;
-                border: 1px solid rgba(120,53,15,0.7);
-                z-index: 12;
-                min-width: 60px;
-                text-align: center;
-                white-space: nowrap;
-                box-shadow: 0 0 8px rgba(250,204,21,0.8); /* توهج ذهبي */
-             }
+.weather-main-info h2 {
+    font-family: var(--font-display);
+    font-size: clamp(3.2rem, 8vw, 6rem);
+    margin: 10px 0;
+    color: var(--text-main);
+    text-shadow: 0 0 20px rgba(85, 214, 255, 0.12);
+}
 
-             .instruction-top-left {
-                position: absolute;
-                top: -14px;                 /* أسفل الدور مباشرة مع فجوة صغيرة */
-                right: -20px;               /* نفس محاذاة الدور لليمين */
-                background: linear-gradient(135deg, #38bdf8, #0ea5e9); /* أزرق سماوي */
-                color: #022c41;
-                padding: 2px 10px;          /* نحيف وأعرض */
-                border-radius: 4px;         /* مستطيل مشابه */
-                font-size: 12px;            /* نفس حجم الخط */
-                font-weight: 700;
-                border: 1px solid rgba(12,74,110,0.8);
-                z-index: 11;
-                min-width: 70px;
-                text-align: center;
-                white-space: nowrap;
-                box-shadow: 0 0 8px rgba(56,189,248,0.75); /* توهج أزرق سماوي */
-             }
+.hourly-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 14px;
+    padding: 16px 6px;
+    scrollbar-width: none;
+    cursor: grab;
+}
 
-             /* شارة الكابتن C أسفل يمين الدائرة */
-             .captain-badge {
-                position: absolute;
-                bottom: -6px;
-                right: -4px;
-                width: 14px;
-                height: 14px;
-                border-radius: 50%;
-                background: radial-gradient(circle at 30% 20%, #fef9c3, #b45309);
-                color: #111827;
-                font-size: 0.55rem;
-                font-weight: 900;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border: 1px solid rgba(0,0,0,0.7);
-                box-shadow: 0 0 8px rgba(250,204,21,0.9);
-                z-index: 13;
-             }
+.hourly-scroll-container::-webkit-scrollbar {
+    display: none;
+}
 
-	         .role-glow { box-shadow: var(--gold-glow-pitch); animation: pulse-role 1.5s infinite; }
+.hourly-item {
+    min-width: 104px;
+    border-radius: 18px;
+    padding: 18px 12px;
+    text-align: center;
+}
 
-	         @keyframes pulse-role { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+.hourly-item:hover {
+    transform: translateY(-6px);
+    border-color: rgba(85, 214, 255, 0.26);
+}
 
-	         /* فقاعة الإحداثيات */
-	         #live-coord {
-	            position: absolute; top: 10px; right: 10px; background: rgba(15, 23, 42, 0.9);
-	            border-right: 4px solid var(--ramadan-gold); padding: 10px 20px; border-radius: 4px; font-size: 14px;
-	            z-index: 1000; display: none; backdrop-filter: blur(5px); color: var(--ramadan-gold); font-weight: bold;
-	         }
+/* ================================================================
+   PITCH / TACTICAL ENGINE
+   ================================================================ */
 
-             /* القائمة المتقدمة التي تظهر عند الضغط المزدوج على اللاعب */
+#tactical-pitch-wrapper {
+    position: relative;
+    width: 100%;
+    height: 650px;
+    perspective: 1400px;
+    margin-bottom: 40px;
+}
+
+#tactical-futsal-pitch {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.02), transparent 60%),
+        linear-gradient(135deg, var(--pitch-green) 0%, var(--pitch-green-2) 100%);
+    border: 2px solid rgba(255,255,255,0.65);
+    border-radius: 6px;
+    box-shadow: var(--pitch-shadow);
+    overflow: hidden;
+    transition: transform var(--t-smooth);
+    transform: rotateX(16deg);
+}
+
+#tactical-futsal-pitch.is-2d {
+    transform: rotateX(0deg);
+}
+
+.tp-midline {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--pitch-line);
+    transform: translateX(-50%);
+}
+
+.tp-center-circle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 120px;
+    height: 120px;
+    border: 3px solid var(--pitch-line);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.tp-penalty-arc {
+    position: absolute;
+    width: 140px;
+    height: 240px;
+    border: 3px solid var(--pitch-line);
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tp-penalty-arc.home {
+    left: -70px;
+    border-radius: 0 120px 120px 0;
+}
+
+.tp-penalty-arc.away {
+    right: -70px;
+    border-radius: 120px 0 0 120px;
+}
+
+.player-node {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: grab;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 16px;
+    color: white;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.42);
+    touch-action: none;
+    transition: transform 180ms cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 180ms ease, filter 180ms ease, opacity 180ms ease;
+    font-family: var(--font-display);
+    overflow: visible !important;
+    will-change: transform, left, top;
+}
+
+.player-node:hover {
+    transform: scale(1.06);
+}
+
+.player-node:active {
+    cursor: grabbing;
+}
+
+.player-node.is-dragging {
+    cursor: grabbing;
+    z-index: 1000 !important;
+    transform: translate(-50%, -50%) scale(1.12);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+}
+
+.team-red {
+    background: linear-gradient(180deg, #ff6b6b 0%, #f43f5e 100%);
+    border: 2px solid rgba(255,255,255,0.9);
+}
+
+.team-blue {
+    background: linear-gradient(180deg, #66a3ff 0%, #3b82f6 100%);
+    border: 2px solid rgba(255,255,255,0.9);
+}
+
+.team-bench {
+    background: linear-gradient(180deg, #6b7280 0%, #475569 100%);
+    border: 2px solid rgba(255,255,255,0.8);
+}
+
+.player-name-center {
+    position: relative;
+    z-index: 10;
+    font-size: 12px;
+    font-weight: 800;
+    font-family: var(--font-main);
+    padding: 0 4px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+.role-badge-bottom {
+    position: absolute;
+    bottom: -26px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    background: linear-gradient(180deg, var(--gold), #c89d2f);
+    color: #111827;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 900;
+    transition: all var(--t-fast);
+    font-family: var(--font-main);
+    white-space: nowrap;
+}
+
+.team-role-top-right {
+    position: absolute;
+    top: -28px;
+    right: -20px;
+    background: linear-gradient(180deg, #f8d25e, #d69e2e);
+    color: #111827;
+    padding: 2px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 900;
+    border: 1px solid rgba(255,255,255,0.08);
+    z-index: 12;
+    min-width: 60px;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: 0 0 14px rgba(231,199,95,0.22);
+}
+
+.instruction-top-left {
+    position: absolute;
+    top: -14px;
+    right: -20px;
+    background: linear-gradient(180deg, #6dd6ff, #3ab7ea);
+    color: #062033;
+    padding: 2px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    border: 1px solid rgba(255,255,255,0.08);
+    z-index: 11;
+    min-width: 70px;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: 0 0 14px rgba(85,214,255,0.16);
+}
+
+.captain-badge {
+    position: absolute;
+    bottom: -6px;
+    right: -4px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 20%, #fff8d4, #b8860b);
+    color: #111827;
+    font-size: 0.58rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0,0,0,0.72);
+    box-shadow: 0 0 10px rgba(231,199,95,0.35);
+    z-index: 13;
+}
+
+.role-glow {
+    box-shadow: 0 0 18px rgba(231,199,95,0.38);
+    animation: rolePulse 1.4s infinite;
+}
+
+@keyframes rolePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+#live-coord {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(5,10,18,0.9);
+    border-right: 4px solid var(--gold);
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    z-index: 1000;
+    display: none;
+    backdrop-filter: blur(10px);
+    color: var(--gold);
+    font-weight: 800;
+}
+
+/* ================================================================
+   TACTICAL MENU
+   ================================================================ */
+
 .tactical-advanced-menu {
-    background: rgba(15, 23, 42, 0.95);
-    color: #fff;
+    background: rgba(8, 12, 22, 0.96) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: var(--shadow-2);
 }
 
 .tactical-advanced-menu label {
-    color: #e5e7eb;
+    color: #dce3ef !important;
 }
 
-
-.tactical-advanced-menu input {
-    background: rgba(0,0,0,0.7);
-    color: #fff;
-}
-
+.tactical-advanced-menu input,
 .tactical-advanced-menu select {
-    background: #111827;
-    color: #ffffff;
-}
-
-.tactical-advanced-menu select option {
-    background: #111827;
-    color: #ffffff;
+    background: rgba(255,255,255,0.06) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
 }
 
 .tactical-advanced-menu input:focus,
 .tactical-advanced-menu select:focus {
-    border-color: rgba(255, 215, 0, 0.75);
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.12);
-    background: rgba(255,255,255,0.09);
+    border-color: rgba(85, 214, 255, 0.7) !important;
+    box-shadow: 0 0 0 3px rgba(85,214,255,0.12) !important;
+    background: rgba(255,255,255,0.08) !important;
 }
 
 .tactical-advanced-menu .tam-btn {
     padding: 10px 12px;
     border: 0;
     border-radius: 12px;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
+    transition: transform var(--t-fast), background var(--t-fast), box-shadow var(--t-fast);
+}
+
+.tactical-advanced-menu .tam-btn:hover {
+    transform: translateY(-1px);
 }
 
 .tactical-advanced-menu .tam-save {
-    background: #ffd86a;
-    color: #111;
+    background: var(--gold);
+    color: #121826;
 }
 
 .tactical-advanced-menu .tam-clear {
-    background: rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.1);
     color: #fff;
 }
 
 .tactical-advanced-menu .tam-close {
-    background: rgba(255, 80, 80, 0.18);
+    background: rgba(255, 95, 109, 0.18);
     color: #fff;
 }
-             .tam-header {
-                font-weight: 800;
-                font-size: 0.95rem;
-                margin-bottom: 10px;
-                color: var(--ramadan-gold);
-                display: flex;
-                align-items: center;
-                gap: 6px;
-             }
 
-             .tam-header::before {
-                content: "\f1e3";
-                font-family: "Font Awesome 6 Free";
-                font-weight: 900;
-                font-size: 0.9rem;
-                color: var(--accent-cyan);
-             }
-
-             .tam-group {
-                margin-bottom: 10px;
-             }
-
-             .tam-group label {
-                display: block;
-                font-size: 0.72rem;
-                color: #cbd5f5;
-                margin-bottom: 4px;
-             }
-
-             .tam-group select {
-                width: 100%;
-                padding: 5px 8px;
-                border-radius: 8px;
-                border: 1px solid rgba(148,163,184,0.6);
-                background: rgba(15,23,42,0.96);
-                color: #e5e7eb;
-                font-size: 0.78rem;
-                appearance: none;
-             }
-
-             .tam-group select:focus {
-                outline: none;
-                border-color: var(--accent-cyan);
-                box-shadow: 0 0 0 1px rgba(56,189,248,0.5);
-             }
-
-             .tam-actions {
-                display: flex;
-                justify-content: flex-start;
-                gap: 6px;
-                margin-top: 6px;
-             }
-
-             .tam-btn {
-                padding: 4px 10px;
-                border-radius: 6px;
-                border: none;
-                font-size: 0.7rem;
-                cursor: pointer;
-                background: rgba(255,255,255,0.1);
-                color: #fff;
-                transition: 0.2s;
-             }
-
-             .tam-btn:hover {
-                background: rgba(255,255,255,0.2);
-             }
-
-             .tam-save {
-                background: var(--ramadan-gold);
-                color: #000;
-             }
-
-             .tam-save:hover {
-                box-shadow: 0 0 10px var(--ramadan-gold);
-             }
-
-             .tam-clear {
-                background: rgba(220,53,69,0.8);
-             }
-
-             .tam-clear:hover {
-                box-shadow: 0 0 10px rgba(220,53,69,0.8);
-             }
-	                #stats-view { display: none; animation: fadeIn 0.5s; }
-	                
-	                .stats-table-container {
-	                    background: rgba(0,0,0,0.3);
-	                    border-radius: 20px;
-	                    padding: 20px;
-	                    margin-bottom: 20px;
-	                    border: 1px solid rgba(255,255,255,0.1);
-	                    overflow-x: auto;
-	                }
-	                
-	                .stats-table { width: 100%; border-collapse: collapse; min-width: 500px; }
-	                .stats-table th { padding: 15px; color: var(--ramadan-gold); border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
-	                .stats-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
-	                .stats-table tr:last-child td { border-bottom: none; }
-	                .stats-table tr:hover td { background: rgba(255,255,255,0.05); }
-
-/* ================================================================
-   [10] النوافذ المنبثقة للتكتيكات (MODALS & GLASS EFFECTS)
-   ================================================================ */
-.tactic-overlay {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85); 
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    display: none; /* مخفي دائماً لحين الاستدعاء */
-    justify-content: center; 
-    align-items: center; 
-    z-index: 100000;
+#team-switch-fab {
+    position: absolute;
+    z-index: 9999;
+    top: 14px;
+    right: 14px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(8, 12, 22, 0.86);
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-1);
 }
 
-.glass-effect {
-    background: rgba(25, 30, 50, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 25px; 
-    padding: 35px; 
-    width: 90%; 
-    max-width: 600px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.02);
-    color: white; 
+/* ================================================================
+   MODALS
+   ================================================================ */
+
+.tactic-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+}
+
+.glass-effect,
+.tactic-modal-content {
+    background: var(--bg-panel-strong) !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    border-radius: 24px !important;
+    padding: 28px !important;
+    width: min(92vw, 640px) !important;
+    box-shadow: var(--shadow-2) !important;
+    color: var(--text-main) !important;
     text-align: center;
     position: relative;
-    animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: modalIn 320ms ease;
+}
+
+@keyframes modalIn {
+    from { transform: scale(0.96); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
 }
 
 .library-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 15px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
 }
 
 .library-header h3 {
-    color: var(--ramadan-gold);
-    font-size: 1.5rem;
+    color: var(--gold);
+    font-size: 1.4rem;
     font-family: 'Reem Kufi', sans-serif;
 }
 
 .close-btn {
     font-size: 2rem;
-    color: var(--danger-red);
+    color: var(--red);
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform var(--t-fast), color var(--t-fast);
     line-height: 1;
 }
 
 .close-btn:hover {
-    transform: rotate(90deg) scale(1.2);
+    transform: rotate(75deg) scale(1.08);
 }
 
-.tactic-grid {
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
-    gap: 20px; 
+.tactic-grid,
+.tactics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
 }
 
-.tactic-item {
-    background: rgba(255, 255, 255, 0.05); 
-    border-radius: 15px; 
-    padding: 20px;
-    cursor: pointer; 
-    border: 1px solid rgba(255,255,255,0.05); 
-    transition: all 0.3s;
+.tactic-item,
+.tactic-card {
+    background: rgba(255,255,255,0.04);
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: transform var(--t-fast), border-color var(--t-fast), background var(--t-fast), box-shadow var(--t-fast);
 }
 
-.tactic-item:hover {
-    border-color: var(--ramadan-gold); 
-    background: rgba(255, 215, 0, 0.1); 
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+.tactic-item:hover,
+.tactic-card:hover {
+    border-color: rgba(231,199,95,0.28);
+    background: rgba(231,199,95,0.08);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-1);
 }
 
 .ins-box {
-    margin-top: 25px;
-    padding: 15px;
-    background: rgba(255, 215, 0, 0.1);
-    border-right: 4px solid var(--ramadan-gold);
-    border-radius: 10px;
+    margin-top: 20px;
+    padding: 14px;
+    background: rgba(231,199,95,0.08);
+    border-right: 4px solid var(--gold);
+    border-radius: 14px;
     text-align: right;
-    animation: fadeIn 0.5s ease;
 }
 
-/* نافذة اختيار الفريق */
 .team-selector-card {
-    padding: 40px;
-    max-width: 400px;
+    padding: 34px;
+    max-width: 420px;
 }
 
 .team-selector-card h4 {
-    font-size: 1.6rem;
-    color: var(--accent-cyan);
+    font-size: 1.45rem;
+    color: var(--accent);
     margin-bottom: 10px;
 }
 
-.team-btns { 
-    display: flex; 
-    gap: 15px; 
-    margin: 30px 0; 
+.team-btns {
+    display: flex;
+    gap: 12px;
+    margin: 24px 0;
 }
 
-.btn-a { 
-    background: #00d2ff; color: #000; flex: 1; padding: 15px; 
-    border-radius: 12px; border: none; font-weight: bold; font-size: 1.1rem; cursor: pointer; 
-    box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4); transition: 0.3s;
-}
-.btn-b { 
-    background: #ff3e3e; color: #fff; flex: 1; padding: 15px; 
-    border-radius: 12px; border: none; font-weight: bold; font-size: 1.1rem; cursor: pointer; 
-    box-shadow: 0 5px 15px rgba(255, 62, 62, 0.4); transition: 0.3s;
+.btn-a,
+.btn-b {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform var(--t-fast), box-shadow var(--t-fast), opacity var(--t-fast);
 }
 
-.btn-a:hover, .btn-b:hover { transform: translateY(-3px); }
+.btn-a {
+    background: linear-gradient(180deg, #5ddcff, #2f8cff);
+    color: #04111f;
+    box-shadow: 0 10px 22px rgba(47, 140, 255, 0.18);
+}
+
+.btn-b {
+    background: linear-gradient(180deg, #ff7178, #f43f5e);
+    color: #fff;
+    box-shadow: 0 10px 22px rgba(244, 63, 94, 0.18);
+}
+
+.btn-a:hover,
+.btn-b:hover {
+    transform: translateY(-2px);
+}
 
 .btn-cancel {
     background: transparent;
-    color: #aaa;
+    color: var(--text-soft);
     border: none;
     text-decoration: underline;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.98rem;
 }
 
 /* ================================================================
-   [11] نظام الإحصائيات الشامل - عرض كامل (FULL WIDTH SYSTEM)
+   ROYAL / HALL
    ================================================================ */
 
-/* إلغاء أي قيود على العرض في الصفحة نفسها */
-#stats-page, .stats-tables-wrapper {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 10px !important;
-    box-sizing: border-box;
-}
-
-/* الكارد الزجاجي - لازم يفرش بعرض الشاشة */
-.stats-table-container, .stats-card-glass {
-    width: 100% !important;
-    display: block;
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(15px);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 25px;
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    overflow-x: auto; /* عشان الجوال */
-}
-
-/* الجدول - السر في table-layout: auto أو fixed */
-.stats-table, .elite-table {
-    width: 100% !important;
-    border-collapse: collapse;
-    margin: 0;
-}
-
-/* تنسيق العناوين (اللاعب، الأهداف...) */
-.stats-table th, .elite-table th {
-    color: #ffd700; /* ذهبي رمضان */
-    padding: 15px 5px;
-    border-bottom: 2px solid rgba(255,255,255,0.1);
+.royal-container {
+    padding: 28px;
+    border-radius: 24px;
     text-align: center;
-    font-size: 1.1rem;
+    margin: 20px auto;
+    max-width: 640px;
+    border: 1px solid rgba(231,199,95,0.18);
+    background:
+        radial-gradient(circle at top, rgba(231,199,95,0.08) 0%, transparent 46%),
+        var(--bg-panel-strong);
 }
 
-/* تنسيق الخلايا (الأرقام) */
-.stats-table td, .elite-table td {
-    padding: 15px 5px;
-    color: #fff;
-    text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+.royal-icon {
+    font-size: 2.8rem;
+    color: var(--gold);
+    margin-bottom: 12px;
+    filter: drop-shadow(0 0 10px rgba(231,199,95,0.2));
 }
 
-/* العمود الأول (الأسماء) - هاد اللي لازم يفرش ويضل عاليمين */
-.stats-table td:first-child, .elite-table td:first-child,
-.stats-table th:first-child, .elite-table th:first-child {
-    text-align: right !important;
-    padding-right: 20px !important;
-    width: 35% !important; /* نعطي الاسم مساحة عشان الجدول يفرش */
-    color: #ffd700;
+.royal-header h1 {
+    font-family: var(--font-display);
+    letter-spacing: 2px;
+    color: var(--gold);
 }
 
-/* تأثير اللمعان عند المرور */
-.stats-card-glass:hover {
-    border-color: rgba(255, 215, 0, 0.6);
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
-}
-/* ================================================================
-   [17] العناصر التفاعلية والإشعارات (INTERACTIVE & UI)
-   ================================================================ */
-
-/* بطاقة الهيرو التفاعلية - تفرش بالعرض */
-.interactive-hero-card {
-    width: 100%;
-    height: 220px;
-    background: linear-gradient(135deg, rgba(0, 210, 255, 0.15), rgba(255, 215, 0, 0.1));
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 30px;
-    margin: 30px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    position: relative;
-    perspective: 1000px;
-    overflow: hidden;
+.history-card,
+.platform-info {
+    background: rgba(255,255,255,0.03);
+    padding: 14px;
+    border-radius: 16px;
+    margin-top: 18px;
+    text-align: right;
+    border-right: 4px solid var(--gold);
+    color: var(--text-main);
 }
 
-.card-inner h3 { font-family: 'Orbitron'; font-size: 2.2rem; color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
-
-/* نظام الإشعارات الزجاجي */
-#notification-container {
-    position: fixed;
-    top: 25px;
-    left: 25px; /* غيرتها لليسار عشان ما تغطي على أزرار الهيدر */
-    z-index: 10000;
+.royal-actions {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    margin-top: 24px;
 }
 
-.glass-toast {
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    border-radius: 18px;
-    padding: 18px 28px;
-    color: #fff;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    animation: slideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* أنيميشن التوهج والظهور */
-@keyframes slideIn {
-    from { transform: translateX(-100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes glowPulse {
-    0%, 100% { border-color: rgba(255, 215, 0, 0.3); box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
-    50% { border-color: rgba(255, 215, 0, 0.8); box-shadow: 0 0 25px rgba(255, 215, 0, 0.4); }
-}
-
-.glass-toast { animation: slideIn 0.5s ease-out, glowPulse 2s infinite; }
-
-/* عناصر إضافية */
-.status-badge {
-    background: #ffd700;
-    color: #000;
-    padding: 6px 18px;
-    border-radius: 50px;
-    font-weight: 900;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-}
-
-.scroll-reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.scroll-reveal.visible { opacity: 1; transform: translateY(0); }
-/* ================================================================
-   [12] المدفع والتوقيت (CANNON & PRAYERS)
-   ================================================================ */
-/* تنسيق حاوية الكروت */
-.prayers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
-    padding: 20px;
-}
-
-/* تنسيق الكرت نفسه */
-.prayer-unit {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-}
-
-/* الأيقونة داخل الكرت */
-.prayer-icon-wrapper {
-    background: rgba(255, 215, 0, 0.1);
-    width: 50px;
-    height: 50px;
+.royal-btn {
+    text-decoration: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    margin-bottom: 12px;
+    gap: 8px;
+    transition: transform var(--t-fast), box-shadow var(--t-fast), opacity var(--t-fast);
 }
 
-.prayer-icon-wrapper i {
-    font-size: 1.5rem;
-    color: var(--ramadan-gold);
+.join-btn {
+    background: linear-gradient(90deg, #25D366, #128C7E);
+    color: #fff;
 }
 
-/* النصوص داخل الكرت */
-.prayer-name-text {
-    font-size: 0.85rem;
-    color: #aaa;
+.support-btn {
+    background: rgba(231,199,95,0.08);
+    color: var(--gold);
+    border: 1px solid rgba(231,199,95,0.2);
+}
+
+.royal-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-1);
+}
+
+/* ================================================================
+   CANNON / DHIKR / MISC
+   ================================================================ */
+
+.section-divider {
+    text-align: center;
+    margin: 36px 0 20px;
+    border-bottom: 1px solid var(--border);
+    line-height: 0.1em;
+}
+
+.section-divider span {
+    background: var(--bg-0);
+    padding: 0 14px;
+    color: var(--gold);
+    font-weight: 800;
+}
+
+.dhikr-section {
+    margin-top: 56px;
+    text-align: center;
+    border-color: rgba(231,199,95,0.18) !important;
+    background: linear-gradient(135deg, rgba(231,199,95,0.05), transparent) !important;
+}
+
+.dhikr-title {
+    color: var(--gold);
+    margin-bottom: 16px;
+    font-family: 'Reem Kufi', sans-serif;
+    font-size: 1.6rem;
+}
+
+#dhikrDisplay {
+    font-size: 1.45rem;
+    line-height: 1.8;
+    color: var(--text-main);
     font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.prayer-time-text {
-    font-size: 1.4rem;
-    font-weight: 900;
-    color: #fff;
-    font-family: 'Orbitron', sans-serif;
-}
-
-/* تمييز الصلاة القادمة */
-.active-next {
-    border-color: var(--ramadan-gold);
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-    transform: translateY(-5px);
-    background: rgba(255, 215, 0, 0.05);
-}
-.cannon-section {
-    text-align: center;
-    padding: 50px;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(0, 242, 255, 0.05));
-    border-radius: 30px;
-    border: 1px solid var(--glass-border);
-    position: relative;
-    overflow: hidden;
-    transition: all 0.5s ease;
-}
-
-.cannon-section.maghrib-active {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(212, 175, 55, 0.1));
-    border-color: var(--ramadan-gold);
-    box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.1), 0 0 40px rgba(255, 215, 0, 0.2);
-}
-
-.countdown-main {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 5rem;
-    font-weight: 900;
-    color: #fff;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-    margin: 30px 0;
-    direction: ltr;
-    letter-spacing: 5px;
 }
 
 /* ================================================================
-   [13] واجهة الطقس (WEATHER APP)
+   TOGGLES / STATUS
    ================================================================ */
-.weather-card-hero {
-    background: var(--glass-bg);
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    padding: 50px;
-    border-radius: 30px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+
+.special-gold {
+    background: linear-gradient(180deg, #f1d46b, #d59b1c) !important;
+    color: #101820 !important;
+    border: none !important;
+    box-shadow: 0 10px 26px rgba(213,155,28,0.24);
 }
 
-.weather-main-info h2 { 
-    font-size: 6.5rem; 
-    margin: 10px 0; 
-    font-family: 'Orbitron', sans-serif;
-    background: linear-gradient(to bottom, #ffffff, var(--accent-cyan));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 5px 15px rgba(0, 242, 254, 0.3));
+.screenshot-btn {
+    background: rgba(255,255,255,0.06);
 }
 
-.hourly-scroll-container {
-    display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    padding: 20px 10px;
-    scrollbar-width: none; 
-    cursor: grab;
+.screenshot-btn:hover {
+    background: rgba(85,214,255,0.12);
+    color: var(--accent);
+    border-color: rgba(85,214,255,0.28);
 }
-.hourly-scroll-container::-webkit-scrollbar { display: none; }
 
-.hourly-item {
-    min-width: 110px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 25px 15px;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-.hourly-item:hover {
-    transform: translateY(-10px);
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 10px 25px rgba(0, 242, 254, 0.2);
+.status-badge {
+    background: var(--gold);
+    color: #111827;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 0.85rem;
 }
 
 /* ================================================================
-   [14] تأثيرات 3D وأرشيف الأمجاد (CHAMPIONS LEAGUE)
-   ================================================================ */
-/* ================================================================
-   🏆 UCL TROPHY PLATINUM CSS RE-DESIGN
+   CHAMPIONS CARD
    ================================================================ */
 
 :root {
-    --ucl-navy: #000510;
-    --ucl-blue-deep: #001f4d;
+    --ucl-navy: #050816;
+    --ucl-blue-deep: #0a1633;
     --ucl-silver-light: #f8fafc;
     --ucl-silver-mid: #cbd5e0;
     --ucl-silver-dark: #4a5568;
     --ucl-chrome-reflect: linear-gradient(135deg, #ffffff 0%, #cbd5e0 25%, #718096 50%, #e2e8f0 75%, #ffffff 100%);
-    --ucl-glow: rgba(0, 210, 255, 0.4);
+    --ucl-glow: rgba(85, 214, 255, 0.24);
 }
 
-/* 1. الحاوية الرئيسية (البطاقة) */
 .cl-champions-card {
     position: relative;
     width: 100%;
     max-width: 100%;
     height: 650px;
     background: radial-gradient(circle at center, var(--ucl-blue-deep) 0%, var(--ucl-navy) 100%);
-    border-radius: 40px;
+    border-radius: 34px;
     overflow: hidden;
-    border: 2px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: var(--shadow-2);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 40px;
+    padding-top: 36px;
     margin: 20px auto;
 }
 
-/* 2. الخلفية المتحركة (نجوم تتحرك ببطء) */
 .cl-stars-layer {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    inset: 0;
     background-image: radial-gradient(white 1px, transparent 1px);
     background-size: 80px 80px;
-    opacity: 0.1;
+    opacity: 0.08;
     animation: starsSlide 100s linear infinite;
-}
-
-@keyframes starsSlide {
-    from { background-position: 0 0; }
-    to { background-position: 1000px 1000px; }
 }
 
 .cl-nebula-glow {
     position: absolute;
-    width: 150%; height: 150%;
-    background: radial-gradient(circle, rgba(0, 81, 255, 0.15) 0%, transparent 70%);
-    top: -25%; left: -25%;
-    filter: blur(50px);
-    animation: nebulaMove 15s ease-in-out infinite;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(85, 214, 255, 0.12) 0%, transparent 70%);
+    top: -25%;
+    left: -25%;
+    filter: blur(40px);
+    animation: nebulaMove 14s ease-in-out infinite;
 }
 
-@keyframes nebulaMove {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-50px, 30px) scale(1.1); }
-}
-
-/* 3. مشهد الكأس العائم */
 .cl-trophy-scene {
     position: relative;
     width: 100%;
@@ -1415,19 +1418,12 @@ body.day-mode .lantern-wire {
     transform-style: preserve-3d;
 }
 
-@keyframes floatAnimation {
-    0%, 100% { transform: translateY(0) rotateY(-5deg); }
-    50% { transform: translateY(-25px) rotateY(15deg); }
-}
-
-/* 4. تفاصيل الكأس (The Big Ears) */
 .ucl-trophy {
     position: relative;
     width: 180px;
     height: 280px;
 }
 
-/* الوعاء الرئيسي للجسم */
 .ucl-bowl {
     position: absolute;
     bottom: 80px;
@@ -1437,620 +1433,137 @@ body.day-mode .lantern-wire {
     height: 160px;
     background: var(--ucl-chrome-reflect);
     border-radius: 10px 10px 70px 70px;
-    box-shadow: 
-        inset -15px -15px 30px rgba(0,0,0,0.4),
+    box-shadow:
+        inset -15px -15px 30px rgba(0,0,0,0.35),
         inset 15px 15px 30px rgba(255,255,255,0.7);
     overflow: hidden;
     z-index: 5;
 }
 
-/* المقابض (الأذنين) */
-.ucl-handle {
-    position: absolute;
-    top: 50px;
-    width: 80px;
-    height: 140px;
-    border: 14px solid #cbd5e0;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    z-index: 1;
-    background: transparent;
-}
-
-.ucl-handle-left {
-    left: -45px;
-    transform: rotate(-20deg);
-    border-right-color: transparent;
-    border-bottom-color: transparent;
-    box-shadow: inset 5px 5px 10px rgba(255,255,255,0.8), -5px 5px 15px rgba(0,0,0,0.4);
-}
-
-.ucl-handle-right {
-    right: -45px;
-    transform: rotate(20deg);
-    border-left-color: transparent;
-    border-bottom-color: transparent;
-    box-shadow: inset -5px 5px 10px rgba(255,255,255,0.8), 5px 5px 15px rgba(0,0,0,0.4);
-}
-
-/* الرقبة والحافة */
 .ucl-rim {
     position: absolute;
-    top: 35px; left: 50%;
+    top: 35px;
+    left: 50%;
     transform: translateX(-50%);
-    width: 145px; height: 35px;
+    width: 145px;
+    height: 35px;
     background: linear-gradient(to bottom, #f8fafc, #718096);
     border-radius: 50%;
     z-index: 6;
-    border-bottom: 2px solid rgba(0,0,0,0.3);
-}
-
-.ucl-rim::after {
-    content: '';
-    position: absolute;
-    top: 5px; left: 50%; transform: translateX(-50%);
-    width: 130px; height: 20px;
-    background: #000;
-    border-radius: 50%;
-}
-
-/* القاعدة والجذع */
-.ucl-stem {
-    position: absolute;
-    bottom: 50px; left: 50%;
-    transform: translateX(-50%);
-    width: 40px; height: 40px;
-    background: linear-gradient(to right, #718096, #ffffff, #718096);
-    z-index: 4;
-}
-
-.ucl-base-tier-1 {
-    position: absolute;
-    bottom: 20px; left: 50%;
-    transform: translateX(-50%);
-    width: 100px; height: 35px;
-    background: var(--ucl-chrome-reflect);
-    border-radius: 10px;
-    z-index: 3;
-}
-
-.ucl-base-tier-2 {
-    position: absolute;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 130px; height: 25px;
-    background: #1a202c;
-    border-radius: 5px 5px 15px 15px;
-    z-index: 2;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-}
-
-/* الظل تحت الكأس */
-.ucl-shadow {
-    position: absolute;
-    bottom: -60px; left: 50%;
-    transform: translateX(-50%);
-    width: 120px; height: 20px;
-    background: rgba(0,0,0,0.5);
-    filter: blur(10px);
-    border-radius: 50%;
-    animation: shadowScale 5s ease-in-out infinite;
-}
-
-@keyframes shadowScale {
-    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
-    50% { transform: translateX(-50%) scale(0.6); opacity: 0.3; }
-}
-
-/* توهج الكأس */
-.cl-trophy-aura {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px; height: 300px;
-    background: radial-gradient(circle, var(--ucl-glow) 0%, transparent 70%);
-    z-index: 0;
-    animation: auraPulse 3s infinite alternate;
-}
-
-@keyframes auraPulse {
-    from { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
-    to { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
-}
-
-/* 5. النصوص السفلية */
-.cl-content {
-    text-align: center;
-    margin-top: 20px;
-    z-index: 20;
-}
-
-.cl-title {
-    font-family: 'Orbitron', sans-serif;
-    color: #fff;
-    font-size: 2.2rem;
-    letter-spacing: 5px;
-    margin-bottom: 5px;
-    text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
-}
-
-.cl-divider {
-    color: #ffd700;
-    font-size: 0.8rem;
-    margin-bottom: 15px;
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-}
-
-.cl-slogan {
-    color: var(--ucl-silver-mid);
-    font-size: 0.9rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 300;
-}
-
-/* إضافات "الكروم" النهائية */
-.ucl-reflection-main {
-    position: absolute;
-    top: 0; left: 20%;
-    width: 20%; height: 100%;
-    background: rgba(255,255,255,0.3);
-    transform: skewX(-20deg);
-}
-
-.ucl-reflection-shine {
-    position: absolute;
-    top: 10px; right: 10%;
-    width: 10px; height: 40px;
-    background: rgba(255,255,255,0.8);
-    border-radius: 20px;
-    filter: blur(2px);
-}
-/* ================================================================
-   [15] الإشعارات (NOTIFICATIONS)
-   ================================================================ */
-#notification-container {
-    position: fixed;
-    top: 100px; /* نزلتها عشان ما تغطي عالهيدر */
-    right: 20px;
-    z-index: 100000;
-    pointer-events: none;
-    width: 350px;
+    border-bottom: 2px solid rgba(0,0,0,0.24);
 }
 
 /* ================================================================
-   [16] الحركات (KEYFRAMES & ANIMATIONS)
+   RESPONSIVE
    ================================================================ */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
 
-@keyframes modalPop {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes pageEnter {
-    0% { opacity: 0; transform: translateY(30px) scale(0.98); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes pulse-gold-btn {
-    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
-    70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
-}
-
-/* ================================================================
-   [17] الاستجابة للشاشات الصغيرة (RESPONSIVE DESIGN)
-   ================================================================ */
 @media (max-width: 992px) {
-    /* بدلاً من الإخفاء، سنجعل الروابط تسبح أفقياً */
-    .header-nav-links { 
-        display: flex !important; 
-        overflow-x: auto; /* تفعيل السحب الجانبي */
-        white-space: nowrap; /* منع نزول الأزرار لسطر جديد */
-        gap: 10px;
-        padding: 10px 5px;
+    .header-nav-links {
         width: 100%;
-        scrollbar-width: none; /* إخفاء شريط التمرير المزعج */
-        -ms-overflow-style: none;
-    }
-    
-    .header-nav-links::-webkit-scrollbar { 
-        display: none; /* إخفاء الشريط في كروم وسفاري */
+        gap: 8px;
+        padding: 8px 0;
     }
 
-    .nav-link { 
-        font-size: 0.9rem; 
-        padding: 8px 15px; 
-        flex-shrink: 0; /* يمنع الأزرار من الانضغاط */
-        background: rgba(255, 255, 255, 0.05); /* خلفية خفيفة لتمييز الأزرار */
-        border-radius: 10px;
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+        flex-shrink: 0;
     }
 
-    .hero-title { font-size: 3.5rem; } /* تصغير العنوان قليلاً ليتناسب مع الجوال */
-    .hero-status-bar { flex-direction: column; gap: 10px; }
+    .hero-section {
+        padding: 42px 16px;
+    }
+
+    .hero-status-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
+
 @media (max-width: 768px) {
-    body { padding-top: 70px; }
-    .main-header { height: 70px; }
-    .logo-text { font-size: 1.4rem; }
-    
-    .section-title { font-size: 2.5rem; }
-    
-    #tactical-pitch-wrapper { 
-        height: 500px;
-        transform: none; /* إلغاء الـ 3D في الموبايل لتسهيل اللمس */
+    body {
+        padding-top: 70px;
     }
-    #tactical-futsal-pitch { transform: none; }
-    
-    .countdown-main { font-size: 3rem; }
-    
-    .main-nav { width: 95%; padding: 12px; bottom: 15px; }
-    .nav-item { width: 45px; height: 45px; font-size: 1.2rem; }
-    
-    .weather-main-info h2 { font-size: 4.5rem; }
-    .weather-card-hero { padding: 30px; }
-    
-    .tactic-grid { grid-template-columns: 1fr; }
-}
-.prayer-icon-wrapper i {
-    transition: all 0.3s ease;
-    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.2));
+
+    .main-header,
+    header {
+        height: 70px;
+    }
+
+    .logo-text {
+        font-size: 1.25rem;
+    }
+
+    .grid-menu {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    #tactical-pitch-wrapper {
+        height: 500px;
+        perspective: none;
+    }
+
+    #tactical-futsal-pitch {
+        transform: none;
+    }
+
+    .countdown-main {
+        font-size: 2.8rem;
+    }
+
+    .weather-card-hero {
+        padding: 22px;
+    }
+
+    .weather-main-info h2 {
+        font-size: 3.8rem;
+    }
+
+    .main-nav {
+        width: calc(100% - 20px);
+        bottom: 10px;
+        padding: 10px;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .nav-item {
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+    }
+
+    .quick-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-table,
+    .elite-table {
+        min-width: 480px;
+    }
 }
 
-.active-next .prayer-icon-wrapper i, 
-.active-maghrib .prayer-icon-wrapper i {
-    transform: scale(1.2); /* تكبير بسيط للصلاة القادمة */
-    color: #fff !important; /* خليها تضوي أبيض بالصلاة الجاية */
-    filter: drop-shadow(0 0 10px var(--ramadan-gold));
-}
-/* الفواصل */
-.section-divider {
-    text-align: center;
-    margin: 40px 0 20px;
-    border-bottom: 1px solid var(--glass-border);
-    line-height: 0.1em;
-}
-.section-divider span {
-    background: var(--main-bg);
-    padding: 0 15px;
-    color: var(--ramadan-gold);
-    font-weight: bold;
-}
+/* ================================================================
+   SMALL UTILITIES
+   ================================================================ */
 
-/* كروت الإحصائيات الشفافة */
-.quick-stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.glass-stat-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(15px);
-    border: 1px solid var(--glass-border);
-    border-radius: 15px;
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.stat-icon {
-    font-size: 1.8rem;
-    color: var(--ramadan-gold);
-}
-
-.stat-label { font-size: 0.8rem; color: #aaa; display: block; }
-.stat-value { font-size: 1.1rem; font-weight: bold; color: #fff; }
-
-/* حاوية الحجز الفخمة */
-.booking-status-container {
-  width: 100%; /* هذا الرقم اللي بخليه يفرش بعرض الموقع */
-    max-width: 100%; /* تأكيد إنه ما يلتزم بحجم أقصى أصغر */
-    margin-left: 0;
-    margin-right: 0;
-    border-radius: 0; /*  اختياري: إذا بدك الزوايا تضل دائرية خليها، إذا بدك إياها ملزقة بالشاشة تماماً خليها 0 */
-  
-
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
-    border-radius: 20px;
-    padding: 25px;
-    border: 1px solid var(--glass-border);
-    margin-top: 20px;
-    text-align: center;
-}
-
-/* 1. إخفاء كل الصفحات بشكل افتراضي */
-.page {
-    display: none !important; /* إخفاء تام */
-    visibility: hidden;
+.scroll-reveal {
     opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 600ms ease, transform 600ms ease;
 }
 
-/* 2. إظهار الصفحة النشطة فقط */
-.page.active {
-    display: block !important; /* إظهار إجباري */
-    visibility: visible;
+.scroll-reveal.visible {
     opacity: 1;
-    animation: fadeIn 0.4s ease-in-out; /* حركة خفيفة للدخول */
+    transform: translateY(0);
 }
 
-/* حركة دخول ناعمة */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+.fade-soft {
+    animation: fadeSoft 280ms ease;
 }
 
-/* 3. تأكد إن المواقيت والطقس مش ماخدين لون شفاف */
-#cannon, #weather {
-    color: white !important;
-    min-height: 100vh; /* عشان تاخد مساحة الشاشة */
-}
-
-/* الحاوية الأساسية */
-.nav-container {
-    position: relative;
-    display: inline-block;
-}
-
-/* زر الهامبرغر المتوهج */
-.hamburger-glow {
-    cursor: pointer;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    transition: 0.3s;
-    filter: drop-shadow(0 0 5px #ffd700);
-}
-
-.hamburger-glow span {
-    width: 35px;
-    height: 5px;
-    background: #ffd700;
-    border-radius: 5px;
-}
-
-/* النافذة الزجاجية المغبشة */
-.glass-nav {
-    position: fixed;
-    top: 80px;
-    right: -350px; /* مخفية */
-    width: 280px;
-    background: rgba(7, 1, 1, 0.847); /* شفافة جداً */
-    backdrop-filter: blur(30px); /* التغبيش اللي طلبته */
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(28, 5, 5, 0.1);
-    border-radius: 20px;
-    padding: 20px;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 2000;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-    /* أنيميشن الطوفان */
-    animation: floatNav 6s ease-in-out infinite;
-}
-
-.glass-nav.active {
-    right: 20px; /* تظهر بجانب الحافة */
-}
-
-/* البطاقات المتوهجة داخل القائمة */
-.nav-card {
-    background: rgba(255, 255, 255, 0.234);
-    margin-bottom: 12px;
-    padding: 15px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    cursor: pointer;
-    transition: 0.3s;
-    border: 1px solid transparent;
-}
-
-.nav-card:hover {
-    background: rgba(255, 215, 0, 0.2);
-    border: 1px solid #ffd700;
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); /* توهج البطاقة */
-}
-
-.nav-card .icon { font-size: 1.5rem; }
-.nav-card .text { color: #fff; font-weight: bold; }
-
-/* أنيميشن الطوفان الخفيف (كأنها بالهواء) */
-@keyframes floatNav {
-    0% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(1deg); }
-    100% { transform: translateY(0px) rotate(0deg); }
-}
-
-.nav-header {
-    color: #ffd700;
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    border-bottom: 1px solid rgba(255,215,0,0.3);
-    padding-bottom: 10px;
-}
-header {
-    display: flex !important;
-    flex-direction: row !important; /* سطر واحد غصب عنه */
-    justify-content: space-between; /* اللوجو على الشمال والباقي على اليمين */
-    align-items: center; /* توسيط عمودي عشان ما يكون شي طالع وشي نازل */
-    padding: 10px 20px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: rgba(0, 5, 10, 0.896);
-    backdrop-filter: blur(10px);
-}
-
-/* حاوية العناصر اللي على اليمين (الساعة، الثيم، الهامبرغر) */
-.header-right-side {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* المسافة بين الساعة والثيم والمنيو */
-}
-
-/* تأكد إن الساعة والمنيو ما عندهم margin-top بيخرب الشكل */
-#header-clock, .theme-toggle, .hamburger-glow {
-    margin: 0 !important;
-    display: flex;
-    align-items: center;
-}
-
-
-.tactic-overlay {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: rgba(0, 0, 0, 0.9) !important; /* سواد كامل عشان نكشف المحتوى */
-    display: none; /* رح نغيرها بـ Flex */
-    justify-content: center !important;
-    align-items: center !important;
-    z-index: 9999999 !important;
-}
-
-.tactic-modal-content {
-    background: #1a1a1a !important; /* لون واضح */
-    border: 3px solid #ffcc00 !important;
-    padding: 25px !important;
-    border-radius: 15px !important;
-    width: 80% !important;
-    max-width: 400px !important;
-    color: white !important;
-    display: block !important; /* تأكيد الإظهار */
-}
-
-.tactics-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
-    margin-top: 20px !important;
-}
-
-.tactic-overlay {
-    position: fixed !important;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
-    display: none; /* سيتحول إلى flex بواسطة JS */
-    justify-content: center;
-    align-items: center;
-    z-index: 999999;
-}
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2.5rem;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.close-btn:hover {
-    color: #ff4444; /* بيقلب أحمر عند اللمس */
-    transform: scale(1.2);
-}
-
-/* ستايل الكارت بتاع الخطة جوه المربع */
-.tactic-card {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 10px;
-    cursor: pointer;
-    text-align: center;
-    border: 1px solid transparent;
-    transition: 0.3s;
-}
-
-.tactic-card:hover {
-    border-color: gold;
-    background: rgba(255, 215, 0, 0.1);
-}
-
-/* تمييز أيقونة الصالة الملكية */
-.nav-card[onclick*="royal-hall"] .icon {
-    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
-    text-shadow: 0 0 10px gold;
-}
-.royal-container {
-    padding: 30px;
-    border-radius: 25px;
-    text-align: center;
-    margin: 20px auto;
-    max-width: 600px;
-    border: 1px solid var(--border-gold);
-    background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(2, 4, 10, 0.95));
-}
-
-.royal-icon {
-    font-size: 3rem;
-    color: var(--ramadan-gold);
-    margin-bottom: 15px;
-    filter: drop-shadow(0 0 10px gold);
-}
-
-.royal-header h1 {
-    font-family: 'Orbitron', sans-serif;
-    letter-spacing: 3px;
-    color: var(--ramadan-gold);
-}
-
-.history-card, .platform-info {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 15px;
-    border-radius: 15px;
-    margin-top: 20px;
-    text-align: right; /* عشان المحتوى عربي */
-    border-right: 4px solid var(--ramadan-gold);
-}
-
-.royal-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.royal-btn {
-    text-decoration: none;
-    padding: 15px;
-    border-radius: 12px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: 0.4s;
-}
-
-.join-btn {
-    background: linear-gradient(90deg, #25D366, #128C7E);
-    color: white;
-}
-
-.support-btn {
-    background: rgba(255, 215, 0, 0.1);
-    color: var(--ramadan-gold);
-    border: 1px solid var(--ramadan-gold);
-}
-
-.royal-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+@keyframes fadeSoft {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
