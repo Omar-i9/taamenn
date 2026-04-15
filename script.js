@@ -1090,7 +1090,6 @@ class FutsalTacticalEngine {
         const btn = document.createElement("button");
         btn.id = "team-switch-fab";
         btn.type = "button";
-        btn.textContent = "تبديل الفريق";
 
         btn.addEventListener("click", () => {
             if (!this.selectedPlayer) {
@@ -1344,7 +1343,6 @@ class FutsalTacticalEngine {
 
             <div class="tam-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button type="button" class="tam-btn tam-save" style="flex:1; min-width:72px;">حفظ</button>
-                <button type="button" class="tam-btn tam-switch-team" style="flex:1; min-width:72px;">تبديل الفريق</button>
                 <button type="button" class="tam-btn tam-clear" style="flex:1; min-width:72px;">مسح</button>
                 <button type="button" class="tam-btn tam-close" style="flex:1; min-width:72px;">إغلاق</button>
             </div>
