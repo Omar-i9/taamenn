@@ -1432,9 +1432,24 @@ main,
 
 .tactical-advanced-menu input,
 .tactical-advanced-menu select {
-    background: rgba(255,255,255,0.06) !important;
-    color: #fff !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
+    background: rgba(15, 20, 35, 0.95) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+}
+select option {
+    background: #0f1423 !important;
+    color: #ffffff !important;
+}
+
+select option:checked {
+    background: #1d2a4a !important;
+    color: #ffffff !important;
+}
+
+/* hover (بعض المتصفحات) */
+select option:hover {
+    background: #2a3b66 !important;
+    color: #ffffff !important;
 }
 
 .tactical-advanced-menu input:focus,
@@ -2195,5 +2210,179 @@ a:focus-visible,
         animation: none !important;
         transition: none !important;
         scroll-behavior: auto !important;
+    }
+}
+
+.royal-container {
+    display: block !important;
+    max-width: 650px;
+    margin: 40px auto;
+    padding: 28px;
+
+    border-radius: 24px;
+    background: rgba(10, 15, 28, 0.85) !important;
+    border: 1px solid rgba(231,199,95,0.25) !important;
+
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    backdrop-filter: blur(18px);
+
+    text-align: center;
+}
+
+/* يمنع أي كود يخربه */
+.royal-container * {
+    position: relative;
+    z-index: 2;
+}
+
+.history-card,
+.platform-info {
+    background: rgba(255,255,255,0.04) !important;
+    padding: 14px;
+    border-radius: 14px;
+    margin-top: 16px;
+    border-right: 4px solid #e7c75f;
+}
+
+.royal-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.join-btn {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.25);
+}
+
+.join-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(37, 211, 102, 0.35);
+    filter: brightness(1.08);
+}
+
+.support-btn {
+    background: rgba(231,199,95,0.08);
+    color: var(--gold);
+    border: 1px solid rgba(231,199,95,0.25);
+    backdrop-filter: blur(10px);
+}
+
+.support-btn:hover {
+    background: rgba(231,199,95,0.18);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(231,199,95,0.2);
+}
+
+.royal-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+/* ===============================
+   RADAR BUTTONS PRO UI
+   =============================== */
+
+.radar-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin: 30px auto;
+    flex-wrap: wrap;
+}
+
+/* الأزرار الأساسية */
+.radar-btn {
+    position: relative;
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    transition: all 0.25s ease;
+    overflow: hidden;
+}
+
+/* Glow داخلي */
+.radar-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(120deg, transparent, rgba(85,214,255,0.25), transparent);
+    opacity: 0;
+    transition: 0.3s;
+}
+
+/* Hover */
+.radar-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4),
+                0 0 18px rgba(85,214,255,0.25);
+    border-color: rgba(85,214,255,0.4);
+}
+
+.radar-btn:hover::before {
+    opacity: 1;
+}
+
+/* Active (المحدد) */
+.radar-btn.active {
+    background: linear-gradient(135deg, #55d6ff, #3b82f6);
+    color: #04111f;
+    border: none;
+    box-shadow: 0 10px 25px rgba(85,214,255,0.35);
+}
+
+/* زر الحفظ */
+.screenshot-btn.special-gold {
+    background: linear-gradient(135deg, #e7c75f, #c89d2f);
+    color: #111;
+    border: none;
+    box-shadow: 0 10px 25px rgba(231,199,95,0.3);
+}
+
+.screenshot-btn.special-gold:hover {
+    box-shadow: 0 14px 30px rgba(231,199,95,0.4),
+                0 0 20px rgba(231,199,95,0.5);
+}
+
+/* ضغط */
+.radar-btn:active {
+    transform: scale(0.95);
+}
+
+/* موبايل */
+@media (max-width: 768px) {
+    .radar-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .radar-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
