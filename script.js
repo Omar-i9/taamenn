@@ -747,7 +747,7 @@ function updateBookingTimer() {
     }
 
     if (timerTextEl) {
-        timerTextEl.innerText = "الحجز يفتح كل جمعة من 8:00 إلى 9:00 مساءً";
+        timerTextEl.innerText = "الحجز يفتح كل جمعة من 5:00 إلى 6:00 مساءً";
     }
 }
 
