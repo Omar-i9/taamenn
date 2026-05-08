@@ -47,21 +47,19 @@ const systemMessages = {
 };
 
 const statsElite = [
-    { name: "يوسف", g: 8, a: 3, r: 9.9 },
-    { name: "عمر", g: 5, a: 6, r: 9.7 },
-    { name: "هاني", g: 2, a: 4, r: 8.9 },
-    { name: "مؤيد", g: 1, a: 2, r: 8.8 },
-    { name: "أرقم", g: 0, a: 1, r: 7.9 },
-    { name: "علي", g: 3, a: 0, r: 8.5 }
+    { name: "يوسف", g: 2, a: 3, r: 9.7 },
+    { name: "عمر", g: 2, a: 1, r: 9.8 },
+    { name: "كريم", g: 1, a: 4, r: 9.9 },
+    { name: "سكافي", g: 0, a: 0, r: 8.8 },
+    { name: "خضر", g: 4, a: 1, r: 9.9 },
 ];
 
 const statsChallenge = [
-    { name: "خضر", g: 7, a: 2, r: 9.8 },
-    { name: "كريم", g: 4, a: 5, r: 9.5 },
-    { name: "سنقرط", g: 1, a: 3, r: 8.7 },
-    { name: "أحمد", g: 1, a: 1, r: 8.1 },
-    { name: "محمد", g: 0, a: 2, r: 8.0 },
-    { name: "إبراهيم", g: 2, a: 0, r: 8.4 }
+    { name: "أبو تركي", g: 2, a: 2, r: 9.8 },
+    { name: "سويركي", g: 4, a: 5, r: 10 },
+    { name: "زيد", g: 5, a: 3, r: 10},
+    { name: "أبو زغير", g: 0, a: 0, r: 9.6 },
+    { name: "نسيت اسمه", g: 2, a: 2, r: 9.0 },
 ];
 
 
@@ -582,82 +580,44 @@ const matchHistoryArchive = [
     { t1: "كريم", t2: "عمر", s: "3 - 3", st: "انتهت", d: "الجمعه 20 فبراير" },
     { t1: "عمر", t2: "كريم", s: "6 - 8", st: "انتهت", d: "الجمعه 27 فبراير" },
     { t1: "خضر", t2: "كريم", s: "13 - 7", st: "انتهت", d: "الجمعه 6 مارس" },
-    { t1: "عمر", t2: "كريم", s: "5 - 7", st: "انتهت", d: "ودية الخميس 12 مارس" },
+    { t1: "عمر", t2: "كريم", s: "5 - 7", st: "انتهت",type: "friendly", d: " الخميس 12 مارس" },
     { t1: "عمر & كريم", t2: "كريم التميمي", s: "9 - 7", st: "انتهت", d: "الجمعه 13 مارس" },
     { t1: "عمر", t2: "كريم", s: "6 - 4", st: "انتهت", d: "الجمعه 21 أبريل" },
     { t1: "عمر", t2: "محمد علي", s: "5 - 5", st: "انتهت", d: "الجمعه 1 مايو" },
-
+    
     // جديد مع تفاصيل
     {
         id: "M-201",
         type: "strong",
         t1: "عمر",
         t2: "كريم",
-        s: "6 - 4",
+        s: "5 - 6",
         st: "انتهت",
         d: "الجمعة 8 مايو",
         dateKey: 20260508,
         details: {
-            team1: { possession: 56, shots: 11, onTarget: 7, saves: 1, assists: 4, passes: 89, fouls: 2, corners: 5 },
-            team2: { possession: 44, shots: 8, onTarget: 4, saves: 3, assists: 2, passes: 76, fouls: 3, corners: 2 }
+            team1: { possession: 56, shots: 11, onTarget: 7, saves: 5, assists: 4, passes: 89, fouls: 2, corners: 5 },
+            team2: { possession: 44, shots: 8, onTarget: 4, saves: 4, assists: 2, passes: 76, fouls: 3, corners: 3 }
         }
     },
     {
         id: "M-202",
-        type: "normal",
-        t1: "خضر",
-        t2: "عمر",
-        s: "2 - 2",
-        st: "انتهت",
-        d: "الجمعة 15 مايو",
-        dateKey: 20260515,
-        details: {
-            team1: { possession: 50, shots: 7, onTarget: 3, saves: 2, assists: 1, passes: 73, fouls: 2, corners: 2 },
-            team2: { possession: 50, shots: 7, onTarget: 3, saves: 2, assists: 1, passes: 78, fouls: 1, corners: 3 }
-        }
-    },
-    {
-        id: "M-203",
-        type: "friendly",
-        t1: "كريم التميمي",
-        t2: "محمد علي",
-        s: "3 - 6",
-        st: "ودية",
-        d: "الخميس 21 مايو",
-        dateKey: 20260521,
-        details: {
-            team1: { possession: 47, shots: 9, onTarget: 4, saves: 1, assists: 2, passes: 74, fouls: 1, corners: 3 },
-            team2: { possession: 53, shots: 12, onTarget: 7, saves: 2, assists: 5, passes: 82, fouls: 2, corners: 4 }
-        }
-    },
-    {
-        id: "M-204",
         type: "strong",
-        t1: "عمر & كريم",
-        t2: "خضر",
-        s: "9 - 8",
+        t1: "عمر",
+        t2: "أبو تركي",
+        s: "9 - 12",
         st: "انتهت",
-        d: "الجمعة 29 مايو",
-        dateKey: 20260529,
+        d: "الجمعة 8 مايو",
+        dateKey: 20260508,
         details: {
-            team1: { possession: 54, shots: 14, onTarget: 8, saves: 2, assists: 6, passes: 91, fouls: 3, corners: 6 },
-            team2: { possession: 46, shots: 12, onTarget: 7, saves: 3, assists: 4, passes: 79, fouls: 4, corners: 4 }
+            team1: { possession: 60, shots: 25, onTarget: 17, saves: 7, assists: 11, passes: 112, fouls: 3, corners: 5 },
+            team2: { possession: 40, shots: 17, onTarget: 13, saves: 4, assists: 8, passes: 91, fouls: 2, corners: 6 }
         }
     },
-    {
-        id: "M-205",
-        type: "normal",
-        t1: "عمر",
-        t2: "محمد علي",
-        s: "1 - 0",
-        st: "انتهت",
-        d: "الجمعة 5 يونيو",
-        dateKey: 20260605,
-        details: {
-            team1: { possession: 49, shots: 5, onTarget: 2, saves: 4, assists: 1, passes: 69, fouls: 2, corners: 1 },
-            team2: { possession: 51, shots: 6, onTarget: 1, saves: 1, assists: 0, passes: 72, fouls: 2, corners: 2 }
-        }
-    }
+     ///   type: "friendly",
+     ///   type: "strong",
+     ///   type: "normal",
+
 ];
 
 const __matchSafeText = (value) =>
@@ -785,6 +745,42 @@ function getFilteredMatches() {
 
     return list;
 }
+
+///
+
+
+
+// =========================================================
+//  كود التصفية (Filter Logic) المتوافق مع هيكل بياناتك
+// =========================================================
+
+// 1. تحديد أزرار الفلترة (Hero Buttons)
+const filterButtons = document.querySelectorAll('.matches-hero-btn');
+
+// 2. تفعيل التصفية عند الضغط على أي زر
+filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        
+        // أ. تحديث الشكل (إزالة النشط من الزر القديم وإضافته للجديد)
+        document.querySelector('.matches-hero-btn.active')?.classList.remove('active');
+        button.classList.add('active');
+
+        // ب. أخذ قيمة التصفية من الزر وتحديثها داخل الـ State تبعك
+        const filterValue = button.getAttribute('data-filter');
+        matchState.filter = filterValue; // تحديث الحالة
+
+        // ج. إغلاق أي تفاصيل مفتوحة عشان ما يصير لخبطة عند التصفية
+        matchState.openId = null;
+
+        // د. إعادة بناء المباريات (هذي الدالة موجودة عندك وبتقوم بالفلترة الصحيحة)
+        renderMatches();
+    });
+});
+
+
+
+
+////
 
 function buildSummary(list) {
     const summary = {
@@ -2371,3 +2367,132 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initAppPageFromStorage();
 });
+
+
+/**
+ * royal-section.js — تأمين 2026
+ *
+ * تأثيرات بسيطة فقط:
+ *   1. ظهور تدريجي للعناصر عند التمرير (scroll reveal)
+ *   2. تأثير موجة (ripple) عند الضغط على الأزرار
+ */
+
+(function () {
+  "use strict";
+
+  /* ══════════════════════════════════════
+     1. Scroll Reveal — ظهور عند التمرير
+     ══════════════════════════════════════
+
+     يضيف الكلاس rh-visible للعناصر حين تدخل
+     نطاق الشاشة، والـ CSS يتكفّل بالأنيميشن.
+  */
+  function initReveal() {
+    const section = document.querySelector("#royal-hall");
+    if (!section) return;
+
+    /* العناصر التي ستظهر بالتسلسل */
+    const targets = section.querySelectorAll(
+      ".rh-header, .rh-card, .rh-actions"
+    );
+
+    /* إضافة ستايل الظهور مسبقاً */
+    targets.forEach((el, i) => {
+      el.style.opacity   = "0";
+      el.style.transform = "translateY(16px)";
+      el.style.transition = `opacity 0.55s ease ${i * 0.12}s,
+                              transform 0.55s cubic-bezier(0.22,1,0.36,1) ${i * 0.12}s`;
+    });
+
+    /* مراقبة الظهور في الـ viewport */
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            /* عند الدخول: أظهر كل العناصر */
+            targets.forEach((el) => {
+              el.style.opacity   = "1";
+              el.style.transform = "translateY(0)";
+            });
+            observer.disconnect(); /* بعد المرة الأولى لا نحتاج للمراقبة */
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(section);
+  }
+
+  /* ══════════════════════════════════════
+     2. Ripple Effect — موجة عند الضغط
+     ══════════════════════════════════════ */
+  function initRipple() {
+    const buttons = document.querySelectorAll("#royal-hall .rh-btn");
+
+    buttons.forEach((btn) => {
+      /* position relative ضروري للـ ripple */
+      btn.style.position = "relative";
+      btn.style.overflow = "hidden";
+
+      btn.addEventListener("click", function (e) {
+        /* إزالة أي ripple قديم */
+        const old = this.querySelector(".rh-ripple");
+        if (old) old.remove();
+
+        /* إنشاء دائرة الموجة */
+        const ripple = document.createElement("span");
+        ripple.classList.add("rh-ripple");
+
+        const rect   = this.getBoundingClientRect();
+        const size   = Math.max(rect.width, rect.height) * 2;
+        const x      = e.clientX - rect.left - size / 2;
+        const y      = e.clientY - rect.top  - size / 2;
+
+        Object.assign(ripple.style, {
+          position:     "absolute",
+          width:        size + "px",
+          height:       size + "px",
+          left:         x + "px",
+          top:          y + "px",
+          borderRadius: "50%",
+          background:   "rgba(255,255,255,0.18)",
+          transform:    "scale(0)",
+          animation:    "rh-ripple-anim 0.55s ease-out forwards",
+          pointerEvents:"none",
+        });
+
+        this.appendChild(ripple);
+
+        /* حذف الـ span بعد انتهاء الأنيميشن */
+        ripple.addEventListener("animationend", () => ripple.remove());
+      });
+    });
+
+    /* إضافة keyframe ديناميكياً إذا لم تكن موجودة */
+    if (!document.getElementById("rh-ripple-style")) {
+      const style = document.createElement("style");
+      style.id = "rh-ripple-style";
+      style.textContent = `
+        @keyframes rh-ripple-anim {
+          to { transform: scale(1); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }
+
+  /* ══════════════════════════════════════
+     تشغيل بعد جاهزية الـ DOM
+     ══════════════════════════════════════ */
+  function init() {
+    initReveal();
+    initRipple();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
