@@ -17,6 +17,8 @@
     <div id="notification-container"></div>
     <div id="sky-background"></div>
     <div class="stars-container" id="starsContainer"></div>
+      <canvas class="rh-particles-canvas" aria-hidden="true"></canvas>
+
 
     <header class="main-header" id="topHeader">
         <div class="header-container">
@@ -325,37 +327,63 @@
             </div>
         </section>
 
-        <section id="royal-hall" class="page">
-            <div class="royal-container glass-effect">
-                <div class="royal-header">
-                    <i class="fas fa-crown royal-icon"></i>
-                    <h1>تأمين 2026</h1>
-                    <p class="subtitle">حيث تُصنع الأمجاد وتُكتب التواريخ</p>
-                </div>
+<!--
+<!--
+  ════════════════════════════════════════
+  قسم: قاعة الملوك — تأمين 2026
+  الملفات المطلوبة في الموقع الرئيسي:
+    <link rel="stylesheet" href="royal-section.css">
+    <script defer src="royal-section.js"></script>
+  ════════════════════════════════════════
+-->
 
-                <div class="royal-content">
-                    <div class="history-card">
-                        <h3><i class="fas fa-history"></i> تاريخنا وإرثنا</h3>
-                        <p>تأمين ليست مجرد اسم، بل هي كيان رياضي وُلد من قلب الحارة وترعرع في الملاعب المحلية. من عام لآخر، كنا وما زلنا الرقم الصعب في كل تحدٍ نخوضه.</p>
-                    </div>
+<section id="royal-hall" class="rh-section">
+  <div class="rh-container glass-effect">
 
-                    <div class="platform-info">
-                        <h3><i class="fas fa-laptop-code"></i> منصتنا الجديدة</h3>
-                        <p>هذا الموقع هو بيتكم الجديد، تم تطويره بـ "سيستم عمر" ليكون المرجع الأول لكل لاعب ومتابع في منظومة تأمين، لتسهيل التكتيكات وطريقة بناء لعبة الفريق، متابعة الطقس، وحفظ الإحصائيات.</p>
-                    </div>
-                </div>
+    <!-- ── الرأس ── -->
+    <div class="rh-header">
+      <i class="fas fa-crown rh-crown"></i>
+      <h1 class="rh-title">تأمين 2026</h1>
+      <p class="rh-subtitle">حيث تُصنع الأمجاد وتُكتب التواريخ</p>
+    </div>
 
-                <div class="royal-actions">
-                    <a href="https://whatsapp.com/channel/0029VbC5YTSB4hdPRDfjyA3c" target="_blank" rel="noopener noreferrer" class="royal-btn join-btn">
-                        <i class="fab fa-whatsapp"></i> انضم للمجموعة
-                    </a>
-                    <a href="https://wa.me/972594054750" target="_blank" rel="noopener noreferrer" class="royal-btn support-btn">
-                        <i class="fas fa-headset"></i> الدعم الفني
-                    </a>
-                </div>
-            </div>
-        </section>
-    </main>
+    <!-- ── بطاقة: التاريخ ── -->
+    <div class="rh-card">
+      <h3><i class="fas fa-history"></i> تاريخنا وإرثنا</h3>
+      <p>
+        تأمين ليست مجرّد اسمٍ يُنطق، بل هي كيانٌ رياضيٌّ وُلد من قلب الحارة
+        وترعرع في الملاعب المحلية. من عامٍ لآخر، كنّا وما زلنا الرقمَ الصعبَ
+        في كلّ تحدٍّ نخوضه.
+      </p>
+    </div>
+
+    <!-- ── بطاقة: المنصة ── -->
+    <div class="rh-card">
+      <h3><i class="fas fa-laptop-code"></i> منصّتنا الجديدة</h3>
+      <p>
+        هذا الموقع هو بيتكم الجديد، تمّ تطويره بـ "سيستم عمر" ليكون المرجعَ
+        الأوّل لكلّ لاعبٍ ومتابع في منظومة تأمين — لتسهيل التكتيكات، بناء
+        لعبة الفريق، متابعة الطقس، وحفظ الإحصائيات.
+      </p>
+    </div>
+
+    <!-- ── الأزرار ── -->
+    <div class="rh-actions">
+      <a href="https://whatsapp.com/channel/0029VbC5YTSB4hdPRDfjyA3c"
+         target="_blank" rel="noopener noreferrer"
+         class="rh-btn rh-btn--wa">
+        <i class="fab fa-whatsapp"></i> انضم للمجموعة
+      </a>
+      <a href="https://wa.me/972594054750"
+         target="_blank" rel="noopener noreferrer"
+         class="rh-btn rh-btn--support">
+        <i class="fas fa-headset"></i> الدعم الفني
+      </a>
+    </div>
+
+  </div>
+</section>
+</main>
 
     <div id="library-modal" class="tactic-overlay" style="display:none;">
         <div class="tactic-modal-content glass-effect">
