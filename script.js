@@ -64,19 +64,7 @@ const statsChallenge = [
     { name: "إبراهيم", g: 2, a: 0, r: 8.4 }
 ];
 
-const matchHistoryArchive = [
-    { t1: "كريم", t2: "عمر", s: "6 - 9", st: "انتهت", d: "الجمعه 16 يناير" },
-    { t1: "عمر", t2: "كريم", s: "7 - 10", st: "انتهت", d: "الجمعه 23 يناير" },
-    { t1: "كريم التميمي", t2: "عمر & كريم", s: "8 - 7", st: "انتهت", d: "الجمعه 30 يناير" },
-    { t1: "خضر", t2: "عمر & كريم", s: "4 - 5", st: "انتهت", d: "الجمعه 13 فبراير" },
-    { t1: "كريم", t2: "عمر", s: "3 - 3", st: "انتهت", d: "الجمعه 20 فبراير" },
-    { t1: "عمر", t2: "كريم", s: "6 - 8", st: "انتهت", d: "الجمعه 27 فبراير" },
-    { t1: "خضر", t2: "كريم", s: "13 - 7", st: "انتهت", d: "الجمعه 6 مارس" },
-    { t1: "عمر", t2: "كريم", s: "5 - 7", st: "انتهت", d: " (ودية) الخميس 12 مارس" },
-    { t1: "عمر & كريم", t2: "كريم التميمي", s: "9 - 7", st: "انتهت", d: "الجمعه 13 مارس" },
-    { t1: "عمر", t2: "كريم", s: "6 - 4", st: "انتهت", d: "الجمعه 21 أبريل" },
-    { t1: "عمر", t2: "محمد علي", s: "5 - 5", st: "انتهت", d: "الجمعه 1 مايو" }
-];
+
 
 const dhikrList = [
     "اللهم إنك عفو تحب العفو فاعف عنا",
@@ -238,15 +226,54 @@ function navigate(pageId, element = null, persist = true) {
             targetPage.classList.add("active");
             targetPage.style.display = "block";
             targetPage.style.opacity = "1";
+        } else if (pageId === "matches" && document.getElementById("matchHistoryContainer")) {
+            // Special-case: the matches/archive markup is placed outside a
+            // `.page` wrapper in the HTML. Show matches-related blocks when
+            // user requests the `matches` page.
+            [
+                ".matches-hero",
+                ".matches-toolbar",
+                "#matchesStats",
+                "#matchHistoryContainer",
+                ".archive-info-fab",
+                "#archiveInfoModal"
+            ].forEach(sel => document.querySelectorAll(sel).forEach(el => el.style.display = ""));
+        } else {
+            // If target page does not exist, fallback to `home`.
+            const fallback = document.getElementById("home");
+            if (fallback) {
+                fallback.classList.add("active");
+                fallback.style.display = "block";
+                fallback.style.opacity = "1";
+                pageId = "home";
+            }
         }
 
         document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
         if (element) element.classList.add("active");
 
         if (persist) {
-            localStorage.setItem("taamen-last-page", pageId);
+            try { localStorage.setItem("taamen-last-page", pageId); } catch (_) {}
             if (history.replaceState) history.replaceState(null, "", `#${pageId}`);
         }
+
+        // If the matches/archive content is placed outside a `.page`,
+        // ensure it's only visible when `matches` is active.
+        const matchesSelectors = [
+            ".matches-hero",
+            ".matches-toolbar",
+            "#matchesStats",
+            "#matchHistoryContainer",
+            ".archive-info-fab",
+            "#archiveInfoModal"
+        ];
+
+        matchesSelectors.forEach(sel => {
+            document.querySelectorAll(sel).forEach(el => {
+                if (pageId === "matches") el.style.display = "";
+                else el.style.display = "none";
+            });
+        });
 
         window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
@@ -498,29 +525,556 @@ function updateFieldIcons() {
     });
 }
 
+function getMatchTypeClass(type) {
+    if (type === "strong") return "match-card--strong";
+    if (type === "friendly") return "match-card--friendly";
+    return "match-card--normal";
+}
+
+function statRow(label, value, total) {
+    const percent = total ? Math.min(100, Math.round((value / total) * 100)) : value;
+    return `
+        <div class="match-stat">
+            <div class="match-stat-top">
+                <span>${safeText(label)}</span>
+                <span>${safeText(value)}${label === "الاستحواذ" ? "%" : ""}</span>
+            </div>
+            <div class="match-stat-bar">
+                <div class="match-stat-fill" style="width:${percent}%"></div>
+            </div>
+        </div>
+    `;
+}
+
+function teamBlock(teamName, stats, reverse = false) {
+    return `
+        <div class="match-team ${reverse ? "match-team--right" : ""}">
+            <div class="match-team-name">${safeText(teamName)}</div>
+
+            <div class="match-team-stats">
+                ${statRow("الاستحواذ", stats.possession, 100)}
+                ${statRow("التسديدات", stats.shots, 20)}
+                ${statRow("على المرمى", stats.onTarget, 15)}
+                ${statRow("التصديات", stats.saves, 10)}
+                ${statRow("الأسيستات", stats.assists, 10)}
+                ${statRow("الأهداف", stats.goals, 10)}
+                ${statRow("دقة التمرير", stats.passes, 100)}
+            </div>
+        </div>
+    `;
+}
+
+/* =========================================================
+   MATCH HISTORY REIMAGINED
+   - old matches + new detailed matches
+   - search / filter / sort
+   - summary counters
+   - accordion details
+   - safe fallback if some elements do not exist
+   ========================================================= */
+
+const matchHistoryArchive = [
+    // قديم
+    { t1: "كريم", t2: "عمر", s: "6 - 9", st: "انتهت", d: "الجمعه 16 يناير" },
+    { t1: "عمر", t2: "كريم", s: "7 - 10", st: "انتهت", d: "الجمعه 23 يناير" },
+    { t1: "كريم التميمي", t2: "عمر & كريم", s: "8 - 7", st: "انتهت", d: "الجمعه 30 يناير" },
+    { t1: "خضر", t2: "عمر & كريم", s: "4 - 5", st: "انتهت", d: "الجمعه 13 فبراير" },
+    { t1: "كريم", t2: "عمر", s: "3 - 3", st: "انتهت", d: "الجمعه 20 فبراير" },
+    { t1: "عمر", t2: "كريم", s: "6 - 8", st: "انتهت", d: "الجمعه 27 فبراير" },
+    { t1: "خضر", t2: "كريم", s: "13 - 7", st: "انتهت", d: "الجمعه 6 مارس" },
+    { t1: "عمر", t2: "كريم", s: "5 - 7", st: "انتهت", d: "ودية الخميس 12 مارس" },
+    { t1: "عمر & كريم", t2: "كريم التميمي", s: "9 - 7", st: "انتهت", d: "الجمعه 13 مارس" },
+    { t1: "عمر", t2: "كريم", s: "6 - 4", st: "انتهت", d: "الجمعه 21 أبريل" },
+    { t1: "عمر", t2: "محمد علي", s: "5 - 5", st: "انتهت", d: "الجمعه 1 مايو" },
+
+    // جديد مع تفاصيل
+    {
+        id: "M-201",
+        type: "strong",
+        t1: "عمر",
+        t2: "كريم",
+        s: "6 - 4",
+        st: "انتهت",
+        d: "الجمعة 8 مايو",
+        dateKey: 20260508,
+        details: {
+            team1: { possession: 56, shots: 11, onTarget: 7, saves: 1, assists: 4, passes: 89, fouls: 2, corners: 5 },
+            team2: { possession: 44, shots: 8, onTarget: 4, saves: 3, assists: 2, passes: 76, fouls: 3, corners: 2 }
+        }
+    },
+    {
+        id: "M-202",
+        type: "normal",
+        t1: "خضر",
+        t2: "عمر",
+        s: "2 - 2",
+        st: "انتهت",
+        d: "الجمعة 15 مايو",
+        dateKey: 20260515,
+        details: {
+            team1: { possession: 50, shots: 7, onTarget: 3, saves: 2, assists: 1, passes: 73, fouls: 2, corners: 2 },
+            team2: { possession: 50, shots: 7, onTarget: 3, saves: 2, assists: 1, passes: 78, fouls: 1, corners: 3 }
+        }
+    },
+    {
+        id: "M-203",
+        type: "friendly",
+        t1: "كريم التميمي",
+        t2: "محمد علي",
+        s: "3 - 6",
+        st: "ودية",
+        d: "الخميس 21 مايو",
+        dateKey: 20260521,
+        details: {
+            team1: { possession: 47, shots: 9, onTarget: 4, saves: 1, assists: 2, passes: 74, fouls: 1, corners: 3 },
+            team2: { possession: 53, shots: 12, onTarget: 7, saves: 2, assists: 5, passes: 82, fouls: 2, corners: 4 }
+        }
+    },
+    {
+        id: "M-204",
+        type: "strong",
+        t1: "عمر & كريم",
+        t2: "خضر",
+        s: "9 - 8",
+        st: "انتهت",
+        d: "الجمعة 29 مايو",
+        dateKey: 20260529,
+        details: {
+            team1: { possession: 54, shots: 14, onTarget: 8, saves: 2, assists: 6, passes: 91, fouls: 3, corners: 6 },
+            team2: { possession: 46, shots: 12, onTarget: 7, saves: 3, assists: 4, passes: 79, fouls: 4, corners: 4 }
+        }
+    },
+    {
+        id: "M-205",
+        type: "normal",
+        t1: "عمر",
+        t2: "محمد علي",
+        s: "1 - 0",
+        st: "انتهت",
+        d: "الجمعة 5 يونيو",
+        dateKey: 20260605,
+        details: {
+            team1: { possession: 49, shots: 5, onTarget: 2, saves: 4, assists: 1, passes: 69, fouls: 2, corners: 1 },
+            team2: { possession: 51, shots: 6, onTarget: 1, saves: 1, assists: 0, passes: 72, fouls: 2, corners: 2 }
+        }
+    }
+];
+
+const __matchSafeText = (value) =>
+    String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+
+const matchState = {
+    filter: "all",
+    search: "",
+    sort: "newest",
+    openId: null
+};
+
+function getMatchKindClass(type) {
+    if (type === "strong") return "match-card--strong";
+    if (type === "friendly") return "match-card--friendly";
+    return "match-card--normal";
+}
+
+function getMatchKindLabel(type) {
+    if (type === "strong") return "قوية";
+    if (type === "friendly") return "ودية";
+    return "عادية";
+}
+
+function parseScore(score) {
+    const parts = String(score || "").split("-").map(s => parseInt(s.trim(), 10));
+    return {
+        left: Number.isFinite(parts[0]) ? parts[0] : 0,
+        right: Number.isFinite(parts[1]) ? parts[1] : 0
+    };
+}
+
+function getMatchKey(match, index) {
+    return match.id || `legacy-${index}`;
+}
+
+function createStatRow(label, value, max = 100) {
+    const num = Number(value) || 0;
+    const percent = Math.max(0, Math.min(100, (num / max) * 100));
+
+    return `
+        <div class="match-stat">
+            <div class="match-stat-top">
+                <span>${__matchSafeText(label)}</span>
+                <span>${__matchSafeText(num)}${label === "الاستحواذ" ? "%" : ""}</span>
+            </div>
+            <div class="match-stat-bar">
+                <div class="match-stat-fill" style="width:${percent}%"></div>
+            </div>
+        </div>
+    `;
+}
+
+function createTeamPanel(teamName, stats, sideClass = "") {
+    return `
+        <div class="match-team ${sideClass}">
+            <div class="match-team-name">${__matchSafeText(teamName)}</div>
+            <div class="match-team-stats">
+                ${createStatRow("الاستحواذ", stats.possession, 100)}
+                ${createStatRow("التسديدات", stats.shots, 20)}
+                ${createStatRow("على المرمى", stats.onTarget, 15)}
+                ${createStatRow("التصديات", stats.saves, 10)}
+                ${createStatRow("الأسيستات", stats.assists, 10)}
+                ${createStatRow("التمريرات", stats.passes, 120)}
+                ${createStatRow("الأخطاء", stats.fouls, 10)}
+                ${createStatRow("الركنيات", stats.corners, 10)}
+            </div>
+        </div>
+    `;
+}
+
+function createComparisonBar(label, leftValue, rightValue) {
+    const left = Number(leftValue) || 0;
+    const right = Number(rightValue) || 0;
+    const total = left + right || 1;
+    const leftPct = (left / total) * 100;
+    const rightPct = (right / total) * 100;
+
+    return `
+        <div class="match-compare">
+            <div class="match-compare-title">${__matchSafeText(label)}</div>
+            <div class="match-compare-bar">
+                <span class="match-compare-left" style="width:${leftPct}%"></span>
+                <span class="match-compare-right" style="width:${rightPct}%"></span>
+            </div>
+            <div class="match-compare-labels">
+                <span>${left}</span>
+                <span>${right}</span>
+            </div>
+        </div>
+    `;
+}
+
+function getFilteredMatches() {
+    const q = matchState.search.trim().toLowerCase();
+
+    let list = matchHistoryArchive
+        .map((m, index) => ({ ...m, __index: index }))
+        .filter(m => {
+            const kind = m.type || "normal";
+            const haystack = [
+                m.t1, m.t2, m.s, m.st, m.d, m.id, kind
+            ].join(" ").toLowerCase();
+
+            const matchFilter =
+                matchState.filter === "all" ||
+                kind === matchState.filter;
+
+            const matchSearch =
+                !q || haystack.includes(q);
+
+            return matchFilter && matchSearch;
+        });
+
+    list.sort((a, b) => {
+        const aKey = Number.isFinite(Number(a.dateKey)) ? Number(a.dateKey) : a.__index;
+        const bKey = Number.isFinite(Number(b.dateKey)) ? Number(b.dateKey) : b.__index;
+        return matchState.sort === "newest" ? (bKey - aKey) : (aKey - bKey);
+    });
+
+    return list;
+}
+
+function buildSummary(list) {
+    const summary = {
+        total: list.length,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        strong: 0,
+        normal: 0,
+        friendly: 0
+    };
+
+    list.forEach((m) => {
+        const { left, right } = parseScore(m.s);
+
+        if (left > right) summary.wins++;
+        else if (left < right) summary.losses++;
+        else summary.draws++;
+
+        const kind = m.type || "normal";
+        if (kind === "strong") summary.strong++;
+        else if (kind === "friendly") summary.friendly++;
+        else summary.normal++;
+    });
+
+    return summary;
+}
+
+function renderSummary() {
+    const statsBox = document.getElementById("matchesStats");
+    if (!statsBox) return;
+
+    const list = getFilteredMatches();
+    const s = buildSummary(list);
+
+    statsBox.innerHTML = `
+        <div class="summary-card">
+            <span>المباريات</span>
+            <strong>${s.total}</strong>
+        </div>
+        <div class="summary-card">
+            <span>فوز</span>
+            <strong>${s.wins}</strong>
+        </div>
+        <div class="summary-card">
+            <span>تعادل</span>
+            <strong>${s.draws}</strong>
+        </div>
+        <div class="summary-card">
+            <span>خسارة</span>
+            <strong>${s.losses}</strong>
+        </div>
+        <div class="summary-card summary-card--strong">
+            <span>قوية</span>
+            <strong>${s.strong}</strong>
+        </div>
+        <div class="summary-card summary-card--friendly">
+            <span>ودية</span>
+            <strong>${s.friendly}</strong>
+        </div>
+    `;
+}
+
+function closeAllDetails(exceptPanel = null) {
+    document.querySelectorAll(".match-details.open").forEach(panel => {
+        if (panel === exceptPanel) return;
+        panel.classList.remove("open");
+        panel.style.maxHeight = "0px";
+    });
+
+    document.querySelectorAll(".match-card-btn[aria-expanded='true']").forEach(btn => {
+        const target = document.getElementById(btn.getAttribute("data-target"));
+        if (target && target === exceptPanel) return;
+        btn.setAttribute("aria-expanded", "false");
+    });
+
+    document.querySelectorAll(".match-item.is-open").forEach(item => {
+        const panel = item.querySelector(".match-details.open");
+        if (panel && panel === exceptPanel) return;
+        item.classList.remove("is-open");
+    });
+}
+
+function openPanel(panel, btn) {
+    panel.classList.add("open");
+    panel.style.maxHeight = "0px";
+    requestAnimationFrame(() => {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+    });
+
+    btn.setAttribute("aria-expanded", "true");
+    btn.closest(".match-item")?.classList.add("is-open");
+    matchState.openId = btn.getAttribute("data-key") || null;
+}
+
+function closePanel(panel, btn) {
+    panel.style.maxHeight = panel.scrollHeight + "px";
+    requestAnimationFrame(() => {
+        panel.classList.remove("open");
+        panel.style.maxHeight = "0px";
+    });
+
+    btn.setAttribute("aria-expanded", "false");
+    btn.closest(".match-item")?.classList.remove("is-open");
+    matchState.openId = null;
+}
+
+function togglePanel(panel, btn) {
+    const isOpen = panel.classList.contains("open");
+
+    if (isOpen) {
+        closePanel(panel, btn);
+        return;
+    }
+
+    closeAllDetails(panel);
+    openPanel(panel, btn);
+}
+
 function renderMatches() {
     const archiveContainer = document.getElementById("matchHistoryContainer");
     if (!archiveContainer) return;
 
-    archiveContainer.innerHTML = matchHistoryArchive.map(m => `
-        <div class="tilt-card" style="display:flex; justify-content:space-between; align-items:center; background: rgba(0, 10, 26, 0.7); border-color: rgba(255,255,255,0.1); margin-bottom: 15px;">
-            <div style="text-align:center; flex:1;">
-                <i class="fas fa-shield-alt" style="display:block; font-size:1.8rem; margin-bottom:8px; color:#a0aec0;"></i>
-                <span style="font-weight:bold; font-size:1.1rem;">${safeText(m.t1)}</span>
+    const list = getFilteredMatches();
+    renderSummary();
+
+    if (!list.length) {
+        archiveContainer.innerHTML = `
+            <div class="empty-state">
+                لا توجد مباريات مطابقة للبحث أو الفلتر الحالي.
             </div>
-            <div style="text-align:center; padding: 0 20px; flex:2;">
-                <div style="font-family:'Orbitron'; font-size:2.2rem; color:var(--accent-cyan); text-shadow: 0 0 15px rgba(0,242,254,0.5); font-weight:900;">${safeText(m.s)}</div>
-                <div style="font-size:0.9rem; color:${m.st === "انتهت" ? "#cbd5e0" : "var(--gold)"}; margin-top:5px; font-weight:bold;">${safeText(m.st)}</div>
-                <div style="font-size:0.8rem; opacity:0.7; margin-top:4px;">${safeText(m.d)}</div>
+        `;
+        return;
+    }
+
+    archiveContainer.innerHTML = list.map((m, index) => {
+        const hasDetails = !!m.details;
+        const detailsId = `match-details-${m.__index}`;
+        const kindClass = getMatchKindClass(m.type);
+        const kindLabel = getMatchKindLabel(m.type);
+        const key = getMatchKey(m, m.__index);
+
+        const { left, right } = parseScore(m.s);
+        const dominant = left > right ? "left" : right > left ? "right" : "draw";
+        const isOpen = matchState.openId === key && hasDetails;
+
+        return `
+            <div class="match-item ${kindClass} ${dominant === "left" ? "match-item--left-win" : dominant === "right" ? "match-item--right-win" : "match-item--draw"} ${isOpen ? "is-open" : ""}" data-kind="${__matchSafeText(m.type || "normal")}">
+                <button class="match-card-btn"
+                        type="button"
+                        data-target="${detailsId}"
+                        data-key="${__matchSafeText(key)}"
+                        aria-expanded="${isOpen ? "true" : "false"}"
+                        ${hasDetails ? "" : "disabled"}>
+                    <div class="match-card-head">
+                        <div class="match-side">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>${__matchSafeText(m.t1)}</span>
+                        </div>
+
+                        <div class="match-center">
+                            <div class="match-score">${__matchSafeText(m.s)}</div>
+                            <div class="match-status">${__matchSafeText(m.st)}</div>
+                            <div class="match-date">${__matchSafeText(m.d)}</div>
+                        </div>
+
+                        <div class="match-side">
+                            <i class="fas fa-tshirt"></i>
+                            <span>${__matchSafeText(m.t2)}</span>
+                        </div>
+                    </div>
+
+                    <div class="match-badges">
+                        ${m.id ? `<span class="match-badge match-badge--id">${__matchSafeText(m.id)}</span>` : ""}
+                        <span class="match-badge match-badge--type">${__matchSafeText(kindLabel)}</span>
+                        ${m.type === "strong" ? `<span class="match-badge match-badge--fire"><i class="fas fa-fire"></i> قوية</span>` : ""}
+                        <span class="match-badge ${hasDetails ? "match-badge--expand" : "match-badge--locked"}">
+                            ${hasDetails ? "اضغط لعرض التفاصيل" : "مباراة قديمة"}
+                        </span>
+                    </div>
+                </button>
+
+                ${hasDetails ? `
+                    <div class="match-details ${isOpen ? "open" : ""}" id="${detailsId}">
+                        <div class="match-details-grid">
+                            ${createTeamPanel(m.t1, m.details.team1)}
+                            ${createTeamPanel(m.t2, m.details.team2, "match-team--right")}
+                        </div>
+
+                        <div class="match-compare-wrap">
+                            ${createComparisonBar("مقارنة الاستحواذ", m.details.team1.possession, m.details.team2.possession)}
+                            ${createComparisonBar("مقارنة التسديدات", m.details.team1.shots, m.details.team2.shots)}
+                            ${createComparisonBar("مقارنة التمريرات", m.details.team1.passes, m.details.team2.passes)}
+                        </div>
+                    </div>
+                ` : ""}
             </div>
-            <div style="text-align:center; flex:1;">
-                <i class="fas fa-tshirt" style="display:block; font-size:1.8rem; margin-bottom:8px; color:#a0aec0;"></i>
-                <span style="font-weight:bold; font-size:1.1rem;">${safeText(m.t2)}</span>
-            </div>
-        </div>
-    `).join("");
+        `;
+    }).join("");
+
+    requestAnimationFrame(() => {
+        if (!matchState.openId) return;
+        const openPanelEl = archiveContainer.querySelector(".match-details.open");
+        if (openPanelEl) {
+            openPanelEl.style.maxHeight = openPanelEl.scrollHeight + "px";
+        }
+    });
 }
 
+function bindToolbar() {
+    const searchInput = document.getElementById("matchSearchInput");
+    const sortSelect = document.getElementById("matchSortSelect");
+
+    if (searchInput) {
+        searchInput.addEventListener("input", () => {
+            matchState.search = searchInput.value;
+            renderMatches();
+        });
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener("change", () => {
+            matchState.sort = sortSelect.value || "newest";
+            renderMatches();
+        });
+    }
+
+    document.querySelectorAll(".match-filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".match-filter-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            matchState.filter = btn.dataset.filter || "all";
+            renderMatches();
+        });
+    });
+}
+
+function bindArchiveClicks() {
+    const archiveContainer = document.getElementById("matchHistoryContainer");
+    if (!archiveContainer) return;
+
+    archiveContainer.addEventListener("click", (e) => {
+        const btn = e.target.closest(".match-card-btn");
+        if (!btn || btn.disabled) return;
+
+        const targetId = btn.getAttribute("data-target");
+        const panel = document.getElementById(targetId);
+        if (!panel) return;
+
+        togglePanel(panel, btn);
+    });
+}
+
+function bindInfoModal() {
+    const infoFab = document.getElementById("archiveInfoFab");
+    const infoModal = document.getElementById("archiveInfoModal");
+    const closeInfo = document.getElementById("closeArchiveInfo");
+
+    if (!infoFab || !infoModal || !closeInfo) return;
+
+    const showModal = () => {
+        infoModal.classList.add("show");
+        infoModal.setAttribute("aria-hidden", "false");
+    };
+
+    const hideModal = () => {
+        infoModal.classList.remove("show");
+        infoModal.setAttribute("aria-hidden", "true");
+    };
+
+    infoFab.addEventListener("click", showModal);
+    closeInfo.addEventListener("click", hideModal);
+
+    infoModal.addEventListener("click", (e) => {
+        if (e.target === infoModal) hideModal();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    renderMatches();
+    bindToolbar();
+    bindArchiveClicks();
+    bindInfoModal();
+});
+
+window.addEventListener("resize", () => {
+    document.querySelectorAll(".match-details.open").forEach(panel => {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+    });
+});
 /* =========================================================
    [8] مواقيت الصلاة
    ========================================================= */
@@ -1755,8 +2309,30 @@ function initKeyboardShortcuts() {
 }
 
 function initAppPageFromStorage() {
-    const savedPage = localStorage.getItem("taamen-last-page") || location.hash.replace("#", "") || "home";
-    navigate(savedPage, null, false);
+    let savedPage = null;
+    try { savedPage = localStorage.getItem("taamen-last-page"); } catch (_) { savedPage = null; }
+    const hashPage = location.hash.replace("#", "");
+
+    const candidate = savedPage || hashPage || "home";
+
+    // Allow 'matches' as a valid candidate even if it's not wrapped in a `.page`,
+    // because the markup for the archive exists elsewhere in the DOM.
+    const matchesExists = document.getElementById("matchHistoryContainer");
+
+    if (candidate === "matches" && matchesExists) {
+        navigate("matches", null, false);
+        return;
+    }
+
+    // Only navigate to a page that actually exists in the DOM.
+    if (candidate && document.getElementById(candidate)) {
+        navigate(candidate, null, false);
+        return;
+    }
+
+    // If saved page was invalid, clear it and default to home.
+    try { localStorage.removeItem("taamen-last-page"); } catch (_) {}
+    navigate("home", null, false);
 }
 
 /* =========================================================
