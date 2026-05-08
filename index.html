@@ -199,60 +199,115 @@
             </div>
         </section>
 
-        <section class="page" id="cannon">
-            <h2 class="section-title">توقيت النخبة</h2>
-            <div class="cannon-section tilt-card" id="dynamicTimerSection">
-                <div class="next-prayer-label" id="nextPrayerNameLabel">الوقت المتبقي للصلاة القادمة</div>
-                <div class="countdown-main" id="dynamicPrayerCounter">--:--:--</div>
-                <div class="date-display" id="hijriDate">جاري تحديث التاريخ الهجري...</div>
-            </div>
-            <div class="prayers-grid" id="prayersContainer"></div>
-        </section>
+<section class="page" id="matches">
 
-        <section class="page" id="matches">
-            <h2 class="section-title">أرشيف الأمجاد</h2>
-            <div class="cl-champions-card">
-                <div class="cl-stars-layer"></div>
-                <div class="cl-nebula-glow"></div>
+    <div class="matches-page-shell">
 
-                <div class="cl-trophy-scene">
-                    <div class="cl-trophy-container">
-                        <div class="cl-trophy-aura"></div>
+        <div class="matches-hero">
+            <div class="matches-hero-glow"></div>
 
-                        <div class="ucl-trophy">
-                            <div class="ucl-handle ucl-handle-left"></div>
-                            <div class="ucl-handle ucl-handle-right"></div>
-                            <div class="ucl-rim"></div>
-                            <div class="ucl-bowl">
-                                <div class="ucl-reflection-main"></div>
-                                <div class="ucl-reflection-shine"></div>
-                            </div>
-                            <div class="ucl-stem"></div>
-                            <div class="ucl-base-tier-1"></div>
-                            <div class="ucl-base-tier-2"></div>
-                        </div>
+            <div class="matches-hero-content">
+                <span class="matches-hero-badge">
+                    <i class="fas fa-trophy"></i>
+                    أرشيف المباريات
+                </span>
 
-                        <div class="ucl-shadow"></div>
-                    </div>
-                </div>
+                <h2 class="matches-hero-title">ليالي المنافسة</h2>
 
-                <div class="cl-content">
-                    <h2 class="cl-title">ليالي الأبطال</h2>
-                    <div class="cl-divider">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="cl-slogan">حيث تُصنع الأساطير</p>
-                </div>
+                <p class="matches-hero-text">
+                    جميع المواجهات والإحصائيات والتفاصيل الكاملة للمباريات القوية والعادية والودية.
+                </p>
             </div>
 
-            <div id="matchHistoryContainer" class="matches-grid"></div>
-        </section>
+            <div class="matches-hero-actions">
+                <button class="matches-hero-btn active" data-filter="all" type="button">
+                    <i class="fas fa-layer-group"></i>
+                    الكل
+                </button>
 
-        <section class="page" id="weather">
+                <button class="matches-hero-btn" data-filter="strong" type="button">
+                    <i class="fas fa-fire"></i>
+                    قوية
+                </button>
+
+                <button class="matches-hero-btn" data-filter="normal" type="button">
+                    <i class="fas fa-futbol"></i>
+                    عادية
+                </button>
+
+                <button class="matches-hero-btn" data-filter="friendly" type="button">
+                    <i class="fas fa-handshake"></i>
+                    ودية
+                </button>
+            </div>
+        </div>
+
+        <div class="matches-toolbar">
+            <div class="matches-search">
+                <i class="fas fa-search"></i>
+                <input
+                    id="matchSearchInput"
+                    type="text"
+                    placeholder="ابحث باسم فريق أو ID أو نتيجة..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="matches-sort">
+                <label for="matchSortSelect">
+                    <i class="fas fa-sort"></i>
+                    ترتيب
+                </label>
+
+                <select id="matchSortSelect">
+                    <option value="newest">الأحدث أولًا</option>
+                    <option value="oldest">الأقدم أولًا</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="matchesStats" class="matches-stats"></div>
+
+        <div id="matchHistoryContainer" class="matches-grid"></div>
+
+        <button
+            class="archive-info-fab"
+            id="archiveInfoFab"
+            aria-label="معلومات الصفحة"
+            type="button"
+        >
+            <i class="fas fa-info"></i>
+        </button>
+
+        <div
+            class="archive-info-modal"
+            id="archiveInfoModal"
+            aria-hidden="true"
+        >
+            <div class="archive-info-modal-box">
+                <button
+                    class="archive-info-close"
+                    id="closeArchiveInfo"
+                    aria-label="إغلاق"
+                    type="button"
+                >
+                    ×
+                </button>
+
+<h3>نظام الأرشيف</h3>
+<p>
+هنا تُحفظ لحظات المنافسة في صورة أكثر أناقة ووضوحًا، حيث يتحول سجل المباريات إلى واجهة حية تعرض كل مواجهة بأسلوب بصري متقدم يميّز بين المباريات القوية والعادية والودية. يمكنك استعراض النتائج بسرعة، والبحث عن أي لقاء، وتصفية السجل، وترتيب المباريات حسب التاريخ، بينما تظهر تفاصيل المباريات الجديدة عند الضغط عليها بشكل تفاعلي يضم الإحصائيات الكاملة لكل فريق على حدة.
+</p>
+<p>
+هذا القسم لا يكتفي بعرض النتيجة، بل يمنحك قراءة أعمق للمباراة نفسها عبر الاستحواذ، التسديدات، التصديات، الأسيستات، التمريرات، والركنيات، مع تصميم متناسق وحركات سلسة تجعل التصفح أكثر فخامة وتنظيمًا.
+</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="page" id="weather">
             <h2 class="section-title">أجواء الملعب (الخليل)</h2>
             <div class="weather-card-hero tilt-card">
                 <div class="weather-main-info">
@@ -327,5 +382,30 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
+
+    <script>
+const infoFab = document.getElementById("archiveInfoFab");
+const infoModal = document.getElementById("archiveInfoModal");
+const closeInfo = document.getElementById("closeArchiveInfo");
+
+if (infoFab && infoModal && closeInfo) {
+    infoFab.addEventListener("click", () => {
+        infoModal.classList.add("show");
+        infoModal.setAttribute("aria-hidden", "false");
+    });
+
+    closeInfo.addEventListener("click", () => {
+        infoModal.classList.remove("show");
+        infoModal.setAttribute("aria-hidden", "true");
+    });
+
+    infoModal.addEventListener("click", (e) => {
+        if (e.target === infoModal) {
+            infoModal.classList.remove("show");
+            infoModal.setAttribute("aria-hidden", "true");
+        }
+    });
+}
+    </script>
 </body>
 </html>
