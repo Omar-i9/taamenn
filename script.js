@@ -3628,49 +3628,48 @@ navigator.share({
 
 
 
-window.switchPage = function(page, btn){
+// 1. تعريف دالة الإغلاق على الـ window عشان الـ HTML يشوفها مهما كان نوع السكربت
+window.closePopup = function() {
+    const popup = document.getElementById('mobilePopup');
+    
+    if (popup) {
+        // إضافة كلاس الأنيميشن بتاع الخروج
+        popup.classList.add('closing'); 
+        
+        // استنى 400 ملي ثانية (نفس مدة أنيميشن CSS) وبعدين اخفيه تماماً
+        setTimeout(() => {
+            popup.classList.remove('active');
+            popup.classList.remove('closing');
+            
+            // زيادة تأكيد عشان ما يفضلش حاجز مكان أو يغطي على الشاشة
+            popup.style.display = 'none';
+        }, 400);
+    }
+};
 
-    document.querySelectorAll(".switch-btn")
-    .forEach(b => b.classList.remove("active"));
-
-    if(btn) btn.classList.add("active");
-
-    const archive = document.getElementById("archivePage");
-    const live = document.getElementById("livePage");
-
-    archive.style.display = (page === "archive") ? "block" : "none";
-    live.style.display = (page === "live") ? "block" : "none";
-}
-
-
+// 2. كود التشغيل عند تحميل الصفحة
 document.addEventListener("DOMContentLoaded", function() {
-    // التحقق إذا كان المستخدم يستخدم موبايل
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    // فحص إذا كان المستخدم موبايل (أو لابتوب بشاشة صغيرة عشان تعرف تجرّب)
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
     if (isMobile) {
-        // تأخير بسيط ثانية واحدة عشان يحس بالدخول
+        // تأخير بسيط ثانية واحدة عشان الأناقة ;)
         setTimeout(() => {
             const popup = document.getElementById('mobilePopup');
-            const sound = document.getElementById('notificationSound');
-            
-            // إظهار البوب آب
-            popup.classList.add('active');
-            
-            // محاولة تشغيل الصوت (قد يفشل لو المستخدم لم يتفاعل بعد)
-            sound.play().catch(error => {
-                console.log("الصوت يحتاج تفاعل أولاً");
-            });
+            if (popup) {
+                // التأكد إن الـ display رجع flex عشان يظهر
+                popup.style.display = 'flex';
+                popup.classList.add('active');
+                
+                // تشغيل الصوت "فقط" لو العنصر موجود في الـ HTML بتاعك
+                const sound = document.getElementById('notificationSound');
+                if (sound) {
+                    sound.play().catch(error => {
+                        console.log("الصوت محتاج تفاعل (بسبب سياسة المتصفحات)");
+                    });
+                }
+            }
         }, 1000); 
     }
 });
-
-function closePopup() {
-    const popup = document.getElementById('mobilePopup');
-    popup.classList.add('closing'); // تشغيل أنيميشن الخروج
-    
-    setTimeout(() => {
-        popup.classList.remove('active');
-        popup.classList.remove('closing');
-    }, 400);
-}
 })();
