@@ -14,6 +14,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&family=Tajawal:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body class="night-mode">
+
+    <!-- صوت التنبيه (تقدر تغير الرابط برابط صوت ديسكورد مباشر لو عندك) -->
+<audio id="notificationSound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
+
+<div class="glass-overlay" id="mobilePopup">
+    <div class="glass-card">
+        <span class="close-x" onclick="closePopup()">&times;</span>
+        <div class="content">
+            <h2>رسالة خاصة لك 🚀</h2>
+            <p>أهلاً بك! نتشرف بزيارتك لموقعنا من خلال هاتفك. استمتع بتجربة تصفح مميزة.</p>
+        </div>
+        
+        <button class="skip-btn" onclick="closePopup()">فهمت ذلك</button>
+        
+        <!-- الملاحظة في الأسفل -->
+        <div class="footer-note">
+            <p>ملاحظة: هذا العرض مخصص لمستخدمي الجوال فقط.</p>
+        </div>
+    </div>
+</div>
+
     <div id="notification-container"></div>
     <div id="sky-background"></div>
     <div class="stars-container" id="starsContainer"></div>

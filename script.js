@@ -3642,4 +3642,35 @@ window.switchPage = function(page, btn){
     live.style.display = (page === "live") ? "block" : "none";
 }
 
+
+document.addEventListener("DOMContentLoaded", function() {
+    // التحقق إذا كان المستخدم يستخدم موبايل
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        // تأخير بسيط ثانية واحدة عشان يحس بالدخول
+        setTimeout(() => {
+            const popup = document.getElementById('mobilePopup');
+            const sound = document.getElementById('notificationSound');
+            
+            // إظهار البوب آب
+            popup.classList.add('active');
+            
+            // محاولة تشغيل الصوت (قد يفشل لو المستخدم لم يتفاعل بعد)
+            sound.play().catch(error => {
+                console.log("الصوت يحتاج تفاعل أولاً");
+            });
+        }, 1000); 
+    }
+});
+
+function closePopup() {
+    const popup = document.getElementById('mobilePopup');
+    popup.classList.add('closing'); // تشغيل أنيميشن الخروج
+    
+    setTimeout(() => {
+        popup.classList.remove('active');
+        popup.classList.remove('closing');
+    }, 400);
+}
 })();

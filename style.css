@@ -4356,3 +4356,84 @@ body {
         transform:translateY(0);
     }
 }
+
+
+/* إخفاء العنصر تماماً في المتصفحات العادية */
+.glass-overlay {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* التفعيل للموبايل فقط (شاشات أصغر من 768px) */
+@media (max-width: 768px) {
+    .glass-overlay.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        width: 85%;
+        padding: 30px;
+        border-radius: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        text-align: center;
+        position: relative;
+        /* تأثير الدخول */
+        transform: translateY(100px);
+        animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+}
+
+@keyframes slideUp {
+    to { transform: translateY(0); }
+}
+
+/* تأثير الخروج */
+.glass-overlay.closing .glass-card {
+    animation: slideDown 0.4s forwards;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(100px); opacity: 0; }
+}
+
+.close-x {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.skip-btn {
+    background: white;
+    color: #333;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.footer-note {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 10px;
+    opacity: 0.8;
+}
