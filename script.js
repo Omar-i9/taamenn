@@ -1252,7 +1252,7 @@ function updateBookingTimer() {
     const badgeEl = document.getElementById("booking-badge");
     const timerTextEl = document.getElementById("booking-timer-text");
 
-    const isBookingOpen = day === 5 && hour >= 17 && hour < 18;
+    const isBookingOpen = day === 5 && hour >= 19 && hour < 20;
     if (isBookingOpen) {
         if (badgeEl) {
             badgeEl.innerText = "مفتوح الآن";
@@ -1260,7 +1260,7 @@ function updateBookingTimer() {
             badgeEl.style.color = "#000";
         }
         if (timerTextEl) {
-            timerTextEl.innerText = "الحجز مفتوح الآن حتى الساعة 6 مساءً";
+            timerTextEl.innerText = "الحجز مفتوح الآن حتى الساعة 8 مساءً";
         }
         if (countdownEl) {
             countdownEl.innerText = "00:00:00:00";
@@ -1292,7 +1292,7 @@ function updateBookingTimer() {
     }
 
     if (timerTextEl) {
-        timerTextEl.innerText = "الحجز يفتح كل جمعة من 5:00 إلى 6:00 مساءً";
+        timerTextEl.innerText = "الحجز يفتح كل جمعة من 7:00 إلى 8:00 مساءً";
     }
 }
 
@@ -2495,4 +2495,1145 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     init();
   }
+
+  const upcomingMatches = [
+    {
+        id: "U-301",
+        t1: "عمر",
+        t2: "كريم",
+        dateشTime: "2026-05-11T18:00:00+03:00",
+        venue: "الملعب الرئيسي",
+        round: "مواجهة حاسمة",
+        note: "عودة قوية بعد الاستعداد.",
+        expected: "4-3-3",
+        tag: "قمة مرتقبة"
+    },
+];
+
+const upcomingState = {
+    filter: "all",
+    search: "",
+    sort: "soonest",
+    openKey: null
+};
+
+function safeText(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+}
+
+function hashString(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+        h = ((h << 5) - h) + str.charCodeAt(i);
+        h |= 0;
+    }
+    return Math.abs(h);
+}
+
+const colorPairs = [
+    ["#00f2ff", "#7c3aed"],
+    ["#ff7a18", "#ff3d81"],
+    ["#4ade80", "#06b6d4"],
+    ["#f59e0b", "#ef4444"],
+    ["#22c55e", "#14b8a6"],
+    ["#a855f7", "#60a5fa"]
+];
+
+function applyTeamGlow(card, match) {
+    const seed = hashString(match.id + match.t1 + match.t2);
+    const pair = colorPairs[seed % colorPairs.length];
+    const pair2 = colorPairs[(seed + 2) % colorPairs.length];
+
+    card.style.setProperty("--accent-a", pair[0]);
+    card.style.setProperty("--accent-b", pair[1]);
+    card.style.setProperty("--accent-c", pair2[0]);
+    card.style.setProperty("--accent-d", pair2[1]);
+}
+
+function getPhase(diffMs) {
+    const hour24 = 24 * 60 * 60 * 1000;
+    const day3 = 72 * 60 * 60 * 1000;
+
+    if (diffMs <= 0) return "live";
+    if (diffMs <= hour24) return "critical";
+    if (diffMs <= day3) return "soon";
+    return "normal";
+}
+
+function getPhaseLabel(phase) {
+    if (phase === "live") return "بدأت الآن";
+    if (phase === "critical") return "أقل من 24 ساعة";
+    if (phase === "soon") return "قريبة";
+    return "مجدولة";
+}
+
+function formatCountdown(diffMs) {
+    if (diffMs <= 0) return "بدأت الآن";
+
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (days > 0) return `${days}ي ${hours}س ${minutes}د`;
+    if (hours > 0) return `${hours}س ${minutes}د ${seconds}ث`;
+    return `${minutes}د ${seconds}ث`;
+}
+
+function formatDateTime(dateTime) {
+    try {
+        return new Intl.DateTimeFormat("ar", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            hour: "numeric",
+            minute: "2-digit"
+        }).format(new Date(dateTime));
+    } catch {
+        return String(dateTime);
+    }
+}
+
+function getBarWidth(phase) {
+    if (phase === "live") return "100%";
+    if (phase === "critical") return "92%";
+    if (phase === "soon") return "68%";
+    return "42%";
+}
+
+function createDetailItem(label, value) {
+    return `
+        <div class="upcoming-detail-item">
+            <span>${safeText(label)}</span>
+            <strong>${safeText(value)}</strong>
+        </div>
+    `;
+}
+
+function getFilteredUpcoming() {
+    const q = upcomingState.search.trim().toLowerCase();
+
+    return upcomingMatches
+        .map((m, index) => {
+            const diff = new Date(m.dateTime).getTime() - Date.now();
+            const phase = getPhase(diff);
+            return { ...m, __index: index, __diff: diff, __phase: phase };
+        })
+        .filter(m => {
+            const haystack = [
+                m.id, m.t1, m.t2, m.venue, m.round, m.note, m.expected, m.tag
+            ].join(" ").toLowerCase();
+
+            const filterOk =
+                upcomingState.filter === "all" ||
+                m.__phase === upcomingState.filter;
+
+            const searchOk = !q || haystack.includes(q);
+
+            return filterOk && searchOk;
+        })
+        .sort((a, b) => {
+            const aTime = new Date(a.dateTime).getTime();
+            const bTime = new Date(b.dateTime).getTime();
+            return upcomingState.sort === "soonest" ? aTime - bTime : bTime - aTime;
+        });
+}
+
+function renderUpcomingStats(list) {
+    const statsBox = document.getElementById("upcomingStats");
+    if (!statsBox) return;
+
+    const critical = list.filter(m => m.__phase === "critical").length;
+    const soon = list.filter(m => m.__phase === "soon").length;
+    const normal = list.filter(m => m.__phase === "normal").length;
+    const next = list[0];
+
+    statsBox.innerHTML = `
+        <div class="upcoming-stat">
+            <span>المباريات القادمة</span>
+            <strong>${list.length}</strong>
+        </div>
+        <div class="upcoming-stat">
+            <span>أقل من 24 ساعة</span>
+            <strong>${critical}</strong>
+        </div>
+        <div class="upcoming-stat">
+            <span>خلال 3 أيام</span>
+            <strong>${soon}</strong>
+        </div>
+        <div class="upcoming-stat">
+            <span>أقرب موعد</span>
+            <strong>${next ? formatCountdown(next.__diff) : "—"}</strong>
+        </div>
+    `;
+}
+
+function renderUpcomingMatches() {
+    const container = document.getElementById("upcomingMatchesContainer");
+    if (!container) return;
+
+    const list = getFilteredUpcoming();
+    renderUpcomingStats(list);
+
+    if (!list.length) {
+        container.innerHTML = `<div class="upcoming-empty">لا توجد مباريات مطابقة للفلتر أو البحث الحالي.</div>`;
+        return;
+    }
+
+    const openKey = upcomingState.openKey;
+
+    container.innerHTML = list.map(match => {
+        const isOpen = openKey === match.id;
+        const phase = match.__phase;
+
+        return `
+            <div class="upcoming-card upcoming-card--${phase} ${isOpen ? "is-open" : ""}" data-key="${safeText(match.id)}" data-time="${safeText(match.dateTime)}">
+                <button class="upcoming-card-btn" type="button" aria-expanded="${isOpen ? "true" : "false"}" data-target="upcoming-details-${match.__index}">
+                    <div class="upcoming-card-head">
+                        <span class="upcoming-tag">
+                            <i class="fas fa-bolt"></i>
+                            ${safeText(match.tag)}
+                        </span>
+
+                        <span class="upcoming-state-pill">
+                            ${safeText(getPhaseLabel(phase))}
+                        </span>
+                    </div>
+
+                    <div class="upcoming-teams-row">
+                        <div class="upcoming-team">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>${safeText(match.t1)}</span>
+                        </div>
+
+                        <div class="upcoming-vs">VS</div>
+
+                        <div class="upcoming-team">
+                            <i class="fas fa-tshirt"></i>
+                            <span>${safeText(match.t2)}</span>
+                        </div>
+                    </div>
+
+                    <div class="upcoming-card-meta">
+                        <div class="upcoming-meta-box">
+                            <span class="upcoming-meta-label">العد التنازلي</span>
+                            <strong class="upcoming-countdown">${safeText(formatCountdown(match.__diff))}</strong>
+                        </div>
+
+                        <div class="upcoming-meta-box">
+                            <span class="upcoming-meta-label">الموعد</span>
+                            <strong class="upcoming-date">${safeText(formatDateTime(match.dateTime))}</strong>
+                        </div>
+                    </div>
+
+                    <div class="upcoming-card-bar">
+                        <span style="width:${getBarWidth(phase)};"></span>
+                    </div>
+                </button>
+
+                <div class="upcoming-details" id="upcoming-details-${match.__index}">
+                    <div class="upcoming-details-grid">
+                        ${createDetailItem("الملعب", match.venue)}
+                        ${createDetailItem("نوع اللقاء", match.round)}
+                        ${createDetailItem("الخطة المتوقعة", match.expected)}
+                        ${createDetailItem("ملاحظة", match.note)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    container.querySelectorAll(".upcoming-card").forEach(card => {
+        const match = list.find(m => m.id === card.dataset.key);
+        if (match) applyTeamGlow(card, match);
+    });
+
+    requestAnimationFrame(() => {
+        if (!upcomingState.openKey) return;
+        const openCard = container.querySelector(`.upcoming-card[data-key="${CSS.escape(upcomingState.openKey)}"]`);
+        if (openCard) {
+            const panel = openCard.querySelector(".upcoming-details.open");
+            if (panel) panel.style.maxHeight = panel.scrollHeight + "px";
+        }
+    });
+}
+
+function refreshUpcomingCards() {
+    document.querySelectorAll(".upcoming-card").forEach(card => {
+        const timeStr = card.dataset.time;
+        if (!timeStr) return;
+
+        const targetTime = new Date(timeStr).getTime();
+        if (Number.isNaN(targetTime)) return;
+
+        const diff = targetTime - Date.now();
+        const phase = getPhase(diff);
+
+        card.classList.remove("upcoming-card--critical", "upcoming-card--soon", "upcoming-card--normal", "upcoming-card--live");
+        card.classList.add(`upcoming-card--${phase}`);
+
+        const state = card.querySelector(".upcoming-state-pill");
+        const countdown = card.querySelector(".upcoming-countdown");
+        const bar = card.querySelector(".upcoming-card-bar span");
+
+        if (state) state.textContent = getPhaseLabel(phase);
+        if (countdown) countdown.textContent = formatCountdown(diff);
+        if (bar) bar.style.width = getBarWidth(phase);
+
+        card.style.setProperty("--accent-a", phase === "critical" || phase === "live" ? "#ff7a18" : "#00f2ff");
+        card.style.setProperty("--accent-b", phase === "critical" || phase === "live" ? "#ff3d81" : "#7c3aed");
+    });
+}
+
+function closeOtherPanels(exceptPanel) {
+    document.querySelectorAll(".upcoming-details.open").forEach(panel => {
+        if (panel === exceptPanel) return;
+        panel.classList.remove("open");
+        panel.style.maxHeight = "0px";
+        const btn = panel.closest(".upcoming-card")?.querySelector(".upcoming-card-btn");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+        panel.closest(".upcoming-card")?.classList.remove("is-open");
+    });
+}
+
+function togglePanel(btn) {
+    const card = btn.closest(".upcoming-card");
+    const panel = card?.querySelector(".upcoming-details");
+    if (!card || !panel) return;
+
+    const isOpen = panel.classList.contains("open");
+
+    if (isOpen) {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+        requestAnimationFrame(() => {
+            panel.classList.remove("open");
+            panel.style.maxHeight = "0px";
+        });
+        btn.setAttribute("aria-expanded", "false");
+        card.classList.remove("is-open");
+        upcomingState.openKey = null;
+    } else {
+        closeOtherPanels(panel);
+        panel.classList.add("open");
+        panel.style.maxHeight = "0px";
+        requestAnimationFrame(() => {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+        });
+        btn.setAttribute("aria-expanded", "true");
+        card.classList.add("is-open");
+        upcomingState.openKey = card.dataset.key || null;
+    }
+}
+
+function bindEvents() {
+    const container = document.getElementById("upcomingMatchesContainer");
+    const searchInput = document.getElementById("upcomingSearchInput");
+    const sortSelect = document.getElementById("upcomingSortSelect");
+
+    if (searchInput) {
+        searchInput.addEventListener("input", () => {
+            upcomingState.search = searchInput.value;
+            renderUpcomingMatches();
+        });
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener("change", () => {
+            upcomingState.sort = sortSelect.value || "soonest";
+            renderUpcomingMatches();
+        });
+    }
+
+    document.querySelectorAll(".upcoming-filter").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".upcoming-filter").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            upcomingState.filter = btn.dataset.filter || "all";
+            renderUpcomingMatches();
+        });
+    });
+
+    if (container) {
+        container.addEventListener("click", (e) => {
+            const btn = e.target.closest(".upcoming-card-btn");
+            if (!btn) return;
+            togglePanel(btn);
+        });
+
+        container.addEventListener("pointermove", (e) => {
+            const card = e.target.closest(".upcoming-card");
+            if (!card) return;
+
+            const rect = card.getBoundingClientRect();
+            const px = ((e.clientX - rect.left) / rect.width) * 100;
+            const py = ((e.clientY - rect.top) / rect.height) * 100;
+
+            card.style.setProperty("--px", `${px}%`);
+            card.style.setProperty("--py", `${py}%`);
+        });
+
+        container.addEventListener("pointerleave", (e) => {
+            const card = e.target.closest(".upcoming-card");
+            if (!card) return;
+            card.style.setProperty("--px", `50%`);
+            card.style.setProperty("--py", `50%`);
+        });
+    }
+}
+
+function initUpcoming() {
+    renderUpcomingMatches();
+    bindEvents();
+    refreshUpcomingCards();
+
+    setInterval(refreshUpcomingCards, 1000);
+
+    window.addEventListener("resize", () => {
+        document.querySelectorAll(".upcoming-details.open").forEach(panel => {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+        });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", initUpcoming);
+
+/**
+ * SoonMatch Ultimate
+ * Fixed + Optimized Version
+ */
+
+(function (global) {
+  'use strict';
+
+  /* =========================
+     CONFIG
+  ========================= */
+
+  const STORAGE_KEY = 'soonmatch-storage-v2';
+  const UPDATE_INTERVAL = 1000;
+
+  /* =========================
+     STATE
+  ========================= */
+
+  const state = {
+    matches: [],
+    interval: null
+  };
+
+  /* =========================
+     DEFAULT MATCHES
+  ========================= */
+
+  const DEFAULT_MATCHES = [
+    {
+      id: 'M-1002',
+      teamA: 'عمر',
+      teamB: 'كريم',
+      dateTime: '2026-05-15T19:00:00',
+      endTime: '2026-05-15T20:00:00',
+      venue: 'سيدات الخليل',
+      badge: 'قادمة',
+      category: 'تحدي',
+      hype: 92,
+      featured: false,
+      createdAt: Date.now()
+    }
+  ];
+
+  /* =========================
+     UTILS
+  ========================= */
+
+  const Utils = {
+
+    $: (id) => document.getElementById(id),
+
+    $$: (selector, parent = document) =>
+      parent.querySelectorAll(selector),
+
+    $1: (selector, parent = document) =>
+      parent.querySelector(selector),
+
+    safe: (value) => {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    },
+
+    uid: () => {
+      return `M-${Math.random()
+        .toString(36)
+        .slice(2, 7)
+        .toUpperCase()}-${Date.now()
+        .toString(36)
+        .slice(-4)
+        .toUpperCase()}`;
+    },
+
+    parseDate: (value) => {
+      const d = new Date(value);
+      return Number.isNaN(d.getTime()) ? null : d;
+    },
+
+    diff: (date) => {
+      const dt = Utils.parseDate(date);
+      return dt ? dt.getTime() - Date.now() : -1;
+    },
+
+    formatCountdown: (ms) => {
+
+      if (ms <= 0) return 'مباشر الآن ⚽';
+
+      const total = Math.floor(ms / 1000);
+
+      const d = Math.floor(total / 86400);
+      const h = Math.floor((total % 86400) / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+
+      if (d > 0) {
+        return `${d} يوم ${h}س ${m}د`;
+      }
+
+      if (h > 0) {
+        return `${h}س ${m}د ${s}ث`;
+      }
+
+      return `${m}د ${s}ث`;
+    },
+
+    formatDate: (date) => {
+
+      try {
+
+        return new Intl.DateTimeFormat('ar', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit',
+          hourCycle: 'h23'
+        }).format(new Date(date));
+
+      } catch {
+
+        return date;
+      }
+    }
+
+  };
+
+  /* =========================
+     NOTIFICATIONS
+  ========================= */
+
+  const Notifications = {
+
+    show(message, type = 'info') {
+
+      const container = Utils.$('sm-toastContainer');
+
+      if (!container) return;
+
+      const icons = {
+        success: 'fa-circle-check',
+        error: 'fa-circle-xmark',
+        warning: 'fa-triangle-exclamation',
+        info: 'fa-circle-info'
+      };
+
+      const toast = document.createElement('div');
+
+      toast.className = `sm-toast sm-toast-${type}`;
+
+      toast.innerHTML = `
+        <i class="fa-solid ${icons[type]}"></i>
+        <span>${Utils.safe(message)}</span>
+      `;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.add('show');
+      });
+
+      setTimeout(() => {
+
+        toast.classList.remove('show');
+
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+
+      }, 3000);
+
+    }
+
+  };
+
+  /* =========================
+     STORAGE
+  ========================= */
+
+  const Storage = {
+
+    load() {
+
+      try {
+
+        const raw = localStorage.getItem(STORAGE_KEY);
+
+        if (!raw) {
+
+          state.matches = DEFAULT_MATCHES;
+          this.save();
+
+          return;
+        }
+
+        const parsed = JSON.parse(raw);
+
+        state.matches = Array.isArray(parsed)
+          ? parsed
+          : DEFAULT_MATCHES;
+
+      } catch (err) {
+
+        console.error(err);
+
+        state.matches = DEFAULT_MATCHES;
+      }
+
+    },
+
+    save() {
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(state.matches)
+      );
+
+    }
+
+  };
+
+  /* =========================
+     RENDERER
+  ========================= */
+
+  const Renderer = {
+
+    createCard(match) {
+
+      const now = Date.now();
+
+      const start = new Date(match.dateTime).getTime();
+      const end = new Date(match.endTime).getTime();
+
+      const diff = start - now;
+
+      let stateClass = '';
+
+      let status = Utils.formatCountdown(diff);
+
+      if (now >= start && now <= end) {
+
+        stateClass = 'live';
+        status = 'مباشر الآن 🔥';
+
+      } else if (diff <= 86400000) {
+
+        stateClass = 'near';
+      }
+
+      return `
+
+      <article class="sm-match-card ${stateClass}" data-id="${Utils.safe(match.id)}">
+
+        ${match.featured ? `
+          <div class="sm-featured">
+            <i class="fa-solid fa-fire"></i>
+            مباراة مميزة
+          </div>
+        ` : ''}
+
+        <div class="sm-card-header">
+
+          <div class="sm-badge">
+            <i class="fa-solid fa-trophy"></i>
+            ${Utils.safe(match.badge)}
+          </div>
+
+          <div class="sm-status">
+            ${status}
+          </div>
+
+        </div>
+
+        <div class="sm-card-body">
+
+          <div class="sm-team">
+            <div class="sm-team-name">
+              ${Utils.safe(match.teamA)}
+            </div>
+          </div>
+
+          <div class="sm-vs">
+            VS
+          </div>
+
+          <div class="sm-team">
+            <div class="sm-team-name">
+              ${Utils.safe(match.teamB)}
+            </div>
+          </div>
+
+        </div>
+
+        <div class="sm-match-info">
+
+          <div class="sm-info-item">
+            <span>التوقيت 📅</span>
+            <span>${Utils.formatDate(match.dateTime)}</span>
+          </div>
+
+          <div class="sm-info-item">
+            <span>الموقع 📍</span>
+            <span>${Utils.safe(match.venue)}</span>
+          </div>
+
+          <div class="sm-info-item">
+            <span>الاستعداد 🔥</span>
+            <span>${Utils.safe(match.hype)}%</span>
+          </div>
+
+          <div class="sm-info-item">
+            <span>نوع المباراة 🏆</span>
+            <span>${Utils.safe(match.category)}</span>
+          </div>
+
+        </div>
+
+        <div class="sm-countdown-box">
+          <span class="sm-countdown">
+            ${status}
+          </span>
+        </div>
+
+        <div class="sm-card-footer">
+
+          <button class="sm-btn" data-action="copy">
+            <i class="fa-solid fa-copy"></i>
+            نسخ
+          </button>
+
+          <button class="sm-btn" data-action="share">
+            <i class="fa-solid fa-share-nodes"></i>
+            مشاركة
+          </button>
+
+        </div>
+
+      </article>
+      `;
+    },
+
+    render() {
+
+      const container = Utils.$('sm-matchesContainer');
+
+      const empty = Utils.$('sm-empty');
+
+      if (!container) return;
+
+      const active = state.matches
+        .filter(match => {
+          return new Date(match.endTime).getTime() > Date.now();
+        })
+        .sort((a, b) => {
+          return new Date(a.dateTime) - new Date(b.dateTime);
+        });
+
+      if (!active.length) {
+
+        container.innerHTML = '';
+
+        if (empty) {
+          empty.style.display = 'flex';
+        }
+
+        return;
+      }
+
+      if (empty) {
+        empty.style.display = 'none';
+      }
+
+      container.innerHTML = active
+        .map(match => Renderer.createCard(match))
+        .join('');
+    }
+
+  };
+
+  /* =========================
+     DATA MANAGER
+  ========================= */
+
+  const Data = {
+
+    add(match) {
+
+      state.matches.unshift(match);
+
+      Storage.save();
+
+      Renderer.render();
+
+      Notifications.show(
+        'تمت إضافة المباراة',
+        'success'
+      );
+    },
+
+    archive(id) {
+
+      state.matches =
+        state.matches.filter(m => m.id !== id);
+
+      Storage.save();
+
+      Renderer.render();
+
+      Notifications.show(
+        'تمت أرشفة المباراة',
+        'info'
+      );
+    }
+
+  };
+
+  /* =========================
+     EVENTS
+  ========================= */
+
+  const Events = {
+
+    submit(e) {
+
+      e.preventDefault();
+
+      const teamA =
+        Utils.$('sm-team-a')?.value.trim();
+
+      const teamB =
+        Utils.$('sm-team-b')?.value.trim();
+
+      const dateTime =
+        Utils.$('sm-date-time')?.value;
+
+      const venue =
+        Utils.$('sm-venue')?.value.trim();
+
+      const badge =
+        Utils.$('sm-badge')?.value.trim();
+
+      const hype =
+        parseInt(Utils.$('sm-hype')?.value || '0');
+
+      if (
+        !teamA ||
+        !teamB ||
+        !dateTime ||
+        !venue ||
+        !badge
+      ) {
+
+        Notifications.show(
+          'املأ جميع الحقول',
+          'error'
+        );
+
+        return;
+      }
+
+      const end = new Date(dateTime);
+
+      end.setHours(end.getHours() + 2);
+
+      Data.add({
+
+        id: Utils.uid(),
+
+        teamA,
+        teamB,
+
+        dateTime,
+
+        endTime: end.toISOString(),
+
+        venue,
+
+        badge,
+
+        category: 'مباراة',
+
+        hype,
+
+        featured: hype >= 90,
+
+        createdAt: Date.now()
+
+      });
+
+      e.target.reset();
+
+    },
+
+    cardAction(e) {
+
+      const btn = e.target.closest('[data-action]');
+
+      if (!btn) return;
+
+      const card =
+        e.target.closest('.sm-match-card');
+
+      if (!card) return;
+
+      const id = card.dataset.id;
+
+      const action = btn.dataset.action;
+
+      const match =
+        state.matches.find(m => m.id === id);
+
+      if (!match) return;
+
+      if (action === 'copy') {
+
+        const text = `
+${match.teamA} VS ${match.teamB}
+${Utils.formatDate(match.dateTime)}
+${match.venue}
+        `;
+
+        navigator.clipboard.writeText(text);
+
+        Notifications.show(
+          'تم النسخ',
+          'success'
+        );
+
+      }
+
+      else if (action === 'share') {
+
+        if (navigator.share) {
+
+          navigator.share({
+            title: `${match.teamA} VS ${match.teamB}`,
+            text: `${match.teamA} VS ${match.teamB}`,
+          });
+
+        } else {
+
+          Notifications.show(
+            'المشاركة غير مدعومة',
+            'warning'
+          );
+        }
+
+      }
+
+      else if (action === 'archive') {
+
+        Data.archive(id);
+
+      }
+
+    }
+
+  };
+
+  /* =========================
+     LIVE UPDATE
+  ========================= */
+
+  function updateCountdowns() {
+
+    Utils.$$('.sm-match-card').forEach(card => {
+
+      const id = card.dataset.id;
+
+      const match =
+        state.matches.find(m => m.id === id);
+
+      if (!match) return;
+
+      const now = Date.now();
+
+      const start =
+        new Date(match.dateTime).getTime();
+
+      const end =
+        new Date(match.endTime).getTime();
+
+      const diff = start - now;
+
+      const status =
+        card.querySelector('.sm-status');
+
+      const countdown =
+        card.querySelector('.sm-countdown');
+
+      if (now >= end) {
+
+        card.remove();
+
+        return;
+      }
+
+      let text = Utils.formatCountdown(diff);
+
+      if (now >= start && now <= end) {
+        text = 'مباشر الآن 🔥';
+      }
+
+      if (status) {
+        status.textContent = text;
+      }
+
+      if (countdown) {
+        countdown.textContent = text;
+      }
+
+    });
+
+  }
+
+  /* =========================
+     INIT
+  ========================= */
+
+  function init() {
+
+    console.log('SoonMatch Started');
+
+    Storage.load();
+
+    Renderer.render();
+
+    const form = Utils.$('sm-add-form');
+
+    if (form) {
+      form.addEventListener(
+        'submit',
+        Events.submit
+      );
+    }
+
+    const container =
+      Utils.$('sm-matchesContainer');
+
+    if (container) {
+      container.addEventListener(
+        'click',
+        Events.cardAction
+      );
+    }
+
+    state.interval =
+      setInterval(
+        updateCountdowns,
+        UPDATE_INTERVAL
+      );
+
+  }
+
+  /* =========================
+     DESTROY
+  ========================= */
+
+  function destroy() {
+
+    clearInterval(state.interval);
+
+  }
+
+  /* =========================
+     AUTO START
+  ========================= */
+
+  if (document.readyState === 'loading') {
+
+    document.addEventListener(
+      'DOMContentLoaded',
+      init
+    );
+
+  } else {
+
+    init();
+
+  }
+
+  /* =========================
+     GLOBAL API
+  ========================= */
+
+  global.SoonMatch = {
+
+    init,
+
+    destroy,
+
+    getMatches: () => state.matches,
+
+    addMatch(data) {
+
+      Data.add({
+        ...data,
+        id: Utils.uid(),
+        createdAt: Date.now()
+      });
+
+    },
+
+    archiveMatch(id) {
+
+      Data.archive(id);
+
+    }
+
+  };
+
+})(window);
+
+
+
+window.switchPage = function(page, btn){
+
+    document.querySelectorAll(".switch-btn")
+    .forEach(b => b.classList.remove("active"));
+
+    if(btn) btn.classList.add("active");
+
+    const archive = document.getElementById("archivePage");
+    const live = document.getElementById("livePage");
+
+    archive.style.display = (page === "archive") ? "block" : "none";
+    live.style.display = (page === "live") ? "block" : "none";
+}
+
 })();
