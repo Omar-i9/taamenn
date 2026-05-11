@@ -15,25 +15,27 @@
 </head>
 <body class="night-mode">
 
-    <!-- صوت التنبيه (تقدر تغير الرابط برابط صوت ديسكورد مباشر لو عندك) -->
+<!-- صوت التنبيه -->
 <audio id="notificationSound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
 
+<!-- نافذة التنبيه -->
 <div class="glass-overlay" id="mobilePopup">
     <div class="glass-card">
         <span class="close-x" onclick="closePopup()">&times;</span>
         <div class="content">
-            <h2>تنويه!</h2>
+            <h2>تنويه! ⚠️</h2>
             <p>قد تواجه بعض المشاكل في عرض أو استخدام الموقع عبر الهاتف، لذلك يُنصح باستخدام الحاسوب أو وضع سطح المكتب للحصول على تجربة أوضح وأكثر استقرارًا، لأن بعض التفاصيل لا تظهر كما ينبغي على الشاشات الصغيرة.</p>
         </div>
         
         <button class="skip-btn" onclick="closePopup()">فهمت ذلك</button>
         
-        <!-- الملاحظة في الأسفل -->
         <div class="footer-note">
-            <p>ملاحظة: هذا العرض مخصص لمستخدمي الجوال فقط.</p>
+            <p>هذا العرض مخصص لمستخدمي الجوال فقط.</p>
+            <p>شكراً لتفهمكم</p>
         </div>
     </div>
 </div>
+
 
     <div id="notification-container"></div>
     <div id="sky-background"></div>

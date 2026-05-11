@@ -3628,48 +3628,46 @@ navigator.share({
 
 
 
-// 1. تعريف دالة الإغلاق على الـ window عشان الـ HTML يشوفها مهما كان نوع السكربت
+// 1. جعل الدالة عالمية عشان الـ HTML يشوفها 100%
 window.closePopup = function() {
     const popup = document.getElementById('mobilePopup');
+    if (!popup) return;
+
+    // تشغيل أنيميشن الخروج
+    popup.classList.add('closing');
     
-    if (popup) {
-        // إضافة كلاس الأنيميشن بتاع الخروج
-        popup.classList.add('closing'); 
-        
-        // استنى 400 ملي ثانية (نفس مدة أنيميشن CSS) وبعدين اخفيه تماماً
-        setTimeout(() => {
-            popup.classList.remove('active');
-            popup.classList.remove('closing');
-            
-            // زيادة تأكيد عشان ما يفضلش حاجز مكان أو يغطي على الشاشة
-            popup.style.display = 'none';
-        }, 400);
-    }
+    // الانتظار حتى ينتهي الأنيميشن (400ms) ثم الحذف نهائياً
+    setTimeout(() => {
+        popup.classList.remove('active');
+        popup.classList.remove('closing');
+        popup.style.display = 'none'; // زيادة تأكيد
+    }, 400);
 };
 
-// 2. كود التشغيل عند تحميل الصفحة
+// 2. التحكم في الظهور
 document.addEventListener("DOMContentLoaded", function() {
-    // فحص إذا كان المستخدم موبايل (أو لابتوب بشاشة صغيرة عشان تعرف تجرّب)
+    // فحص الموبايل أو عرض الشاشة
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
     if (isMobile) {
-        // تأخير بسيط ثانية واحدة عشان الأناقة ;)
         setTimeout(() => {
             const popup = document.getElementById('mobilePopup');
+            const sound = document.getElementById('notificationSound');
+
             if (popup) {
-                // التأكد إن الـ display رجع flex عشان يظهر
-                popup.style.display = 'flex';
-                popup.classList.add('active');
+                popup.style.display = 'flex'; // تأمين العرض
+                // إضافة الكلاس اللي بيشغل الأنيميشن
+                setTimeout(() => popup.classList.add('active'), 10);
                 
-                // تشغيل الصوت "فقط" لو العنصر موجود في الـ HTML بتاعك
-                const sound = document.getElementById('notificationSound');
+                // محاولة تشغيل الصوت
                 if (sound) {
-                    sound.play().catch(error => {
-                        console.log("الصوت محتاج تفاعل (بسبب سياسة المتصفحات)");
+                    sound.play().catch(() => {
+                        console.log("المتصفح منع الصوت.. لازم المستخدم يضغط أولاً");
                     });
                 }
             }
-        }, 1000); 
+        }, 1000); // يظهر بعد ثانية من التحميل
     }
 });
+
 })();
