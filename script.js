@@ -2944,7 +2944,20 @@ document.addEventListener("DOMContentLoaded", initUpcoming);
       hype: 92,
       featured: false,
       createdAt: Date.now()
-    }
+    },
+     {
+      id: 'M-1002',
+      teamA: 'عمر',
+      teamB: 'غير معروف',
+      dateTime: '2026-05-22T19:00:00',
+      endTime: '2026-05-22T20:00:00',
+      venue: 'سيدات الخليل',
+      badge: 'قادمة',
+      category: 'غير معروف',
+      hype: 50,
+      featured: false,
+      createdAt: Date.now()
+    },
   ];
 
   /* =========================
@@ -3127,165 +3140,299 @@ document.addEventListener("DOMContentLoaded", initUpcoming);
 
   };
 
-  /* =========================
-     RENDERER
-  ========================= */
+/* =========================
+   SMART RENDERER v2
+========================= */
 
-  const Renderer = {
+const Renderer = {
 
-    createCard(match) {
+  getMatchState(match) {
 
-      const now = Date.now();
+    const now = Date.now();
 
-      const start = new Date(match.dateTime).getTime();
-      const end = new Date(match.endTime).getTime();
+    const start =
+      new Date(match.dateTime).getTime();
 
-      const diff = start - now;
+    const end =
+      new Date(match.endTime).getTime();
 
-      let stateClass = '';
+    const diff = start - now;
 
-      let status = Utils.formatCountdown(diff);
+    const isLive =
+      now >= start && now <= end;
 
-      if (now >= start && now <= end) {
+    const isEnded =
+      now > end;
 
-        stateClass = 'live';
-        status = 'مباشر الآن 🔥';
+    const isNear =
+      diff > 0 && diff <= 86400000;
 
-      } else if (diff <= 86400000) {
+    return {
+      now,
+      start,
+      end,
+      diff,
+      isLive,
+      isEnded,
+      isNear
+    };
+  },
 
-        stateClass = 'near';
-      }
+  getStatus(matchState) {
 
-      return `
-
-      <article class="sm-match-card ${stateClass}" data-id="${Utils.safe(match.id)}">
-
-        ${match.featured ? `
-          <div class="sm-featured">
-            <i class="fa-solid fa-fire"></i>
-            مباراة مميزة
-          </div>
-        ` : ''}
-
-        <div class="sm-card-header">
-
-          <div class="sm-badge">
-            <i class="fa-solid fa-trophy"></i>
-            ${Utils.safe(match.badge)}
-          </div>
-
-          <div class="sm-status">
-            ${status}
-          </div>
-
-        </div>
-
-        <div class="sm-card-body">
-
-          <div class="sm-team">
-            <div class="sm-team-name">
-              ${Utils.safe(match.teamA)}
-            </div>
-          </div>
-
-          <div class="sm-vs">
-            VS
-          </div>
-
-          <div class="sm-team">
-            <div class="sm-team-name">
-              ${Utils.safe(match.teamB)}
-            </div>
-          </div>
-
-        </div>
-
-        <div class="sm-match-info">
-
-          <div class="sm-info-item">
-            <span>التوقيت 📅</span>
-            <span>${Utils.formatDate(match.dateTime)}</span>
-          </div>
-
-          <div class="sm-info-item">
-            <span>الموقع 📍</span>
-            <span>${Utils.safe(match.venue)}</span>
-          </div>
-
-          <div class="sm-info-item">
-            <span>الاستعداد 🔥</span>
-            <span>${Utils.safe(match.hype)}%</span>
-          </div>
-
-          <div class="sm-info-item">
-            <span>نوع المباراة 🏆</span>
-            <span>${Utils.safe(match.category)}</span>
-          </div>
-
-        </div>
-
-        <div class="sm-countdown-box">
-          <span class="sm-countdown">
-            ${status}
-          </span>
-        </div>
-
-        <div class="sm-card-footer">
-
-          <button class="sm-btn" data-action="copy">
-            <i class="fa-solid fa-copy"></i>
-            نسخ
-          </button>
-
-          <button class="sm-btn" data-action="share">
-            <i class="fa-solid fa-share-nodes"></i>
-            مشاركة
-          </button>
-
-        </div>
-
-      </article>
-      `;
-    },
-
-    render() {
-
-      const container = Utils.$('sm-matchesContainer');
-
-      const empty = Utils.$('sm-empty');
-
-      if (!container) return;
-
-      const active = state.matches
-        .filter(match => {
-          return new Date(match.endTime).getTime() > Date.now();
-        })
-        .sort((a, b) => {
-          return new Date(a.dateTime) - new Date(b.dateTime);
-        });
-
-      if (!active.length) {
-
-        container.innerHTML = '';
-
-        if (empty) {
-          empty.style.display = 'flex';
-        }
-
-        return;
-      }
-
-      if (empty) {
-        empty.style.display = 'none';
-      }
-
-      container.innerHTML = active
-        .map(match => Renderer.createCard(match))
-        .join('');
+    if (matchState.isLive) {
+      return 'مباشر الآن 🔥';
     }
 
-  };
+    if (matchState.isEnded) {
+      return 'انتهت المباراة';
+    }
 
+    return Utils.formatCountdown(
+      matchState.diff
+    );
+  },
+
+  createInfoItem(label, value) {
+
+    return `
+      <div class="sm-info-item">
+        <span>${label}</span>
+        <span>${value}</span>
+      </div>
+    `;
+  },
+
+  createCard(match) {
+
+    const stateData =
+      this.getMatchState(match);
+
+    const status =
+      this.getStatus(stateData);
+
+    const classes = [
+      'sm-match-card'
+    ];
+
+    if (stateData.isLive) {
+      classes.push('live');
+    }
+
+    if (stateData.isNear) {
+      classes.push('near');
+    }
+
+    if (match.featured) {
+      classes.push('featured');
+    }
+
+    return `
+    <article
+      class="${classes.join(' ')}"
+      data-id="${Utils.safe(match.id)}"
+    >
+
+      ${match.featured ? `
+      <div class="sm-featured">
+        <i class="fa-solid fa-fire"></i>
+        مباراة مميزة
+      </div>
+      ` : ''}
+
+      <div class="sm-card-header">
+
+        <div class="sm-badge">
+          <i class="fa-solid fa-trophy"></i>
+          ${Utils.safe(match.badge)}
+        </div>
+
+        <div class="sm-status">
+          ${status}
+        </div>
+
+      </div>
+
+      <div class="sm-card-body">
+
+        <div class="sm-team">
+          <div class="sm-team-name">
+            ${Utils.safe(match.teamA)}
+          </div>
+        </div>
+
+        <div class="sm-vs">
+          VS
+        </div>
+
+        <div class="sm-team">
+          <div class="sm-team-name">
+            ${Utils.safe(match.teamB)}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="sm-match-info">
+
+        ${this.createInfoItem(
+          '📅 التوقيت',
+          Utils.formatDate(match.dateTime)
+        )}
+
+        ${this.createInfoItem(
+          '📍 الموقع',
+          Utils.safe(match.venue)
+        )}
+
+        ${this.createInfoItem(
+          '🔥 الحماس',
+          `${Utils.safe(match.hype)}%`
+        )}
+
+        ${this.createInfoItem(
+          '🏆 النوع',
+          Utils.safe(match.category)
+        )}
+
+      </div>
+
+      <div class="sm-countdown-box">
+        <span class="sm-countdown">
+          ${status}
+        </span>
+      </div>
+
+      <div class="sm-card-footer">
+
+        <button
+          class="sm-btn"
+          data-action="copy"
+          type="button"
+        >
+          <i class="fa-solid fa-copy"></i>
+          نسخ
+        </button>
+
+        <button
+          class="sm-btn"
+          data-action="share"
+          type="button"
+        >
+          <i class="fa-solid fa-share-nodes"></i>
+          مشاركة
+        </button>
+
+
+      </div>
+
+    </article>
+    `;
+  },
+
+     /*  <button 
+    class="sm-btn danger"
+    data-action="archive"
+    type="button" 
+>
+    <i class="fa-solid fa-box-archive"></i>
+    أرشفة
+</button> */
+
+
+  render() {
+
+    const container =
+      Utils.$('sm-matchesContainer');
+
+    const empty =
+      Utils.$('sm-empty');
+
+    if (!container) {
+      console.warn(
+        'sm-matchesContainer not found'
+      );
+      return;
+    }
+
+    const activeMatches =
+      state.matches
+        .filter(match => {
+
+          const end =
+            new Date(match.endTime).getTime();
+
+          return end > Date.now();
+
+        })
+        .sort((a, b) => {
+
+          return (
+            new Date(a.dateTime).getTime() -
+            new Date(b.dateTime).getTime()
+          );
+
+        });
+
+    if (!activeMatches.length) {
+
+      container.innerHTML = '';
+
+      if (empty) {
+        empty.style.display = 'flex';
+      }
+
+      return;
+    }
+
+    if (empty) {
+      empty.style.display = 'none';
+    }
+
+    const html =
+      activeMatches
+        .map(match => this.createCard(match))
+        .join('');
+
+    container.innerHTML = html;
+  },
+
+  refreshCard(card, match) {
+
+    if (!card || !match) return;
+
+    const stateData =
+      this.getMatchState(match);
+
+    const status =
+      this.getStatus(stateData);
+
+    const statusEl =
+      card.querySelector('.sm-status');
+
+    const countdownEl =
+      card.querySelector('.sm-countdown');
+
+    if (statusEl) {
+      statusEl.textContent = status;
+    }
+
+    if (countdownEl) {
+      countdownEl.textContent = status;
+    }
+
+    card.classList.toggle(
+      'live',
+      stateData.isLive
+    );
+
+    card.classList.toggle(
+      'near',
+      stateData.isNear
+    );
+  }
+
+};
   /* =========================
      DATA MANAGER
   ========================= */
@@ -3535,6 +3682,7 @@ navigator.share({
   function init() {
 
     console.log('SoonMatch Started');
+    
 
     Storage.load();
 
@@ -3556,6 +3704,7 @@ navigator.share({
       container.addEventListener(
         'click',
         Events.cardAction
+        
       );
     }
 
@@ -3594,38 +3743,82 @@ navigator.share({
 
   }
 
-  /* =========================
-     GLOBAL API
-  ========================= */
+/* =========================
+   GLOBAL API
+========================= */
 
-  global.SoonMatch = {
+function switchPage(page, btn){
 
-    init,
+    const pages = {
+        archive: document.getElementById('archivePage'),
+        live: document.getElementById('livePage')
+    };
 
-    destroy,
+    if(!pages.archive || !pages.live) return;
 
-    getMatches: () => state.matches,
+    Object.values(pages).forEach(el => {
+        el.hidden = true;
+    });
 
-    addMatch(data) {
-
-      Data.add({
-        ...data,
-        id: Utils.uid(),
-        createdAt: Date.now()
-      });
-
-    },
-
-    archiveMatch(id) {
-
-      Data.archive(id);
-
+    if(pages[page]){
+        pages[page].hidden = false;
     }
 
-  };
+    document
+    .querySelectorAll('.switch-btn')
+    .forEach(button => {
+        button.classList.remove('active');
+    });
+
+    if(btn){
+        btn.classList.add('active');
+    }
+
+    requestAnimationFrame(() => {
+        Renderer.render?.();
+    });
+
+}
+
+function restorePageState() {
+  const saved = localStorage.getItem('soonmatch-active-page');
+  const active = saved === 'live' ? 'live' : 'archive';
+
+  const archiveBtn = document.querySelector('.switch-btn[onclick*="archive"]');
+  const liveBtn = document.querySelector('.switch-btn[onclick*="live"]');
+
+  if (active === 'live') {
+    switchPage('live', liveBtn);
+  } else {
+    switchPage('archive', archiveBtn);
+  }
+}
+
+global.SoonMatch = {
+  init,
+  destroy,
+  getMatches: () => state.matches,
+
+  addMatch(data) {
+    Data.add({
+      ...data,
+      id: Utils.uid(),
+      createdAt: Date.now()
+    });
+  },
+
+  archiveMatch(id) {
+    Data.archive(id);
+  },
+
+  switchPage
+};
+
+global.switchPage = switchPage;
+
+document.addEventListener('DOMContentLoaded', restorePageState);
 
 })(window);
-
 
 
 // 1. جعل الدالة عالمية عشان الـ HTML يشوفها 100%

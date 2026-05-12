@@ -4309,54 +4309,228 @@ body {
     100% { box-shadow: 0 0 0 0 rgba(255, 77, 141, 0); }
 }
 
+/* =========================
+   PAGE SWITCHER
+========================= */
+
 .matches-switcher{
     display:flex;
     justify-content:center;
-    gap:10px;
-    margin:20px 0;
+    align-items:center;
+    gap:12px;
+    margin:24px 0;
+    flex-wrap:wrap;
 }
 
 .switch-btn{
-    padding:10px 18px;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-    background:#151a2e;
-    color:#fff;
-    font-weight:600;
-    transition:0.3s;
     position:relative;
     overflow:hidden;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    min-width:170px;
+
+    padding:12px 20px;
+
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        180deg,
+        rgba(255,255,255,0.05),
+        rgba(255,255,255,0.02)
+    );
+
+    color:#eef4ff;
+
+    font-size:.95rem;
+    font-weight:800;
+    font-family:inherit;
+
+    cursor:pointer;
+
+    transition:
+    transform .22s ease,
+    background .22s ease,
+    border-color .22s ease,
+    box-shadow .22s ease,
+    opacity .22s ease;
 }
 
 .switch-btn:hover{
     transform:translateY(-2px);
-    background:#1e2745;
+    border-color:rgba(0,229,255,.25);
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.25),
+    0 0 18px rgba(0,229,255,.12);
+
+    background:
+    linear-gradient(
+        180deg,
+        rgba(0,229,255,.08),
+        rgba(124,58,237,.08)
+    );
+}
+
+.switch-btn:active{
+    transform:scale(.98);
 }
 
 .switch-btn.active{
-    background:linear-gradient(135deg,#00e5ff,#7c3aed);
-    color:#000;
-    box-shadow:0 0 15px rgba(0,229,255,0.4);
+    color:#071018;
+
+    border-color:transparent;
+
+    background:
+    linear-gradient(
+        135deg,
+        #00e5ff,
+        #7c3aed
+    );
+
+    box-shadow:
+    0 10px 25px rgba(0,229,255,.25),
+    0 0 20px rgba(124,58,237,.25);
 }
 
-/* تأثير بسيط عند التبديل */
+/* =========================
+   PAGE SYSTEM
+========================= */
+
 #archivePage,
 #livePage{
-    animation:fadeIn .25s ease;
+    width:100%;
+    min-height:200px;
+
+    opacity:1;
+    transform:translateY(0);
+
+    animation:fadePage .35s ease;
 }
 
-@keyframes fadeIn{
+/* مهم جداً */
+#archivePage[hidden],
+#livePage[hidden]{
+    display:none !important;
+}
+
+@keyframes fadePage{
+
     from{
         opacity:0;
-        transform:translateY(8px);
+        transform:translateY(10px);
     }
+
     to{
         opacity:1;
         transform:translateY(0);
     }
 }
 
+/* =========================
+   LIVE PAGE FIXES
+========================= */
+
+#livePage{
+    margin-top:12px;
+}
+
+.sm-cards-grid{
+    width:100%;
+}
+
+.sm-match-card{
+    position:relative;
+    overflow:hidden;
+}
+
+/* =========================
+   LIVE CARD STATES
+========================= */
+
+.sm-match-card.state-near{
+    border-color:#ff8a3d;
+
+    box-shadow:
+    0 0 0 1px rgba(255,138,61,.15),
+    0 0 25px rgba(255,138,61,.10);
+}
+
+.sm-match-card.state-near .sm-countdown-box{
+    background:rgba(255,138,61,.12);
+    border-color:rgba(255,138,61,.35);
+}
+
+.sm-match-card.state-near .sm-countdown{
+    color:#ffb06e;
+}
+
+.sm-match-card.state-live{
+    border-color:#ff4d8d;
+
+    background:
+    linear-gradient(
+        180deg,
+        rgba(255,77,141,.07),
+        rgba(16,24,46,.85)
+    );
+
+    animation:livePulse 2s infinite;
+}
+
+.sm-match-card.state-live .sm-status{
+    background:#ff4d8d;
+    border-color:#ff4d8d;
+    color:#fff;
+}
+
+.sm-match-card.state-live .sm-countdown-box{
+    background:#ff4d8d;
+    border-color:#ff4d8d;
+}
+
+.sm-match-card.state-live .sm-countdown{
+    color:#fff;
+}
+
+@keyframes livePulse{
+
+    0%{
+        box-shadow:0 0 0 0 rgba(255,77,141,.35);
+    }
+
+    70%{
+        box-shadow:0 0 0 12px rgba(255,77,141,0);
+    }
+
+    100%{
+        box-shadow:0 0 0 0 rgba(255,77,141,0);
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width:768px){
+
+    .switch-btn{
+        width:100%;
+    }
+
+    .matches-switcher{
+        gap:10px;
+    }
+
+    #archivePage,
+    #livePage{
+        min-height:120px;
+    }
+}
 
 /* التصميم الأساسي للأوفرلاي */
 .glass-overlay {
