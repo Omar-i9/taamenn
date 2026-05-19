@@ -594,7 +594,7 @@ const matchHistoryArchive = [
         s: "5 - 6",
         st: "انتهت",
         d: "الجمعة 8 مايو",
-        dateKey: 20260508,
+        dateKey: 20260501,
         details: {
             team1: { possession: 56, shots: 11, onTarget: 7, saves: 5, assists: 4, passes: 89, fouls: 2, corners: 5 },
             team2: { possession: 44, shots: 8, onTarget: 4, saves: 4, assists: 2, passes: 76, fouls: 3, corners: 3 }
@@ -612,6 +612,21 @@ const matchHistoryArchive = [
         details: {
             team1: { possession: 60, shots: 25, onTarget: 17, saves: 7, assists: 11, passes: 112, fouls: 3, corners: 5 },
             team2: { possession: 40, shots: 17, onTarget: 13, saves: 4, assists: 8, passes: 91, fouls: 2, corners: 6 }
+        },
+    },
+
+            {
+        id: "M-203",
+        type: "strong",
+        t1: "عمر",
+        t2: "كريم",
+        s: "11 - 8",
+        st: "انتهت",
+        d: "الجمعة 15 مايو",
+        dateKey: 20260515,
+        details: {
+            team1: { possession: 65, shots: 25, onTarget: 18, saves: 7, assists: 7, passes: 80, fouls: 5, corners: 5 },
+            team2: { possession: 35, shots: 15, onTarget: 11, saves: 7, assists: 8, passes: 122, fouls: 3, corners: 7 }
         }
     },
      ///   type: "friendly",
@@ -2496,19 +2511,6 @@ document.addEventListener("DOMContentLoaded", () => {
     init();
   }
 
-  const upcomingMatches = [
-    {
-        id: "U-301",
-        t1: "عمر",
-        t2: "كريم",
-        dateشTime: "2026-05-11T18:00:00+03:00",
-        venue: "الملعب الرئيسي",
-        round: "مواجهة حاسمة",
-        note: "عودة قوية بعد الاستعداد.",
-        expected: "4-3-3",
-        tag: "قمة مرتقبة"
-    },
-];
 
 const upcomingState = {
     filter: "all",
@@ -2931,7 +2933,7 @@ document.addEventListener("DOMContentLoaded", initUpcoming);
      DEFAULT MATCHES
   ========================= */
 
-  const DEFAULT_MATCHES = [
+  const upcomingMatches = [
     {
       id: 'M-1002',
       teamA: 'عمر',
@@ -2946,15 +2948,15 @@ document.addEventListener("DOMContentLoaded", initUpcoming);
       createdAt: Date.now()
     },
      {
-      id: 'M-1002',
+      id: 'M-1003',
       teamA: 'عمر',
-      teamB: 'غير معروف',
+      teamB: 'فتحي',
       dateTime: '2026-05-22T19:00:00',
       endTime: '2026-05-22T20:00:00',
       venue: 'سيدات الخليل',
-      badge: 'قادمة',
-      category: 'غير معروف',
-      hype: 50,
+      badge: 'محتملة',
+      category: 'تحدي',
+      hype: 80,
       featured: false,
       createdAt: Date.now()
     },
