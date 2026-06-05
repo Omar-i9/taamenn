@@ -1,0 +1,27 @@
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(280px, .75fr); gap: 18px; align-items: stretch; }
+.hero-card { padding: clamp(28px, 5vw, 54px); position: relative; overflow: hidden; }
+.hero-card::before { content: ''; position: absolute; inset: -40% -20% auto auto; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(231,199,95,.22), transparent 65%); }
+.hero-card h1 { font-family: var(--font-title); font-size: clamp(3.4rem, 9vw, 6.8rem); margin: 8px 0 10px; line-height: 1; }
+.hero-card p { color: var(--muted); font-size: 1.12rem; line-height: 1.9; max-width: 760px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.status-stack { display: grid; gap: 14px; }
+.status-card { padding: 22px; display: grid; align-content: center; gap: 8px; }
+.status-label { color: var(--soft); font-weight: 700; }
+.status-card strong { font-size: 1.6rem; color: var(--gold); }
+.status-card small { color: var(--muted); }
+.dashboard-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+.dashboard-card { padding: 22px; min-height: 190px; overflow: hidden; }
+.wide-card { grid-column: span 2; }
+.large-value { display: block; font-family: var(--font-title); font-size: clamp(1.7rem, 3vw, 2.5rem); color: var(--text); margin-top: 18px; }
+.dashboard-card p { color: var(--muted); line-height: 1.75; }
+.next-match-mini { display: grid; gap: 10px; }
+.mini-teams { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.mini-teams strong { font-size: 1.45rem; color: var(--gold); }
+.mini-teams span { color: var(--soft); }
+.mini-countdown { direction: ltr; text-align: center; font-family: var(--font-digital); font-size: clamp(2rem, 5vw, 3.5rem); color: var(--cyan); text-shadow: var(--glow-cyan); }
+.quick-entry-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+.entry-card { text-align: right; cursor: pointer; background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: 22px; box-shadow: var(--shadow-1); display: grid; gap: 8px; transition: transform var(--mid), border-color var(--mid), box-shadow var(--mid); }
+.entry-card:hover { transform: translateY(-5px); border-color: rgba(231,199,95,.28); box-shadow: var(--shadow-2); }
+.entry-card i { font-size: 2rem; color: var(--gold); }
+.entry-card span { font-size: 1.2rem; font-weight: 900; }
+.entry-card small { color: var(--muted); line-height: 1.6; }

@@ -1,0 +1,44 @@
+@media (max-width: 1080px) {
+  .desktop-nav { display: none; }
+  .menu-button { display: grid; }
+  .dashboard-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .archive-toolbar { grid-template-columns: 1fr; }
+  .archive-stats { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+
+@media (max-width: 860px) {
+  :root { --header-h: 70px; }
+  .brand-copy small { display: none; }
+  .brand-copy strong { font-size: 1.1rem; }
+  .brand-logo { width: 40px; height: 40px; }
+  .clock-chip { display: none; }
+  .hero-grid, .match-center-grid, .weather-prayer-grid, .about-grid { grid-template-columns: 1fr; }
+  .status-stack { grid-template-columns: 1fr 1fr; }
+  .quick-entry-grid { grid-template-columns: 1fr; }
+  .match-info-grid, .weather-metrics { grid-template-columns: 1fr; }
+  .teams-line { grid-template-columns: 1fr; }
+  .teams-line b { width: 60px; height: 60px; margin: 0 auto; }
+  .tactical-pitch { height: 540px; }
+}
+
+@media (max-width: 620px) {
+  .app-shell { width: min(100% - 20px, var(--max-w)); padding-top: 18px; }
+  .header-inner { padding: 0 10px; }
+  .hero-card, .dashboard-card, .weather-card, .prayer-card, .about-card, .action-panel { border-radius: 22px; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .wide-card { grid-column: auto; }
+  .status-stack { grid-template-columns: 1fr; }
+  .archive-stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .archive-card-main { grid-template-columns: 1fr; }
+  .details-grid { grid-template-columns: 1fr; }
+  .prayer-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .weather-hero-row { display: grid; }
+  .weather-temp { font-size: 4rem; }
+  .tactical-pitch { height: 460px; }
+  .player-token { width: 55px; height: 55px; }
+  .player-token strong { font-size: .72rem; max-width: 46px; }
+  .instruction-mark { max-width: 120px; font-size: .62rem; }
+  .pitch-status { top: 24px; right: 24px; font-size: .78rem; max-width: calc(100% - 48px); }
+  .dialog-actions { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
