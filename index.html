@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07111f" />
+  <meta name="description" content="تأمين 2026 Legacy Edition - منصة الفريق للتكتيك، المباريات، الطقس، الصلاة، والأرشيف." />
+  <title>تأمين 2026 | Legacy Edition</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&family=Tajawal:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/00-tokens.css" />
+  <link rel="stylesheet" href="css/01-base.css" />
+  <link rel="stylesheet" href="css/02-layout.css" />
+  <link rel="stylesheet" href="css/03-components.css" />
+  <link rel="stylesheet" href="css/04-home.css" />
+  <link rel="stylesheet" href="css/05-match-center.css" />
+  <link rel="stylesheet" href="css/06-radar.css" />
+  <link rel="stylesheet" href="css/07-archive.css" />
+  <link rel="stylesheet" href="css/08-weather-prayer.css" />
+  <link rel="stylesheet" href="css/09-about.css" />
+  <link rel="stylesheet" href="css/10-mobile.css" />
+  <link rel="stylesheet" href="css/11-v2-polish.css" />
+  <link rel="stylesheet" href="css/12-v3-final.css" />
+</head>
+<body class="theme-night">
+  <div class="background-shell" aria-hidden="true">
+    <div class="bg-orb bg-orb-one"></div>
+    <div class="bg-orb bg-orb-two"></div>
+    <div class="stars-layer" id="starsLayer"></div>
+  </div>
+
+  <div id="toastHost" class="toast-host" aria-live="polite"></div>
+
+  <header class="main-header" id="mainHeader">
+    <div class="header-inner">
+      <button class="brand" data-route="home" type="button" aria-label="العودة للرئيسية">
+        <img src="assets/favicon.png" alt="شعار تأمين" class="brand-logo" />
+        <span class="brand-copy">
+          <strong>تأمين <span>2026</span></strong>
+          <small>Legacy Edition</small>
+        </span>
+      </button>
+
+      <nav class="desktop-nav compact-nav" aria-label="التنقل الرئيسي">
+        <button data-route="home" class="nav-link active" type="button"><i class="fa-solid fa-house"></i><span>الرئيسية</span></button>
+        <button data-route="radar" class="nav-link" type="button"><i class="fa-solid fa-users-viewfinder"></i><span>الرادار</span></button>
+        <button data-route="archive" class="nav-link" type="button"><i class="fa-solid fa-box-archive"></i><span>الأرشيف</span></button>
+        <button data-route="weather-prayer" class="nav-link" type="button"><i class="fa-solid fa-cloud-sun"></i><span>الطقس والصلاة</span></button>
+        <button data-route="match-center" class="nav-link" type="button"><i class="fa-solid fa-calendar-check"></i><span>المباراة</span></button>
+
+        <div class="more-nav" id="moreNav">
+          <button class="nav-link more-nav-btn" id="moreNavToggle" type="button" aria-expanded="false" aria-controls="moreNavPanel">
+            <i class="fa-solid fa-wand-magic-sparkles"></i><span>المزيد</span><i class="fa-solid fa-chevron-down more-arrow"></i>
+          </button>
+          <div class="more-nav-panel" id="moreNavPanel" aria-hidden="true">
+            <button data-route="guide" class="more-nav-item" type="button">
+              <i class="fa-solid fa-book-open"></i>
+              <span><strong>دليل الاستخدام</strong><small>شرح كل صفحة وزر</small></span>
+            </button>
+            <button data-route="about" class="more-nav-item" type="button">
+              <i class="fa-solid fa-circle-info"></i>
+              <span><strong>عن المنصة</strong><small>الفكرة والمصادر والتواصل</small></span>
+            </button>
+            <a class="more-nav-item programmer-more" href="https://omar-i9.github.io/omar-i9/" target="_blank" rel="noopener noreferrer">
+              <i class="fa-solid fa-code"></i>
+              <span><strong>صفحات المبرمج</strong><small>روابط عمر ومشاريعه</small></span>
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="header-tools">
+        <div class="clock-chip" id="headerClock">--:--:--</div>
+        <button id="themeToggle" class="icon-button" type="button" aria-label="تبديل ثيم الليل/الغروب">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <button id="menuToggle" class="menu-button" type="button" aria-label="فتح القائمة">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+      <div class="mobile-menu-title">قائمة تأمين</div>
+      <button data-route="home" class="mobile-nav-link" type="button"><i class="fa-solid fa-house"></i> الرئيسية</button>
+      <button data-route="match-center" class="mobile-nav-link" type="button"><i class="fa-solid fa-calendar-check"></i> المباراة القادمة</button>
+      <button data-route="radar" class="mobile-nav-link" type="button"><i class="fa-solid fa-users-viewfinder"></i> الرادار التكتيكي</button>
+      <button data-route="archive" class="mobile-nav-link" type="button"><i class="fa-solid fa-trophy"></i> أرشيف المباريات</button>
+      <button data-route="weather-prayer" class="mobile-nav-link" type="button"><i class="fa-solid fa-cloud-sun"></i> الطقس والصلاة</button>
+      <button data-route="guide" class="mobile-nav-link" type="button"><i class="fa-solid fa-book-open"></i> دليل الاستخدام</button>
+      <button data-route="about" class="mobile-nav-link" type="button"><i class="fa-solid fa-circle-info"></i> عن المنصة والمصادر</button>
+      <a class="mobile-nav-link mobile-social-link" href="https://omar-i9.github.io/omar-i9/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-link"></i> صفحات المبرمج</a>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="page active" id="home" data-page-title="الرئيسية">
+      <div class="hero-grid">
+        <div class="hero-card glass-panel reveal-up">
+          <div class="eyebrow"><i class="fa-solid fa-shield-halved"></i> الإصدار الملكي الليلي</div>
+          <h1>تأمين 2026</h1>
+          <p>
+            منصة عربية فخمة للفريق: مباراة قادمة، رادار تكتيكي، أرشيف كامل، طقس وصلاة، وروابط واضحة.
+            كل شيء مقسم بملفات نظيفة عشان التعديل ما يتحول لحفلة تعذيب برمجية.
+          </p>
+          <div class="hero-actions">
+            <button class="primary-btn" data-route="match-center" type="button"><i class="fa-solid fa-play"></i> ابدأ من المباراة القادمة</button>
+            <button class="ghost-btn" data-route="radar" type="button"><i class="fa-solid fa-chalkboard-user"></i> جهز التشكيلة</button>
+          </div>
+        </div>
+
+        <aside class="status-stack reveal-up delay-1">
+          <article class="status-card glass-panel">
+            <span class="status-label">حالة النظام</span>
+            <strong id="systemStatus">مفعل ومستقر</strong>
+            <small>آخر بناء: Legacy Build</small>
+          </article>
+          <article class="status-card glass-panel">
+            <span class="status-label">المدينة النشطة</span>
+            <strong id="activeCityName">الخليل</strong>
+            <small>تستخدم للطقس ومواقيت الصلاة</small>
+          </article>
+        </aside>
+      </div>
+
+      <section class="dashboard-grid" aria-label="لوحة القيادة">
+        <article class="dashboard-card wide-card glass-panel reveal-up">
+          <div class="card-head">
+            <div>
+              <span class="eyebrow">مركز المباراة</span>
+              <h2>المباراة القادمة</h2>
+            </div>
+            <i class="fa-solid fa-futbol card-ghost-icon"></i>
+          </div>
+          <div class="next-match-mini" id="homeNextMatch"></div>
+        </article>
+
+        <article class="dashboard-card glass-panel reveal-up delay-1">
+          <div class="card-head compact">
+            <span class="eyebrow">جاهزية اللعب</span>
+            <i class="fa-solid fa-cloud-bolt"></i>
+          </div>
+          <strong class="large-value" id="playabilityScore">--</strong>
+          <p id="playabilityText">جاري قراءة الطقس...</p>
+        </article>
+
+        <article class="dashboard-card glass-panel reveal-up delay-2">
+          <div class="card-head compact">
+            <span class="eyebrow">الصلاة القادمة</span>
+            <i class="fa-solid fa-mosque"></i>
+          </div>
+          <strong class="large-value" id="homeNextPrayer">--</strong>
+          <p id="homePrayerCountdown">--:--:--</p>
+        </article>
+
+        <article class="dashboard-card glass-panel reveal-up delay-3">
+          <div class="card-head compact">
+            <span class="eyebrow">آخر نتيجة</span>
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <strong class="large-value" id="lastMatchScore">--</strong>
+          <p id="lastMatchText">لا توجد بيانات بعد</p>
+        </article>
+
+        <article class="dashboard-card glass-panel reveal-up delay-4">
+          <div class="card-head compact">
+            <span class="eyebrow">MVP الحالي</span>
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <strong class="large-value" id="mvpName">--</strong>
+          <p id="mvpReason">يتم حسابه من البيانات</p>
+        </article>
+      </section>
+
+      <section class="quick-entry-grid reveal-up">
+        <button class="entry-card" data-route="radar" type="button">
+          <i class="fa-solid fa-users-viewfinder"></i>
+          <span>الرادار التكتيكي</span>
+          <small>حرّك اللاعبين، طبّق تشكيلات، واحفظ الصورة</small>
+        </button>
+        <button class="entry-card" data-route="archive" type="button">
+          <i class="fa-solid fa-box-archive"></i>
+          <span>أرشيف المباريات</span>
+          <small>بحث، فلترة، إحصائيات، وتفاصيل</small>
+        </button>
+        <button class="entry-card" data-route="weather-prayer" type="button">
+          <i class="fa-solid fa-cloud-sun-rain"></i>
+          <span>الطقس والصلاة</span>
+          <small>الخليل أو القدس مع حسابات مباشرة</small>
+        </button>
+      </section>
+    </section>
+
+    <section class="page" id="match-center" data-page-title="المباراة القادمة">
+      <div class="page-heading reveal-up">
+        <span class="eyebrow"><i class="fa-solid fa-calendar-check"></i> دورة حياة المباراة</span>
+        <h1>مركز المباراة القادمة</h1>
+        <p>من هون بتشوف الموعد، الجاهزية، والمشاركة. إضافة المباريات الرسمية صارت من ملف البيانات عشان الأرشيف يظل مرتب وواضح.</p>
+      </div>
+
+      <div class="match-center-grid">
+        <article class="glass-panel match-main-card reveal-up" id="matchCenterCard"></article>
+        <aside class="match-side-panel reveal-up delay-1">
+          <div class="glass-panel action-panel">
+            <h3>إجراءات سريعة</h3>
+            <button id="shareMatchBtn" class="primary-btn full" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة الموعد</button>
+            <button class="ghost-btn full" data-route="radar" type="button"><i class="fa-solid fa-chess-board"></i> فتح الرادار</button>
+            <button id="copyMatchBtn" class="ghost-btn full" type="button"><i class="fa-solid fa-copy"></i> نسخ النص</button>
+          </div>
+          <div class="glass-panel action-panel edit-guide-card">
+            <h3><i class="fa-solid fa-code"></i> تعديل المباريات</h3>
+            <p>الإضافة المحلية انشالت عشان الأرشيف يضل رسمي وثابت. أضف المباريات من ملف البيانات مباشرة.</p>
+            <ol>
+              <li>افتح <code>data/site-data.js</code>.</li>
+              <li>للمباريات السابقة عدّل مصفوفة <code>matchArchive</code>.</li>
+              <li>للمباريات القادمة عدّل مصفوفة <code>upcomingMatches</code>.</li>
+              <li>غيّر الإصدار في <code>siteMeta.version</code> عند كل تحديث كبير.</li>
+            </ol>
+            <button class="ghost-btn full" data-route="guide" type="button"><i class="fa-solid fa-book-open"></i> شرح كل الصفحات</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="page" id="radar" data-page-title="الرادار التكتيكي">
+      <div class="page-heading reveal-up">
+        <span class="eyebrow"><i class="fa-solid fa-users-viewfinder"></i> المحرك التكتيكي</span>
+        <h1>الرادار التكتيكي</h1>
+        <p>اسحب اللاعبين على الملعب. اضغط مرتين على اللاعب لتعديل الاسم، الدور، التعليمات، أو الكابتن.</p>
+      </div>
+
+      <div class="radar-toolbar reveal-up delay-1">
+        <button id="applyDiamond" class="radar-btn active" type="button"><i class="fa-solid fa-gem"></i> الماسة</button>
+        <button id="applySquare" class="radar-btn" type="button"><i class="fa-solid fa-border-all"></i> المربع</button>
+        <button id="applyPyramid" class="radar-btn" type="button"><i class="fa-solid fa-play"></i> الهرم</button>
+        <button id="applyYPress" class="radar-btn" type="button"><i class="fa-solid fa-bolt"></i> ضغط Y</button>
+        <button id="resetPitch" class="radar-btn" type="button"><i class="fa-solid fa-rotate-right"></i> إعادة ضبط</button>
+        <button id="savePitch" class="radar-btn gold" type="button"><i class="fa-solid fa-camera"></i> حفظ التشكيلة</button>
+      </div>
+
+      <div class="radar-help-tip glass-panel reveal-up delay-2">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>اسحب اللاعب لتغيير المركز. اضغط مرتين على اللاعب لتعديل اسمه، دوره، تعليماته، أو تعيينه ككابتن.</span>
+      </div>
+
+      <div class="pitch-shell reveal-up delay-2">
+        <div class="pitch-status" id="pitchStatus">جاهز للتحريك</div>
+        <div id="tacticalPitch" class="tactical-pitch" aria-label="ملعب تكتيكي تفاعلي">
+          <div class="pitch-line center"></div>
+          <div class="pitch-circle"></div>
+          <div class="goal-box goal-home"></div>
+          <div class="goal-box goal-away"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="archive" data-page-title="الأرشيف">
+      <div class="page-heading reveal-up">
+        <span class="eyebrow"><i class="fa-solid fa-trophy"></i> أرشيف المباريات</span>
+        <h1>ليالي المنافسة</h1>
+        <p>عرض أوضح للمباريات مع بحث وفلترة وملخصات. لأن البحث داخل ذاكرة البشر كارثة غير موثوقة.</p>
+      </div>
+
+      <div class="archive-toolbar glass-panel reveal-up delay-1">
+        <div class="search-field">
+          <i class="fa-solid fa-search"></i>
+          <input id="archiveSearch" type="search" placeholder="ابحث باسم فريق، نتيجة، ID، أو نوع المباراة..." />
+        </div>
+        <div class="filter-row" role="group" aria-label="فلترة المباريات">
+          <button class="filter-btn active" data-filter="all" type="button">الكل</button>
+          <button class="filter-btn" data-filter="strong" type="button">قوية</button>
+          <button class="filter-btn" data-filter="normal" type="button">عادية</button>
+          <button class="filter-btn" data-filter="friendly" type="button">ودية</button>
+        </div>
+        <select id="archiveSort" class="select-control" aria-label="ترتيب المباريات">
+          <option value="newest">الأحدث أولًا</option>
+          <option value="oldest">الأقدم أولًا</option>
+          <option value="goals">الأكثر أهدافًا</option>
+        </select>
+      </div>
+
+      <div id="archiveStats" class="archive-stats reveal-up delay-2"></div>
+      <div id="archiveList" class="archive-list reveal-up delay-3"></div>
+    </section>
+
+    <section class="page" id="weather-prayer" data-page-title="الطقس والصلاة">
+      <div class="page-heading reveal-up">
+        <span class="eyebrow"><i class="fa-solid fa-cloud-sun"></i> خدمات الملعب</span>
+        <h1>الطقس ومواقيت الصلاة</h1>
+        <p>اختر الخليل أو القدس، والموقع يحدث الطقس ومواعيد الصلاة حسب الإحداثيات.</p>
+      </div>
+
+      <div class="city-switcher glass-panel reveal-up delay-1">
+        <label for="citySelect">المدينة</label>
+        <select id="citySelect" class="select-control">
+          <option value="hebron">الخليل - فلسطين</option>
+          <option value="jerusalem">القدس - فلسطين</option>
+        </select>
+        <button id="refreshServices" class="ghost-btn" type="button"><i class="fa-solid fa-rotate"></i> تحديث</button>
+      </div>
+
+      <div class="weather-prayer-grid">
+        <article class="weather-card glass-panel reveal-up" id="weatherCard">
+          <div class="loading-line">جاري تحميل الطقس...</div>
+        </article>
+        <article class="prayer-card glass-panel reveal-up delay-1">
+          <div class="service-head">
+            <div>
+              <span class="eyebrow">مواقيت الصلاة</span>
+              <h2 id="prayerCityTitle">الخليل</h2>
+            </div>
+            <i class="fa-solid fa-mosque"></i>
+          </div>
+          <div class="next-prayer-box">
+            <span id="nextPrayerLabel">الصلاة القادمة</span>
+            <strong id="nextPrayerName">--</strong>
+            <b id="nextPrayerCountdown">--:--:--</b>
+          </div>
+          <div class="prayer-grid" id="prayerGrid"></div>
+          <p class="service-note" id="prayerNote">يتم الحساب عبر Aladhan حسب الإحداثيات المختارة.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="page" id="guide" data-page-title="دليل الاستخدام">
+      <div class="page-heading reveal-up">
+        <span class="eyebrow"><i class="fa-solid fa-book-open"></i> دليل الموقع</span>
+        <h1>كيف تستخدم تأمين 2026؟</h1>
+        <p>شرح سريع لكل صفحة وزر مهم، عشان الموقع يكون مفهوم حتى لو المستخدم داخل أول مرة ولسه صاحي من النوم.</p>
+      </div>
+
+      <div id="guideGrid" class="guide-grid reveal-up delay-1"></div>
+
+      <div class="glass-panel code-guide reveal-up delay-2">
+        <h2><i class="fa-solid fa-pen-to-square"></i> كيف أضيف مباراة؟</h2>
+        <p>كل البيانات الرسمية موجودة في ملف <code>data/site-data.js</code>. لا تحتاج تفتح ملفات التصميم أو المنطق.</p>
+        <div class="code-guide-grid">
+          <article>
+            <h3>إضافة مباراة للأرشيف</h3>
+            <pre><code>{
+  id: 'M-204',
+  type: 'strong', // normal | strong | friendly
+  team1: 'عمر',
+  team2: 'كريم',
+  score1: 7,
+  score2: 6,
+  status: 'انتهت',
+  dateLabel: 'الجمعة 22 مايو',
+  dateKey: 20260522,
+  story: 'وصف قصير للمباراة'
+}</code></pre>
+          </article>
+          <article>
+            <h3>إضافة مباراة قادمة</h3>
+            <pre><code>{
+  id: 'UP-003',
+  title: 'مواجهة الجمعة',
+  team1: 'تأمين',
+  team2: 'التحدي',
+  location: 'ملعب سيدات الخليل',
+  weekday: 5, // الجمعة
+  hour: 19,
+  minute: 0,
+  durationMinutes: 60,
+  note: 'أي ملاحظة تظهر بالموقع'
+}</code></pre>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="about" data-page-title="عن المنصة">
+      <div class="about-shell reveal-up">
+        <div class="about-hero glass-panel">
+          <i class="fa-solid fa-crown about-icon"></i>
+          <h1>عن تأمين 2026</h1>
+          <p>منصة صغيرة بفكرة واضحة: تنظيم الفريق بدل ما تضيع النتائج والمواعيد في محادثات واتساب لا يقرأها أحد.</p>
+        </div>
+
+        <div class="about-grid">
+          <article class="about-card glass-panel">
+            <h3><i class="fa-solid fa-bullseye"></i> فكرة المنصة</h3>
+            <p>تأمين 2026 منصة لتنظيم مباريات الفريق، تجهيز التشكيلات، متابعة النتائج، حفظ الأرشيف، ومراجعة جاهزية اللعب.</p>
+          </article>
+          <article class="about-card glass-panel">
+            <h3><i class="fa-solid fa-layer-group"></i> ماذا تقدم؟</h3>
+            <p>رادار تكتيكي، مركز مباراة، أرشيف، طقس، مواقيت صلاة، مشاركة مواعيد، وتقسيم ملفات جاهز للصيانة.</p>
+          </article>
+          <article class="about-card glass-panel">
+            <h3><i class="fa-solid fa-database"></i> مصادر البيانات</h3>
+            <ul id="sourcesList"></ul>
+          </article>
+          <article class="about-card glass-panel">
+            <h3><i class="fa-solid fa-code-branch"></i> حالة الإصدار</h3>
+            <p>Legacy Edition: نسخة شبه نهائية، مبنية للتحديثات الصغيرة والصيانة بدل إعادة البناء كل مرة.</p>
+          </article>
+        </div>
+
+        <div class="about-actions glass-panel">
+          <a class="primary-btn link-btn" href="https://whatsapp.com/channel/0029VbC5YTSB4hdPRDfjyA3c" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> قناة تأمين</a>
+          <a class="ghost-btn link-btn" href="https://wa.me/972594054750" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-headset"></i> الدعم الفني</a>
+          <a class="programmer-btn link-btn" href="https://omar-i9.github.io/omar-i9/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-link"></i> صفحات المبرمج</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="playerDialog" class="player-dialog">
+    <form method="dialog" id="playerForm">
+      <h3>تعديل اللاعب</h3>
+      <input type="hidden" name="id" />
+      <label>اسم اللاعب <input name="name" required /></label>
+      <label>دور الفريق
+        <select name="teamRole" id="teamRoleSelect"></select>
+        <small class="dialog-hint" id="roleHint">اختر دور اللاعب داخل الفريق.</small>
+      </label>
+      <label>تعليمات تكتيكية
+        <select name="instruction" id="instructionSelect"></select>
+        <small class="dialog-hint" id="instructionHint">اختر تعليمات مختصرة تظهر فوق اللاعب.</small>
+      </label>
+      <div class="dialog-actions">
+        <button value="cancel" class="ghost-btn" type="submit">إغلاق</button>
+        <button id="clearPlayer" class="danger-btn" value="clear" type="button">مسح</button>
+        <button value="save" class="primary-btn" type="submit">حفظ</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
