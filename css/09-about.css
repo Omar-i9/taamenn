@@ -1,0 +1,14 @@
+.about-shell { display: grid; gap: 16px; }
+.about-hero { text-align: center; padding: clamp(28px, 5vw, 54px); }
+.about-icon { width: 80px; height: 80px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 50%; background: rgba(231,199,95,.12); color: var(--gold); font-size: 2.4rem; box-shadow: var(--glow-gold); }
+.about-hero h1 { font-family: var(--font-title); font-size: clamp(2.8rem, 6vw, 5rem); margin: 0 0 10px; }
+.about-hero p { color: var(--muted); max-width: 720px; margin: 0 auto; line-height: 1.9; font-size: 1.08rem; }
+.about-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+.about-card { padding: 22px; }
+.about-card h3 { margin: 0 0 12px; color: var(--gold); font-family: var(--font-title); display: flex; align-items: center; gap: 10px; }
+.about-card p { color: var(--muted); line-height: 1.9; }
+.about-card ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.about-card li { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: grid; gap: 5px; }
+.about-card li strong { color: var(--text); }
+.about-card li span { color: var(--muted); line-height: 1.6; }
+.about-actions { padding: 18px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }

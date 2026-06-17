@@ -1,0 +1,704 @@
+/* =========================================================
+   TAAMEN V3.8 — RADAR PRO REBUILD
+   تحسين الرادار والملعب التفاعلي بدون العبث بباقي الموقع
+   ========================================================= */
+
+#radar {
+  --radar-green-1: #0c2f20;
+  --radar-green-2: #115a35;
+  --radar-line: rgba(237, 248, 255, .78);
+  --radar-soft-line: rgba(237, 248, 255, .34);
+  --radar-shadow: 0 22px 70px rgba(0, 0, 0, .38);
+}
+
+#radar .page-heading p {
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.radar-toolbar {
+  position: relative;
+  z-index: 8;
+  gap: 8px !important;
+  padding: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 24px;
+  background: rgba(7, 14, 28, .42);
+  backdrop-filter: blur(18px);
+}
+
+.radar-btn {
+  min-height: 44px;
+  border-radius: 16px !important;
+  isolation: isolate;
+  color: rgba(245, 248, 255, .9);
+}
+
+.radar-btn.active,
+.radar-btn:focus-visible {
+  color: #07111f;
+  background: linear-gradient(135deg, var(--gold), #fff0a3) !important;
+  border-color: rgba(255,255,255,.42) !important;
+  box-shadow: 0 12px 32px rgba(231,199,95,.24), 0 0 0 4px rgba(231,199,95,.12) !important;
+}
+
+.radar-help-tip {
+  max-width: 980px;
+  margin: 0 auto 14px;
+  font-size: .92rem;
+}
+
+.radar-tactic-summary {
+  display: grid;
+  grid-template-columns: minmax(230px, auto) 1fr auto;
+  align-items: center;
+  gap: 14px;
+  max-width: 1180px;
+  margin: 0 auto 14px;
+  padding: 14px 16px;
+  border-radius: 24px;
+}
+
+.tactic-summary-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tactic-summary-main i {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: #07111f;
+  background: linear-gradient(135deg, var(--gold), #fff0a3);
+  box-shadow: 0 12px 32px rgba(231,199,95,.18);
+}
+
+.tactic-summary-main span,
+.tactic-summary-metrics span {
+  display: block;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: .76rem;
+}
+
+.tactic-summary-main strong {
+  display: block;
+  color: var(--text);
+  font-family: var(--font-title);
+  font-size: 1.08rem;
+}
+
+.radar-tactic-summary p {
+  margin: 0;
+  color: rgba(238,244,255,.78);
+  line-height: 1.8;
+  font-weight: 700;
+}
+
+.tactic-summary-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tactic-summary-metrics span {
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.045);
+  white-space: nowrap;
+}
+
+.tactic-summary-metrics b {
+  color: var(--gold);
+  margin-inline-end: 4px;
+}
+
+.radar-studio {
+  display: grid;
+  grid-template-columns: minmax(190px, 230px) minmax(520px, 1fr) minmax(190px, 230px);
+  align-items: stretch;
+  gap: 14px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.radar-studio .pitch-shell {
+  min-width: 0;
+  margin: 0 !important;
+}
+
+.radar-side-panel {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 26px;
+  align-self: stretch;
+  overflow: hidden;
+}
+
+.radar-side-head {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.radar-side-head span {
+  color: var(--gold);
+  font-weight: 1000;
+  font-size: .82rem;
+}
+
+.radar-side-head strong {
+  color: var(--text);
+  font-family: var(--font-title);
+  font-size: 1.08rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.radar-side-head small {
+  color: var(--muted);
+  font-weight: 800;
+  font-size: .72rem;
+}
+
+.radar-team-meter {
+  height: 9px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255,255,255,.07);
+  margin-bottom: 12px;
+}
+
+.radar-team-meter span {
+  display: block;
+  height: 100%;
+  width: var(--meter, 48%);
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(85,214,255,.85), rgba(231,199,95,.92));
+  box-shadow: 0 0 22px rgba(85,214,255,.24);
+}
+
+.radar-lineup-list {
+  display: grid;
+  gap: 8px;
+}
+
+.lineup-player {
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.045);
+  color: var(--text);
+  border-radius: 16px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  text-align: start;
+  cursor: pointer;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.lineup-player:hover,
+.lineup-player:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(231,199,95,.34);
+  background: rgba(231,199,95,.08);
+  outline: none;
+}
+
+.lineup-position {
+  grid-row: span 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(85,214,255,.12);
+  color: #8fe8ff;
+  border: 1px solid rgba(85,214,255,.18);
+  font-family: var(--font-display);
+  font-size: .72rem;
+  font-weight: 1000;
+}
+
+.lineup-name {
+  font-weight: 1000;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lineup-player small {
+  color: var(--muted);
+  font-weight: 800;
+  font-size: .67rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.radar-pool-title {
+  margin: 14px 0 8px;
+  color: rgba(255,255,255,.62);
+  font-weight: 900;
+  font-size: .73rem;
+}
+
+.radar-player-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pool-chip {
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.18);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 8px;
+  display: inline-grid;
+  gap: 1px;
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+.pool-chip span {
+  font-weight: 1000;
+  font-size: .7rem;
+}
+
+.pool-chip small {
+  color: var(--muted);
+  font-size: .58rem;
+  font-weight: 800;
+}
+
+.pool-chip:hover,
+.pool-chip:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(85,214,255,.1);
+  border-color: rgba(85,214,255,.26);
+  outline: none;
+}
+
+.pitch-shell {
+  position: relative;
+}
+
+.pitch-status {
+  z-index: 20;
+  max-width: calc(100% - 28px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0,0,0,.24);
+}
+
+.tactical-pitch {
+  height: clamp(440px, 62vw, 690px) !important;
+  min-height: 420px;
+  border-radius: 30px !important;
+  border: 3px solid rgba(245,255,250,.74) !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.10) 0 1px, transparent 2px),
+    linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 64px, rgba(0,0,0,.035) 64px 128px),
+    radial-gradient(circle at 50% 50%, rgba(85,214,255,.08), transparent 38%),
+    linear-gradient(135deg, var(--radar-green-1), var(--radar-green-2)) !important;
+  background-size: 28px 28px, 12.5% 100%, 100% 16.66%, auto, auto, auto;
+  box-shadow: var(--radar-shadow), inset 0 0 90px rgba(0,0,0,.38), inset 0 0 0 1px rgba(255,255,255,.12) !important;
+  touch-action: none;
+  isolation: isolate;
+}
+
+.tactical-pitch::before,
+.tactical-pitch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tactical-pitch::before {
+  background:
+    linear-gradient(90deg, transparent 0 calc(50% - 1.5px), var(--radar-line) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    radial-gradient(circle at 50% 50%, transparent 0 62px, var(--radar-line) 63px 65px, transparent 66px),
+    radial-gradient(circle at 50% 50%, var(--radar-line) 0 5px, transparent 6px),
+    linear-gradient(90deg, transparent 0 12%, var(--radar-soft-line) 12% calc(12% + 2px), transparent calc(12% + 2px) 88%, var(--radar-soft-line) 88% calc(88% + 2px), transparent calc(88% + 2px));
+}
+
+.tactical-pitch::after {
+  background: radial-gradient(circle at 50% 8%, rgba(255,255,255,.18), transparent 18%), linear-gradient(180deg, rgba(255,255,255,.08), transparent 35%, rgba(0,0,0,.16));
+  mix-blend-mode: screen;
+  opacity: .75;
+}
+
+.pitch-third {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-inline: 1px dashed rgba(255,255,255,.13);
+}
+
+.pitch-third.left { left: 0; width: 33.333%; background: linear-gradient(90deg, rgba(255,107,107,.08), transparent); }
+.pitch-third.middle { left: 33.333%; width: 33.333%; background: rgba(255,255,255,.015); }
+.pitch-third.right { right: 0; width: 33.333%; background: linear-gradient(-90deg, rgba(85,163,255,.10), transparent); }
+
+.pitch-line.center,
+.pitch-circle,
+.goal-box {
+  z-index: 3;
+}
+
+.goal-box {
+  background: rgba(255,255,255,.035);
+  box-shadow: inset 0 0 30px rgba(255,255,255,.06);
+}
+
+.goal-home {
+  right: -70px !important;
+}
+
+.goal-away {
+  left: -70px !important;
+}
+
+.player-token {
+  width: 72px !important;
+  height: 72px !important;
+  z-index: 12 !important;
+  display: grid !important;
+  grid-template-rows: 1fr auto;
+  place-items: center;
+  border: 2px solid rgba(255,255,255,.88) !important;
+  box-shadow: 0 18px 36px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.28) !important;
+  transition: left .32s cubic-bezier(.2,.8,.2,1), top .32s cubic-bezier(.2,.8,.2,1), transform .18s ease, filter .18s ease, box-shadow .18s ease !important;
+  will-change: left, top, transform;
+}
+
+.player-token::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,.22);
+  pointer-events: none;
+}
+
+.player-token:hover,
+.player-token:focus-visible,
+.player-token.selected-token {
+  outline: none;
+  filter: brightness(1.12) saturate(1.05);
+  box-shadow: 0 22px 45px rgba(0,0,0,.48), 0 0 0 5px rgba(231,199,95,.18), inset 0 1px rgba(255,255,255,.28) !important;
+}
+
+.player-token.dragging {
+  z-index: 80 !important;
+  transition: none !important;
+  transform: translate(-50%, -50%) scale(1.09) !important;
+}
+
+.player-token.team-home {
+  background: radial-gradient(circle at 35% 20%, #ffd1d1, transparent 24%), linear-gradient(180deg, #ff6b6b, #be123c) !important;
+}
+
+.player-token.team-away {
+  background: radial-gradient(circle at 35% 20%, #d7e8ff, transparent 24%), linear-gradient(180deg, #66a3ff, #1d4ed8) !important;
+}
+
+.player-name-label {
+  align-self: end;
+  width: 60px;
+  font-size: .76rem !important;
+  font-weight: 1000;
+  text-align: center;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.position-badge,
+.team-role-badge {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  white-space: nowrap;
+  font-weight: 1000;
+  line-height: 1;
+}
+
+.position-badge {
+  bottom: -13px;
+  background: linear-gradient(135deg, var(--gold), #fff0a3);
+  color: #07111f;
+  padding: 4px 9px;
+  font-size: .68rem;
+  box-shadow: 0 10px 20px rgba(0,0,0,.25);
+}
+
+.team-role-badge {
+  top: 100%;
+  margin-top: 15px;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(5, 10, 20, .84);
+  color: rgba(255,255,255,.86);
+  border: 1px solid rgba(255,255,255,.12);
+  padding: 5px 9px;
+  font-size: .62rem;
+}
+
+.captain-mark {
+  width: 24px !important;
+  height: 24px !important;
+  top: -9px !important;
+  right: -7px !important;
+  font-family: var(--font-display);
+  box-shadow: 0 10px 18px rgba(0,0,0,.26);
+}
+
+.instruction-mark {
+  top: -48px !important;
+  min-width: 112px !important;
+  max-width: 172px !important;
+  background: rgba(4, 10, 22, .88) !important;
+  border-color: rgba(85,214,255,.2) !important;
+  color: rgba(255,255,255,.9);
+  box-shadow: 0 12px 24px rgba(0,0,0,.28);
+}
+
+.player-dialog {
+  width: min(490px, calc(100vw - 24px)) !important;
+}
+
+.player-dialog form {
+  gap: 12px !important;
+  border-color: rgba(85,214,255,.18) !important;
+}
+
+.player-dialog input,
+.player-dialog select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(85,214,255,.22);
+  border-radius: 16px;
+  background: rgba(12, 18, 34, .92) !important;
+  color: rgba(245,248,255,.96) !important;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-weight: 900;
+  outline: none;
+}
+
+.player-dialog select option {
+  color: #101827;
+  background: #f8fafc;
+}
+
+.player-dialog input:focus,
+.player-dialog select:focus {
+  border-color: rgba(85,214,255,.72);
+  box-shadow: 0 0 0 4px rgba(85,214,255,.12);
+}
+
+.player-library-label {
+  order: -1;
+}
+
+.dialog-hint {
+  display: block;
+  color: rgba(225,232,244,.62) !important;
+  line-height: 1.6;
+}
+
+.dialog-actions {
+  gap: 10px !important;
+}
+
+.dialog-actions button {
+  min-height: 48px;
+  pointer-events: auto !important;
+}
+
+.saving-shot .player-token {
+  filter: saturate(1.08) brightness(1.06);
+}
+
+@media (max-width: 1120px) {
+  .radar-studio {
+    grid-template-columns: 1fr;
+  }
+
+  .radar-side-panel {
+    order: 2;
+  }
+
+  .radar-studio .pitch-shell {
+    order: 1;
+  }
+
+  .radar-lineup-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .radar-tactic-summary {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .tactic-summary-main,
+  .tactic-summary-metrics {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 760px) {
+  .radar-toolbar {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    scrollbar-width: none;
+  }
+
+  .radar-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .radar-btn {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 9px 11px !important;
+    font-size: .76rem;
+  }
+
+  .radar-help-tip {
+    font-size: .78rem;
+    padding: 11px 12px;
+  }
+
+  .radar-tactic-summary {
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .tactic-summary-main strong {
+    font-size: .94rem;
+  }
+
+  .radar-studio {
+    gap: 10px;
+  }
+
+  .tactical-pitch {
+    height: min(92vw, 470px) !important;
+    min-height: 350px;
+    border-radius: 22px !important;
+  }
+
+  .pitch-status {
+    top: 10px;
+    right: 10px;
+    font-size: .68rem;
+    padding: 7px 9px;
+  }
+
+  .player-token {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .player-name-label {
+    width: 46px;
+    font-size: .6rem !important;
+  }
+
+  .position-badge {
+    font-size: .56rem;
+    padding: 3px 7px;
+    bottom: -11px;
+  }
+
+  .team-role-badge {
+    display: none;
+  }
+
+  .instruction-mark {
+    min-width: 88px !important;
+    max-width: 120px !important;
+    top: -39px !important;
+    font-size: .56rem !important;
+    padding: 3px 6px !important;
+  }
+
+  .captain-mark {
+    width: 19px !important;
+    height: 19px !important;
+    font-size: .58rem !important;
+  }
+
+  .radar-lineup-list {
+    grid-template-columns: 1fr;
+  }
+
+  .radar-player-pool {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .radar-player-pool::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pool-chip {
+    flex: 0 0 auto;
+  }
+
+  .dialog-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .tactical-pitch {
+    height: 360px !important;
+    min-height: 340px;
+  }
+
+  .player-token {
+    width: 46px !important;
+    height: 46px !important;
+  }
+
+  .player-name-label {
+    width: 40px;
+    font-size: .55rem !important;
+  }
+
+  .instruction-mark {
+    display: none;
+  }
+}

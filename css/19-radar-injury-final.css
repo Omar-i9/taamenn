@@ -1,0 +1,328 @@
+/* =========================================================
+   TAAMEN V3.7 — RADAR + INJURY FINAL FIX
+   آخر طبقة صيانة: علاج الأزرار، الرادار، وسجل التعافي
+   ========================================================= */
+
+/* لا نعرض أي كلام تعديل ملفات للمستخدم العادي */
+.injury-edit-note,
+.edit-guide-card,
+.edit-guide-card.injury-edit-note,
+[data-admin-only],
+.guide-card:has(li:nth-child(4)) li:has(code),
+.guide-card li:has(code) {
+  display: none !important;
+}
+
+/* فصل واضح بين النشط والسابق */
+.injury-section-divider {
+  display: grid;
+  grid-template-columns: minmax(18px, 1fr) auto auto minmax(18px, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 12px;
+  color: rgba(238,245,255,.62);
+}
+
+.injury-section-divider span {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(231,199,95,.2), transparent);
+}
+
+.injury-section-divider b {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gold);
+  font-weight: 1000;
+  white-space: nowrap;
+}
+
+.injury-section-divider em {
+  color: rgba(238,245,255,.48);
+  font-size: .78rem;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+/* منع ظهور الحالات المتعافية كأنها إصابة نشطة */
+.injuries-list .injury-card.severity-healed,
+.injuries-list .injury-card.severity-recovery {
+  display: none !important;
+}
+
+/* شريط ويندوز للحالات السابقة: زر واحد فقط يفتح المجموعة */
+.injuries-recovered-host {
+  margin-top: 0 !important;
+}
+
+.recovered-drawer-shell {
+  margin-top: 10px !important;
+  overflow: hidden !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(84,232,214,.16) !important;
+  background:
+    linear-gradient(135deg, rgba(84,232,214,.055), rgba(255,255,255,.018)),
+    rgba(5,12,26,.68) !important;
+}
+
+.recovered-drawer-toggle {
+  min-height: 62px !important;
+  cursor: pointer !important;
+  border-bottom: 1px solid transparent !important;
+}
+
+.recovered-drawer-toggle.is-open {
+  border-bottom-color: rgba(255,255,255,.075) !important;
+}
+
+.recovered-drawer-body {
+  padding: 14px !important;
+}
+
+.recovered-files-list {
+  gap: 10px !important;
+}
+
+/* داخل السجل: ملفات عادية، مش أزرار */
+.recovered-file-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.075);
+  background:
+    linear-gradient(135deg, rgba(84,232,214,.055), rgba(255,255,255,.02)),
+    rgba(255,255,255,.035);
+  animation: recoveredRowIn .32s ease both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.recovered-file-card::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #54e8d6, transparent);
+  opacity: .78;
+  pointer-events: none;
+}
+
+.recovered-file-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+}
+
+.recovered-file-head > i:first-child {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: #06121d;
+  background: linear-gradient(135deg, #54e8d6, #c3fff4);
+  box-shadow: 0 14px 28px rgba(84,232,214,.14);
+}
+
+.recovered-mini-transition {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.recovered-mini-transition span {
+  padding: 10px 11px;
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,.07);
+  background: rgba(0,0,0,.16);
+  color: rgba(238,245,255,.68);
+  line-height: 1.7;
+}
+
+.recovered-mini-transition span:last-child {
+  border-color: rgba(84,232,214,.16);
+  background: rgba(84,232,214,.07);
+}
+
+.recovered-mini-transition b {
+  display: block;
+  color: var(--gold);
+  margin-bottom: 3px;
+}
+
+.recovered-mini-transition span:last-child b,
+.recovered-mini-transition > i {
+  color: #54e8d6;
+}
+
+.recovered-mini-transition > i {
+  align-self: center;
+}
+
+.recovered-file-description {
+  margin: 10px 0 0;
+  color: rgba(238,245,255,.68);
+  line-height: 1.75;
+}
+
+.recovered-file-care {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255,255,255,.09);
+}
+
+.recovered-file-care .injury-panel-grid {
+  gap: 10px;
+}
+
+.recovered-file-care .injury-panel-grid > div {
+  border-radius: 15px;
+  padding: 10px;
+  background: rgba(0,0,0,.12);
+  border: 1px solid rgba(255,255,255,.055);
+}
+
+/* زر خطة العلاج النشط: لازم يفتح بدون قفز لأعلى الصفحة */
+.injury-toggle-btn,
+.recovered-drawer-toggle {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.injury-action-panel {
+  scroll-margin-top: 130px;
+}
+
+/* الرادار: إصلاح الضغط والسحب وظهور الرتب */
+.radar-page,
+.tactical-layout,
+.tactical-pitch-wrap,
+.tactical-pitch {
+  position: relative;
+}
+
+.tactical-pitch,
+.player-token {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.player-token {
+  z-index: 15 !important;
+  pointer-events: auto !important;
+  will-change: left, top, transform;
+}
+
+.player-token.dragging {
+  z-index: 60 !important;
+}
+
+.player-token .instruction-mark,
+.player-token .team-role-badge,
+.player-token .position-badge,
+.player-token .captain-mark {
+  pointer-events: none !important;
+}
+
+.team-role-badge,
+.position-badge,
+.instruction-mark {
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* نافذة تعديل اللاعب: الأزرار فوق كل الطبقات وتشتغل */
+.player-dialog[open] {
+  display: grid !important;
+  place-items: center;
+}
+
+.player-dialog form {
+  isolation: isolate;
+}
+
+.player-dialog select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 12px;
+  background: rgba(8, 15, 31, .95) !important;
+  color: rgba(238,245,255,.92) !important;
+  padding: 0 10px;
+  font-family: inherit;
+  font-weight: 800;
+  outline: none;
+}
+
+.player-dialog select option {
+  color: #07111f;
+  background: #f4f7fb;
+}
+
+.dialog-actions {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dialog-actions button,
+#savePlayerChanges,
+#closePlayerDialog,
+#clearPlayer {
+  position: relative !important;
+  z-index: 25 !important;
+  pointer-events: auto !important;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+#savePlayerChanges { order: 3; }
+#clearPlayer { order: 2; }
+#closePlayerDialog { order: 1; }
+
+@media (max-width: 720px) {
+  .injury-section-divider {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+  }
+
+  .injury-section-divider em {
+    grid-column: 1 / -1;
+    justify-self: center;
+    white-space: normal;
+    text-align: center;
+    font-size: .72rem;
+  }
+
+  .recovered-file-head {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .recovered-file-state {
+    grid-column: 2;
+    justify-self: start;
+    grid-auto-flow: column;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .recovered-mini-transition {
+    grid-template-columns: 1fr;
+  }
+
+  .recovered-mini-transition > i {
+    transform: rotate(-90deg);
+    justify-self: center;
+  }
+
+  .dialog-actions {
+    grid-template-columns: 1fr !important;
+  }
+}

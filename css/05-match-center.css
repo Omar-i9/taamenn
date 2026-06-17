@@ -1,0 +1,23 @@
+.match-center-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); gap: 18px; align-items: start; }
+.match-main-card { padding: clamp(24px, 4vw, 42px); overflow: hidden; position: relative; }
+.match-main-card::after { content: ''; position: absolute; bottom: -100px; left: -100px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(85,214,255,.18), transparent 65%); }
+.match-badge-line { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.match-badge-line span { display: inline-flex; align-items: center; gap: 8px; background: var(--panel-soft); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; color: var(--muted); font-weight: 800; }
+.teams-line { margin: 30px auto 18px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; text-align: center; }
+.teams-line strong { font-family: var(--font-title); font-size: clamp(2rem, 5vw, 4rem); color: var(--gold); }
+.teams-line b { font-family: var(--font-digital); color: var(--cyan); background: rgba(85,214,255,.08); border: 1px solid rgba(85,214,255,.18); border-radius: 50%; width: 72px; height: 72px; display: grid; place-items: center; }
+.big-countdown { direction: ltr; font-family: var(--font-digital); color: var(--text); font-size: clamp(2.6rem, 8vw, 6rem); text-align: center; line-height: 1.1; text-shadow: var(--glow-cyan); }
+.pulse-once { animation: pulseSoft .6s ease; }
+@keyframes pulseSoft { 50% { transform: scale(1.02); } }
+.match-date-line { text-align: center; color: var(--muted); font-weight: 800; }
+.match-info-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+.match-info-grid div { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: grid; gap: 6px; }
+.match-info-grid span { color: var(--soft); font-size: .85rem; }
+.match-info-grid strong { color: var(--text); line-height: 1.5; }
+.match-side-panel { display: grid; gap: 14px; }
+.action-panel { padding: 20px; }
+.action-panel h3 { margin: 0 0 14px; color: var(--gold); font-family: var(--font-title); }
+.action-panel button + button { margin-top: 10px; }
+.result-form { display: grid; gap: 12px; }
+.result-form label { display: grid; gap: 6px; color: var(--muted); font-weight: 800; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }

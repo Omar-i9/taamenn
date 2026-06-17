@@ -1,0 +1,1243 @@
+/* =========================================================
+   TAAMEN 2026 V3.3 — ADAPTIVE MOBILE EXPERIENCE
+   الكمبيوتر يبقى واسع وفخم، والجوال يأخذ واجهة أخف وأسرع بنفس البيانات والمنطق.
+   ========================================================= */
+
+@media (min-width: 821px) {
+  .menu-hint-bubble,
+  .menu-trigger-wrap,
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
+@media (max-width: 820px) {
+  :root {
+    --header-h: 58px;
+    --mobile-gap: 8px;
+    --mobile-radius: 16px;
+    --mobile-pad: 10px;
+  }
+
+  html {
+    font-size: 13.5px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    padding-top: var(--header-h) !important;
+    overflow-x: hidden !important;
+  }
+
+  body.nav-open {
+    overflow: hidden !important;
+  }
+
+  body.nav-open::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 1090;
+    background:
+      radial-gradient(circle at 80% 15%, rgba(231, 199, 95, .13), transparent 34%),
+      rgba(0, 0, 0, .50);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    animation: mobileBackdropIn .18s ease both;
+  }
+
+  @keyframes mobileBackdropIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Header: صغير، واضح، بدون شريط يبلع الشاشة */
+  .main-header {
+    height: var(--header-h) !important;
+    min-height: var(--header-h) !important;
+    overflow: visible !important;
+    z-index: 1300 !important;
+    border-bottom-color: rgba(255,255,255,.07) !important;
+  }
+
+  .main-header.scrolled {
+    height: 54px !important;
+    min-height: 54px !important;
+  }
+
+  .header-inner {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    padding: 0 8px !important;
+    gap: 6px !important;
+  }
+
+  .desktop-nav,
+  .desktop-nav.compact-nav,
+  .more-nav,
+  .more-nav-panel {
+    display: none !important;
+  }
+
+  .brand {
+    min-width: 0 !important;
+    max-width: calc(100vw - 126px) !important;
+    padding: 4px 5px !important;
+    gap: 6px !important;
+    border-radius: 12px !important;
+  }
+
+  .brand-logo {
+    width: 32px !important;
+    height: 32px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .brand-copy {
+    min-width: 0 !important;
+  }
+
+  .brand-copy strong {
+    display: block !important;
+    max-width: 118px !important;
+    font-size: .88rem !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .brand-copy small {
+    display: none !important;
+  }
+
+  .header-tools {
+    margin-inline-start: auto !important;
+    gap: 5px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .clock-chip {
+    display: none !important;
+  }
+
+  .icon-button,
+  .menu-button {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    border-radius: 12px !important;
+  }
+
+  .menu-trigger-wrap {
+    display: inline-flex !important;
+    position: relative !important;
+    align-items: center !important;
+  }
+
+  .menu-button {
+    display: grid !important;
+    place-items: center !important;
+    position: relative !important;
+    z-index: 1402 !important;
+    background:
+      radial-gradient(circle at 25% 15%, rgba(255,255,255,.22), transparent 34%),
+      linear-gradient(135deg, rgba(231,199,95,.22), rgba(255,255,255,.05)) !important;
+    border: 1px solid rgba(231,199,95,.28) !important;
+    box-shadow: 0 9px 22px rgba(0,0,0,.24), 0 0 18px rgba(231,199,95,.15) !important;
+  }
+
+  .menu-button span {
+    width: 18px !important;
+    height: 2px !important;
+    background: var(--gold) !important;
+    border-radius: 99px !important;
+    transition: transform .2s ease, opacity .2s ease, background .2s ease !important;
+  }
+
+  .menu-button.active {
+    background: linear-gradient(135deg, var(--gold), #fff0b2) !important;
+  }
+
+  .menu-button.active span {
+    background: #111827 !important;
+  }
+
+  .menu-button.active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg) !important;
+  }
+
+  .menu-button.active span:nth-child(2) {
+    opacity: 0 !important;
+  }
+
+  .menu-button.active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg) !important;
+  }
+
+  /* التلميح: واضح أول مرة، وبعدها يختفي بذكاء */
+  .menu-hint-bubble {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    position: absolute !important;
+    top: calc(100% + 7px) !important;
+    left: -2px !important;
+    padding: 5px 8px !important;
+    border-radius: 999px !important;
+    color: #111827 !important;
+    background: linear-gradient(135deg, #fff4c7, var(--gold)) !important;
+    border: 1px solid rgba(255,255,255,.46) !important;
+    box-shadow: 0 12px 26px rgba(0,0,0,.26), 0 0 18px rgba(231,199,95,.22) !important;
+    font-size: .61rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+    z-index: 1401 !important;
+    animation: menuHintFloat 2.4s ease-in-out infinite !important;
+  }
+
+  .menu-hint-bubble::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 14px;
+    width: 9px;
+    height: 9px;
+    background: var(--gold);
+    transform: rotate(45deg);
+    border-radius: 2px;
+  }
+
+  body.nav-open .menu-hint-bubble,
+  body.mobile-menu-seen .menu-hint-bubble {
+    display: none !important;
+  }
+
+  @keyframes menuHintFloat {
+    0%, 100% { transform: translateY(0); filter: brightness(1); }
+    50% { transform: translateY(3px); filter: brightness(1.07); }
+  }
+
+  /* Mobile Menu: Bottom Sheet حقيقي بدل نافذة كبيرة تخنق الصفحة */
+  .mobile-menu {
+    display: block !important;
+    position: fixed !important;
+    top: auto !important;
+    right: 8px !important;
+    left: 8px !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: min(76dvh, 610px) !important;
+    overflow: auto !important;
+    overscroll-behavior: contain !important;
+    padding: 11px !important;
+    border-radius: 24px !important;
+    z-index: 1400 !important;
+    background:
+      radial-gradient(circle at top right, rgba(231,199,95,.14), transparent 32%),
+      linear-gradient(145deg, rgba(8, 13, 27, .985), rgba(4, 7, 16, .985)) !important;
+    border: 1px solid rgba(231,199,95,.19) !important;
+    box-shadow: 0 28px 80px rgba(0,0,0,.58), inset 0 1px rgba(255,255,255,.075) !important;
+    opacity: 0 !important;
+    transform: translateY(110%) scale(.98) !important;
+    pointer-events: none !important;
+    transition: opacity .22s ease, transform .28s cubic-bezier(.22,1,.36,1) !important;
+  }
+
+  body.theme-sunset .mobile-menu {
+    background:
+      radial-gradient(circle at top right, rgba(255,166,82,.18), transparent 34%),
+      linear-gradient(145deg, rgba(38, 14, 24, .985), rgba(12, 6, 12, .985)) !important;
+    border-color: rgba(255,183,97,.23) !important;
+  }
+
+  .mobile-menu.open {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+    pointer-events: auto !important;
+  }
+
+  .mobile-menu-head {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    padding: 3px 3px 9px !important;
+    margin-bottom: 9px !important;
+    border-bottom: 1px solid rgba(255,255,255,.08) !important;
+  }
+
+  .mobile-menu-title {
+    color: var(--gold) !important;
+    font-weight: 900 !important;
+    font-size: .98rem !important;
+  }
+
+  .mobile-menu-head p {
+    margin: 3px 0 0 !important;
+    color: var(--soft) !important;
+    font-size: .68rem !important;
+    line-height: 1.4 !important;
+    max-width: 230px !important;
+  }
+
+  .mobile-menu-badge {
+    flex: 0 0 auto !important;
+    padding: 5px 8px !important;
+    border-radius: 999px !important;
+    font-size: .66rem !important;
+    font-weight: 900 !important;
+    color: var(--gold) !important;
+    background: rgba(231,199,95,.10) !important;
+    border: 1px solid rgba(231,199,95,.15) !important;
+  }
+
+  .mobile-nav-label {
+    margin: 9px 3px 7px !important;
+    color: var(--soft) !important;
+    font-size: .66rem !important;
+    font-weight: 900 !important;
+  }
+
+  .mobile-nav-group {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .mobile-nav-link {
+    min-height: 56px !important;
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 29px minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 8px !important;
+    align-items: center !important;
+    padding: 8px 9px !important;
+    border-radius: 16px !important;
+    text-align: right !important;
+    color: var(--text) !important;
+    background: rgba(255,255,255,.045) !important;
+    border: 1px solid rgba(255,255,255,.07) !important;
+    text-decoration: none !important;
+    transition: transform .18s ease, background .18s ease, border-color .18s ease !important;
+  }
+
+  .mobile-nav-link i {
+    grid-row: 1 / 3 !important;
+    width: 29px !important;
+    height: 29px !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 11px !important;
+    color: var(--gold) !important;
+    background: rgba(231,199,95,.10) !important;
+    font-size: .84rem !important;
+  }
+
+  .mobile-nav-link span {
+    min-width: 0 !important;
+    font-size: .78rem !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .mobile-nav-link small {
+    color: var(--soft) !important;
+    font-size: .58rem !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .mobile-nav-link.active,
+  .mobile-nav-link:active {
+    background: linear-gradient(135deg, var(--gold), #ffe99b) !important;
+    color: #101827 !important;
+    border-color: transparent !important;
+    transform: translateY(-1px) !important;
+  }
+
+  .mobile-nav-link.active i,
+  .mobile-nav-link:active i {
+    color: #101827 !important;
+    background: rgba(0,0,0,.08) !important;
+  }
+
+  .mobile-social-link {
+    grid-column: span 2 !important;
+  }
+
+  /* Page Shell: عرض أعرض وحشو أقل، بدون إحساس 640x800 */
+  .app-shell {
+    width: calc(100% - 8px) !important;
+    max-width: none !important;
+    padding: 8px 0 18px !important;
+  }
+
+  .page.active {
+    animation-duration: .22s !important;
+  }
+
+  .page-heading {
+    margin: 6px 2px 10px !important;
+    padding: 0 4px !important;
+    text-align: right !important;
+  }
+
+  .page-heading .eyebrow,
+  .eyebrow {
+    font-size: .68rem !important;
+    letter-spacing: 0 !important;
+  }
+
+  .page-heading h1,
+  .hero-card h1,
+  .about-hero h1 {
+    font-size: clamp(1.45rem, 7.4vw, 2.25rem) !important;
+    line-height: 1.08 !important;
+    margin: 4px 0 5px !important;
+  }
+
+  .page-heading p,
+  .hero-card p,
+  .about-hero p {
+    font-size: .78rem !important;
+    line-height: 1.52 !important;
+    margin: 0 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .glass-panel,
+  .hero-card,
+  .dashboard-card,
+  .entry-card,
+  .archive-card,
+  .weather-card,
+  .prayer-card,
+  .about-card,
+  .guide-card,
+  .action-panel,
+  .match-main-card,
+  .city-switcher,
+  .code-guide {
+    border-radius: var(--mobile-radius) !important;
+    box-shadow: 0 10px 28px rgba(0,0,0,.20) !important;
+  }
+
+  .hero-grid,
+  .match-center-grid,
+  .weather-prayer-grid,
+  .about-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--mobile-gap) !important;
+  }
+
+  /* Home */
+  .hero-card {
+    padding: 14px !important;
+    min-height: 0 !important;
+  }
+
+  .hero-actions,
+  .quick-entry-grid,
+  .dashboard-grid,
+  .status-stack,
+  .guide-grid,
+  .about-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: var(--mobile-gap) !important;
+  }
+
+  .hero-actions .primary-btn,
+  .hero-actions .ghost-btn,
+  .primary-btn,
+  .ghost-btn,
+  .danger-btn,
+  .programmer-btn {
+    min-height: 36px !important;
+    padding: 8px 9px !important;
+    font-size: .72rem !important;
+    border-radius: 12px !important;
+    line-height: 1.18 !important;
+  }
+
+  .status-card,
+  .dashboard-card,
+  .entry-card {
+    padding: 10px !important;
+    min-height: 104px !important;
+  }
+
+  .status-card strong,
+  .large-value {
+    font-size: clamp(1.02rem, 4.7vw, 1.45rem) !important;
+    line-height: 1.1 !important;
+  }
+
+  .status-label,
+  .dashboard-card .eyebrow,
+  .card-head span {
+    font-size: .62rem !important;
+  }
+
+  .dashboard-card p,
+  .status-card small,
+  .entry-card small {
+    font-size: .64rem !important;
+    line-height: 1.32 !important;
+  }
+
+  .dashboard-card.wide-card,
+  .wide-card {
+    grid-column: 1 / -1 !important;
+  }
+
+  .card-head {
+    gap: 6px !important;
+  }
+
+  .card-ghost-icon {
+    font-size: 1.4rem !important;
+  }
+
+  .entry-card {
+    gap: 4px !important;
+    min-height: 96px !important;
+  }
+
+  .entry-card i {
+    font-size: 1.18rem !important;
+  }
+
+  .entry-card span {
+    font-size: .78rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .mini-teams,
+  .teams-line {
+    gap: 6px !important;
+  }
+
+  .mini-countdown,
+  .big-countdown {
+    font-size: clamp(1.25rem, 8vw, 2rem) !important;
+    line-height: 1.12 !important;
+    margin-block: 6px !important;
+  }
+
+  .countdown-engine {
+    gap: .12em !important;
+  }
+
+  .countdown-engine .countdown-word {
+    font-size: .46em !important;
+  }
+
+  /* Match center */
+  .match-main-card {
+    padding: 12px !important;
+  }
+
+  .match-badge-line {
+    display: flex !important;
+    gap: 6px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    padding-bottom: 2px !important;
+  }
+
+  .match-badge-line::-webkit-scrollbar,
+  .upcoming-strip::-webkit-scrollbar,
+  .filter-row::-webkit-scrollbar,
+  .radar-toolbar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .match-badge-line span,
+  .heat-badge {
+    flex: 0 0 auto !important;
+    font-size: .64rem !important;
+    padding: 5px 8px !important;
+    border-radius: 999px !important;
+  }
+
+  .teams-line {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    margin: 10px 0 2px !important;
+  }
+
+  .teams-line strong {
+    font-size: .98rem !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .teams-line b {
+    font-size: .68rem !important;
+    padding: 4px 7px !important;
+  }
+
+  .match-date-line {
+    font-size: .70rem !important;
+    margin: 4px 0 8px !important;
+  }
+
+  .match-info-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .match-info-grid div {
+    padding: 8px !important;
+    min-width: 0 !important;
+  }
+
+  .match-info-grid span {
+    font-size: .58rem !important;
+  }
+
+  .match-info-grid strong {
+    font-size: .66rem !important;
+    line-height: 1.25 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .upcoming-strip {
+    display: flex !important;
+    gap: 7px !important;
+    overflow-x: auto !important;
+    padding: 3px 0 1px !important;
+    scroll-snap-type: x mandatory !important;
+  }
+
+  .upcoming-pill {
+    flex: 0 0 min(72%, 240px) !important;
+    scroll-snap-align: start !important;
+    padding: 9px !important;
+    border-radius: 14px !important;
+  }
+
+  .upcoming-pill span,
+  .upcoming-pill small {
+    font-size: .62rem !important;
+  }
+
+  .upcoming-pill strong {
+    font-size: .82rem !important;
+  }
+
+  .match-side-panel {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .action-panel {
+    padding: 12px !important;
+  }
+
+  .action-panel h3 {
+    font-size: .95rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .edit-guide-card ol,
+  .edit-guide-card p {
+    font-size: .68rem !important;
+    line-height: 1.45 !important;
+  }
+
+  /* Archive: قائمة كثيفة وواضحة */
+  .archive-toolbar {
+    position: sticky !important;
+    top: calc(var(--header-h) + 4px) !important;
+    z-index: 40 !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 7px !important;
+    padding: 8px !important;
+    margin-bottom: 8px !important;
+    border-radius: 16px !important;
+  }
+
+  .search-field {
+    min-height: 36px !important;
+    padding: 7px 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .search-field input,
+  .select-control {
+    font-size: .72rem !important;
+  }
+
+  .filter-row,
+  .radar-toolbar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    overflow-x: auto !important;
+    padding-bottom: 2px !important;
+    scrollbar-width: none !important;
+  }
+
+  .filter-btn,
+  .radar-btn {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-height: 32px !important;
+    padding: 7px 10px !important;
+    font-size: .66rem !important;
+    white-space: nowrap !important;
+    border-radius: 999px !important;
+  }
+
+  .archive-stats {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .stat-tile {
+    min-height: 68px !important;
+    padding: 8px 5px !important;
+    border-radius: 13px !important;
+  }
+
+  .stat-tile i {
+    font-size: .82rem !important;
+  }
+
+  .stat-tile span {
+    font-size: .58rem !important;
+  }
+
+  .stat-tile strong {
+    font-size: 1rem !important;
+  }
+
+  .archive-list {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .archive-card {
+    overflow: hidden !important;
+  }
+
+  .archive-ribbon {
+    font-size: .62rem !important;
+    padding: 5px 8px !important;
+  }
+
+  .archive-card-main {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    gap: 7px !important;
+    align-items: center !important;
+    padding: 10px !important;
+    text-align: center !important;
+  }
+
+  .archive-team {
+    min-width: 0 !important;
+    gap: 4px !important;
+  }
+
+  .archive-team i {
+    font-size: .92rem !important;
+  }
+
+  .archive-team strong {
+    max-width: 100% !important;
+    font-size: .70rem !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .archive-team small {
+    font-size: .55rem !important;
+    white-space: nowrap !important;
+  }
+
+  .archive-score-block {
+    min-width: 72px !important;
+  }
+
+  .archive-score-block strong {
+    font-size: clamp(1.05rem, 6.2vw, 1.55rem) !important;
+    line-height: 1.05 !important;
+  }
+
+  .archive-score-block small,
+  .archive-id {
+    font-size: .55rem !important;
+  }
+
+  .archive-score-block p {
+    font-size: .61rem !important;
+    line-height: 1.25 !important;
+    margin-top: 4px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .archive-actions-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 5px !important;
+    overflow-x: auto !important;
+    padding: 0 10px 10px !important;
+    scrollbar-width: none !important;
+  }
+
+  .archive-actions-row::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .archive-actions-row span,
+  .details-button {
+    flex: 0 0 auto !important;
+    font-size: .58rem !important;
+    padding: 5px 7px !important;
+    border-radius: 999px !important;
+    min-height: 28px !important;
+  }
+
+  .archive-details {
+    padding: 0 8px 10px !important;
+  }
+
+  .details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .details-grid h4 {
+    font-size: .78rem !important;
+    margin-bottom: 6px !important;
+  }
+
+  .detail-row {
+    gap: 4px !important;
+  }
+
+  .detail-row div:first-child {
+    font-size: .58rem !important;
+  }
+
+  .legacy-summary {
+    padding: 10px !important;
+  }
+
+  .legacy-summary p {
+    font-size: .68rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .legacy-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .legacy-summary-grid span {
+    font-size: .62rem !important;
+  }
+
+  /* Weather & Prayer */
+  .city-switcher {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    gap: 7px !important;
+    padding: 9px !important;
+    align-items: center !important;
+  }
+
+  .city-switcher label {
+    font-size: .68rem !important;
+  }
+
+  .weather-card,
+  .prayer-card {
+    padding: 12px !important;
+  }
+
+  .service-head h2 {
+    font-size: 1.08rem !important;
+  }
+
+  .weather-temp {
+    font-size: clamp(2.15rem, 13vw, 3.35rem) !important;
+    line-height: .95 !important;
+  }
+
+  .weather-metrics,
+  .prayer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .metric-card,
+  .prayer-unit,
+  .next-prayer-box {
+    padding: 9px !important;
+    border-radius: 13px !important;
+  }
+
+  .metric-card span,
+  .prayer-unit span,
+  .service-note,
+  .next-prayer-box span {
+    font-size: .62rem !important;
+  }
+
+  .metric-card strong,
+  .prayer-unit strong,
+  .next-prayer-box strong {
+    font-size: .92rem !important;
+  }
+
+  .next-prayer-box b {
+    font-size: 1.1rem !important;
+  }
+
+  /* Guide & About */
+  .guide-card,
+  .about-card {
+    padding: 10px !important;
+  }
+
+  .guide-card-head,
+  .about-card h3 {
+    gap: 6px !important;
+  }
+
+  .guide-card h3,
+  .about-card h3 {
+    font-size: .82rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .guide-card p,
+  .about-card p,
+  .guide-card li,
+  .about-card li {
+    font-size: .62rem !important;
+    line-height: 1.38 !important;
+  }
+
+  .guide-card p,
+  .about-card p {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .guide-card ul {
+    padding-inline-start: 16px !important;
+    margin-top: 7px !important;
+  }
+
+  .guide-card li:nth-child(n+4) {
+    display: none !important;
+  }
+
+  .code-guide {
+    padding: 12px !important;
+  }
+
+  .code-guide h2 {
+    font-size: 1rem !important;
+  }
+
+  .code-guide p {
+    font-size: .68rem !important;
+  }
+
+  .code-guide-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .code-guide pre {
+    max-height: 230px !important;
+    overflow: auto !important;
+    font-size: .62rem !important;
+    border-radius: 12px !important;
+  }
+
+  .about-shell {
+    gap: 8px !important;
+  }
+
+  .about-hero {
+    padding: 14px !important;
+  }
+
+  .about-icon {
+    font-size: 1.55rem !important;
+  }
+
+  .about-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 7px !important;
+    padding: 10px !important;
+  }
+
+  /* Radar */
+  .radar-toolbar {
+    position: sticky !important;
+    top: calc(var(--header-h) + 4px) !important;
+    z-index: 45 !important;
+    background: rgba(5, 10, 22, .62) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-radius: 999px !important;
+    padding: 6px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .radar-help-tip {
+    padding: 9px 10px !important;
+    font-size: .68rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .pitch-shell {
+    overflow-x: auto !important;
+    overscroll-behavior-x: contain !important;
+    border-radius: 18px !important;
+    padding: 8px !important;
+    scrollbar-width: thin !important;
+  }
+
+  .tactical-pitch {
+    min-width: 700px !important;
+    height: clamp(470px, 68dvh, 600px) !important;
+  }
+
+  .player-dot,
+  .player-node {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  .player-name,
+  .player-name-center {
+    font-size: 9px !important;
+    max-width: 58px !important;
+  }
+
+  .player-role,
+  .role-badge-bottom,
+  .team-role-top-right,
+  .instruction-top-left {
+    font-size: 8.5px !important;
+    max-width: 108px !important;
+  }
+
+  /* Dialog */
+  .player-dialog {
+    width: min(96vw, 430px) !important;
+  }
+
+  .player-dialog form {
+    padding: 14px !important;
+    border-radius: 18px !important;
+  }
+}
+
+/* موبايل عريض/تابلت: نستغل العرض بدل كرت فوق كرت */
+@media (min-width: 560px) and (max-width: 820px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(210px, .8fr) !important;
+    align-items: stretch !important;
+  }
+
+  .match-center-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(220px, .65fr) !important;
+  }
+
+  .archive-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .archive-card-main {
+    grid-template-columns: 1fr !important;
+  }
+
+  .archive-score-block {
+    order: -1 !important;
+  }
+
+  .quick-entry-grid,
+  .guide-grid,
+  .about-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .weather-prayer-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* شاشات صغيرة جدًا: نحافظ على القراءة، مش على استعراض العضلات */
+@media (max-width: 420px) {
+  :root {
+    --header-h: 56px;
+  }
+
+  .brand-copy strong {
+    max-width: 92px !important;
+    font-size: .80rem !important;
+  }
+
+  .icon-button,
+  .menu-button {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+  }
+
+  .menu-hint-bubble {
+    font-size: .56rem !important;
+    padding: 4px 7px !important;
+    left: -10px !important;
+  }
+
+  .mobile-menu-head p {
+    display: none !important;
+  }
+
+  .mobile-nav-link {
+    min-height: 52px !important;
+    padding: 7px 8px !important;
+    grid-template-columns: 27px minmax(0, 1fr) !important;
+  }
+
+  .mobile-nav-link i {
+    width: 27px !important;
+    height: 27px !important;
+  }
+
+  .mobile-nav-link span {
+    font-size: .72rem !important;
+  }
+
+  .mobile-nav-link small {
+    font-size: .54rem !important;
+  }
+
+  .hero-actions .primary-btn,
+  .hero-actions .ghost-btn,
+  .primary-btn,
+  .ghost-btn,
+  .danger-btn,
+  .programmer-btn {
+    font-size: .66rem !important;
+    padding-inline: 6px !important;
+  }
+
+  .dashboard-card,
+  .entry-card,
+  .status-card {
+    min-height: 94px !important;
+  }
+
+  .entry-card span {
+    font-size: .72rem !important;
+  }
+
+  .entry-card small {
+    font-size: .56rem !important;
+  }
+
+  .archive-card-main {
+    gap: 5px !important;
+    padding: 8px !important;
+  }
+
+  .archive-team strong {
+    font-size: .64rem !important;
+  }
+
+  .archive-score-block strong {
+    font-size: 1.04rem !important;
+  }
+
+  .archive-score-block p {
+    -webkit-line-clamp: 1 !important;
+  }
+
+  .match-info-grid,
+  .legacy-summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .weather-metrics,
+  .prayer-grid,
+  .archive-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .tactical-pitch {
+    min-width: 660px !important;
+    height: 500px !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .hero-actions,
+  .quick-entry-grid,
+  .dashboard-grid,
+  .status-stack,
+  .guide-grid,
+  .about-grid,
+  .mobile-nav-group,
+  .weather-metrics,
+  .prayer-grid,
+  .archive-stats,
+  .details-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mobile-social-link {
+    grid-column: auto !important;
+  }
+
+  .brand-copy strong {
+    max-width: 72px !important;
+  }
+}

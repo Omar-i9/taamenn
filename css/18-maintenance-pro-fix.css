@@ -1,0 +1,490 @@
+/* =========================================================
+   TAAMEN V3.6 — MAINTENANCE PRO FIX
+   Fixes: hero buttons, player dialog, injury panels, recovery drawer
+   ========================================================= */
+
+/* Click layers: خلي الأزرار فوق كل الزينة، لأن الزينة أحيانًا بتحب تصير حارس أمن */
+.hero-card::before,
+.glass-panel::before,
+.glass-panel::after,
+.dashboard-card::before,
+.dashboard-card::after,
+.entry-card::before,
+.entry-card::after,
+.injury-card::before,
+.injury-card::after {
+  pointer-events: none !important;
+}
+
+.hero-card > *,
+.hero-actions,
+.hero-actions .primary-btn,
+.hero-actions .ghost-btn,
+[data-route],
+.primary-btn,
+.ghost-btn,
+.radar-btn,
+.player-token,
+.injury-toggle-btn,
+.recovered-drawer-toggle,
+.recovered-file-main {
+  position: relative;
+  z-index: 5;
+  pointer-events: auto !important;
+}
+
+.hero-actions .primary-btn,
+.hero-actions .ghost-btn {
+  cursor: pointer !important;
+  transform: translateZ(0);
+}
+
+.hero-actions .primary-btn:active,
+.hero-actions .ghost-btn:active,
+.injury-toggle-btn:active,
+.recovered-drawer-toggle:active,
+.recovered-file-main:active {
+  transform: translateY(1px) scale(.99);
+}
+
+/* Player dialog hardening */
+.player-dialog {
+  z-index: 100001 !important;
+}
+
+.player-dialog::backdrop {
+  background: rgba(2, 7, 18, .62);
+  backdrop-filter: blur(12px);
+}
+
+.player-dialog form {
+  position: relative;
+  z-index: 2;
+}
+
+.player-dialog input,
+.player-dialog select,
+.player-dialog button {
+  pointer-events: auto !important;
+}
+
+.dialog-actions {
+  position: relative;
+  z-index: 3;
+}
+
+#savePlayerChanges,
+#closePlayerDialog,
+#clearPlayer {
+  cursor: pointer !important;
+  min-width: 110px;
+}
+
+/* Injury active cards: panel without browser details weird scrolling */
+.injury-toggle-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(255,255,255,.09);
+  background: rgba(0,0,0,.18);
+  color: rgba(238,245,255,.84);
+  font-family: inherit;
+  font-weight: 1000;
+  cursor: pointer;
+  transition: border-color .24s ease, background .24s ease, transform .18s ease;
+}
+
+.injury-toggle-btn:hover,
+.injury-toggle-btn.is-open {
+  border-color: color-mix(in srgb, var(--tone), transparent 64%);
+  background: color-mix(in srgb, var(--tone), transparent 91%);
+}
+
+.injury-toggle-btn > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.injury-toggle-btn .fa-chevron-down {
+  transition: transform .24s ease;
+}
+
+.injury-toggle-btn.is-open .fa-chevron-down,
+.recovered-drawer-toggle.is-open > .fa-chevron-down,
+.recovered-file-main.is-open .recovered-chevron {
+  transform: rotate(180deg);
+}
+
+.injury-action-panel,
+.recovered-file-details,
+.recovered-drawer-body {
+  animation: taamenPanelOpen .26s cubic-bezier(.22,1,.36,1) both;
+}
+
+.injury-action-panel[hidden],
+.recovered-file-details[hidden],
+.recovered-drawer-body[hidden] {
+  display: none !important;
+}
+
+.injury-action-panel {
+  position: relative;
+  z-index: 3;
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.17);
+}
+
+.injury-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.injury-panel-grid h4 {
+  margin: 0 0 8px;
+  color: var(--tone, var(--gold));
+}
+
+.injury-panel-grid ul,
+.injury-panel-grid ol {
+  margin: 0;
+  padding: 0 18px 0 0;
+  color: rgba(238,245,255,.72);
+  line-height: 1.85;
+}
+
+/* اخفي بلوك تعديل الإصابات من المستخدم، التعديل مكانه docs فقط */
+.injury-edit-note,
+.edit-guide-card.injury-edit-note {
+  display: none !important;
+}
+
+/* Windows-like recovery drawer */
+.injuries-recovered-host {
+  margin-top: 22px;
+}
+
+.recovered-drawer-shell {
+  padding: 0 !important;
+  overflow: hidden;
+  border-color: rgba(84,232,214,.18) !important;
+}
+
+.recovered-drawer-toggle {
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 16px;
+  border: 0;
+  background:
+    linear-gradient(90deg, rgba(84,232,214,.11), transparent 42%),
+    rgba(255,255,255,.025);
+  color: rgba(238,245,255,.9);
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.drawer-line-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 1000;
+}
+
+.drawer-line-title i {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #06121d;
+  background: linear-gradient(135deg, #54e8d6, #b8fff3);
+}
+
+.drawer-line-meta {
+  padding: 7px 11px;
+  border-radius: 999px;
+  color: #06121d;
+  background: #54e8d6;
+  font-size: .72rem;
+  font-weight: 1000;
+  white-space: nowrap;
+}
+
+.recovered-drawer-body {
+  padding: 12px 14px 16px;
+  background: rgba(0,0,0,.08);
+}
+
+.recovered-month-group + .recovered-month-group {
+  margin-top: 14px;
+}
+
+.recovered-month-label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: rgba(238,245,255,.58);
+  font-weight: 900;
+}
+
+.recovered-month-label::before,
+.recovered-month-label::after {
+  content: '';
+  height: 1px;
+  background: rgba(255,255,255,.08);
+}
+
+.recovered-month-label span {
+  grid-column: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recovered-month-label b {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 28px;
+  height: 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: rgba(238,245,255,.78);
+  background: rgba(255,255,255,.08);
+}
+
+.recovered-files-list {
+  display: grid;
+  gap: 8px;
+}
+
+.recovered-file-row {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.075);
+  background: rgba(255,255,255,.045);
+  animation: recoveredRowIn .32s ease both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.recovered-file-main {
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  color: rgba(238,245,255,.88);
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 11px;
+  text-align: right;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.recovered-file-main > i:first-child {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: #06121d;
+  background: linear-gradient(135deg, #54e8d6, #c3fff4);
+}
+
+.recovered-file-text strong,
+.recovered-file-text small {
+  display: block;
+}
+
+.recovered-file-text strong {
+  color: rgba(255,255,255,.94);
+  font-weight: 1000;
+}
+
+.recovered-file-text small {
+  margin-top: 3px;
+  color: rgba(238,245,255,.53);
+  font-size: .74rem;
+}
+
+.recovered-file-state {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 82px;
+}
+
+.recovered-file-state b {
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #06121d;
+  background: #54e8d6;
+  font-size: .7rem;
+}
+
+.recovered-file-state em {
+  color: rgba(238,245,255,.48);
+  font-size: .66rem;
+  font-style: normal;
+}
+
+.recovered-chevron {
+  transition: transform .22s ease;
+  color: rgba(238,245,255,.58);
+}
+
+.recovered-file-details {
+  padding: 0 12px 13px;
+  color: rgba(238,245,255,.72);
+}
+
+.recovered-file-details > p {
+  margin: 10px 0 0;
+  padding: 10px 11px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.16);
+  line-height: 1.7;
+}
+
+.recovered-transition {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.recovered-transition span {
+  min-height: 78px;
+  padding: 10px 11px;
+  border-radius: 15px;
+  background: rgba(0,0,0,.16);
+  border: 1px solid rgba(255,255,255,.07);
+  line-height: 1.65;
+}
+
+.recovered-transition span:last-child {
+  border-color: rgba(84,232,214,.16);
+  background: rgba(84,232,214,.07);
+}
+
+.recovered-transition b {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--gold);
+}
+
+.recovered-transition span:last-child b {
+  color: #54e8d6;
+}
+
+.recovered-transition > i {
+  color: #54e8d6;
+}
+
+/* Old details support: لو بقى كرت قديم من الكاش ما يخرب */
+.injury-details summary {
+  pointer-events: auto !important;
+}
+
+/* Tactical better touch/click */
+.tactical-pitch {
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+.player-token {
+  touch-action: none !important;
+  cursor: grab !important;
+}
+
+.player-token:active {
+  cursor: grabbing !important;
+}
+
+.player-token.selected-token {
+  outline: 2px solid rgba(231,199,95,.72) !important;
+  outline-offset: 5px !important;
+}
+
+@keyframes taamenPanelOpen {
+  from { opacity: .001; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes recoveredRowIn {
+  from { opacity: .001; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 720px) {
+  .injury-panel-grid,
+  .recovered-transition {
+    grid-template-columns: 1fr;
+  }
+
+  .recovered-transition > i {
+    transform: rotate(-90deg);
+    justify-self: center;
+  }
+
+  .recovered-drawer-toggle {
+    grid-template-columns: 1fr auto;
+  }
+
+  .drawer-line-meta {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .recovered-file-main {
+    grid-template-columns: auto 1fr auto;
+    gap: 9px;
+  }
+
+  .recovered-file-state {
+    grid-column: 2;
+    justify-items: start;
+    grid-auto-flow: column;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .recovered-chevron {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+  .player-dialog {
+    width: min(94vw, 480px) !important;
+  }
+
+  .dialog-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  #savePlayerChanges,
+  #closePlayerDialog,
+  #clearPlayer {
+    width: 100%;
+  }
+}
