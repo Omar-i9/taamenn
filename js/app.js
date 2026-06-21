@@ -13,6 +13,8 @@ import { initDeviceInspector } from './modules/device-inspector.js';
 import { initShareCapture } from './modules/share-capture.js';
 import { initTactical } from './modules/tactical.js';
 import { initAIAssistant } from './modules/ai-assistant.js';
+import { initCookieConsent } from './modules/cookies.js';
+import { initSecurityCenter } from './modules/security-center.js';
 
 let currentCity = read('city', CONFIG.defaultCity);
 
@@ -108,12 +110,14 @@ async function boot() {
   initClock();
   initTheme();
   initHeader();
+  initCookieConsent();
   initMobileUX();
   initDeviceInspector();
   initRouter();
   initCitySwitcher();
   initSources();
   initGuide();
+  initSecurityCenter();
   initMatchCenter();
   initAIAssistant();
   initTactical();

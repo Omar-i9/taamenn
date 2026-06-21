@@ -1,6 +1,6 @@
 import { $, $all } from './ui.js';
 
-const validRoutes = ['home', 'match-center', 'archive', 'ai', 'radar', 'weather-prayer', 'injuries', 'qibla', 'guide', 'about'];
+const validRoutes = ['home', 'match-center', 'archive', 'ai', 'radar', 'weather-prayer', 'injuries', 'qibla', 'security', 'guide', 'about'];
 let currentRoute = 'home';
 let routerBound = false;
 

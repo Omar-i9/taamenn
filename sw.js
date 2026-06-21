@@ -1,4 +1,4 @@
-const cacheName = 'taamen-2026-v5-2-ai-backend-bridge';
+const cacheName = 'taamen-2026-v5-3-security-privacy';
 
 const assets = [
   './',
@@ -27,9 +27,12 @@ const assets = [
   './css/21-navigation-stability.css',
   './css/22-radar-rebuild.css',
   './css/23-ai-assistant.css',
+  './css/24-security-privacy.css',
   './js/app.js',
   './js/config.js',
   './js/modules/router.js',
+  './js/modules/cookies.js',
+  './js/modules/security-center.js',
   './js/modules/tactical.js',
   './js/modules/ai-assistant.js',
   './js/modules/api-client.js',
@@ -55,7 +58,8 @@ const assets = [
   './docs/V3_9_RADAR_PAUSED_NOTES.md',
   './docs/V4_0_NAVIGATION_STABILITY_NOTES.md',
   './docs/V5_RADAR_REBUILD_NOTES.md',
-  './docs/AI_ASSISTANT_GUIDE.md'
+  './docs/AI_ASSISTANT_GUIDE.md',
+  './docs/V5_2_SECURITY_PRIVACY_NOTES.md'
 ];
 
 self.addEventListener('install', event => {

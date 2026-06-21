@@ -383,6 +383,51 @@ export const guideSections = [
   }
 ];
 
+export const security = {
+  status: 'active',
+  privacyMode: 'enabled',
+  emergencyMode: 'watch',
+  lastReviewLabel: 'مراجعة دورية',
+  aiProtection: {
+    backendProxy: true,
+    publicApiKeys: false,
+    fallbackEnabled: true
+  },
+  cookiePolicy: {
+    version: 1,
+    necessary: true,
+    preferences: true,
+    experience: true,
+    analytics: false
+  },
+  links: [
+    {
+      label: 'التواصل مع الآدمن',
+      type: 'admin',
+      url: 'https://wa.me/972594054750',
+      note: 'قناة مباشرة للتبليغ عن مشكلة أو طلب مساعدة.'
+    },
+    {
+      label: 'مجموعة واتساب',
+      type: 'group',
+      url: '#',
+      note: 'لا يتم نشر الرابط إلا للأعضاء المسموح لهم.'
+    },
+    {
+      label: 'مجموعة Discord',
+      type: 'group',
+      url: '#',
+      note: 'رابط اختياري يتم تحديثه من ملف البيانات عند الحاجة.'
+    },
+    {
+      label: 'بلاغ أمني',
+      type: 'security-report',
+      url: 'https://wa.me/972594054750',
+      note: 'استخدمه فقط للإبلاغ عن نشاط غير طبيعي أو رابط مشبوه.'
+    }
+  ]
+};
+
 export const dhikrList = [
   'اللهم إنك عفو تحب العفو فاعف عنا',
   'سبحان الله وبحمده، عدد خلقه ورضا نفسه',
