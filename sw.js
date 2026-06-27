@@ -1,4 +1,4 @@
-const cacheName = 'taamen-2026-v5-6-ai-mobile-quality';
+const cacheName = 'taamen-2026-v5-7-ai-suggestions-accordion';
 
 const assets = [
   './',

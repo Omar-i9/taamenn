@@ -21,6 +21,7 @@ import { buildAIRequestPayload, generateLocalAnswer } from './ai-answer-engine.j
 
 const MEMORY_KEY = 'taamen.ai.session.v2';
 const MAX_STORED_MESSAGES = 20;
+const SUGGESTION_SOUND_ENABLED = true;
 
 const ROUTE_LABELS = [
   ['home', 'الرئيسية', 'ملخص المنصة والعدادات السريعة'],
@@ -68,6 +69,8 @@ const state = {
   memory: null,
   lastMode: hasAIEndpoint() ? 'ready' : 'local'
 };
+
+let suggestionAudioContext = null;
 
 export function initAIAssistant() {
   const root = $('#aiAssistant');
@@ -199,6 +202,13 @@ function bindAIEvents() {
     if (handleSuggestionClick(event)) return;
     handleSuggestionToggle(event);
   });
+
+  suggestions?.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    closeAllSuggestionGroups();
+  });
+
+  window.addEventListener('resize', syncSuggestionPanelHeights, { passive: true });
   messages?.addEventListener('click', event => {
     if (handleSuggestionClick(event)) return;
 
@@ -233,29 +243,115 @@ function bindAIEvents() {
 }
 
 function handleSuggestionClick(event) {
-  const button = event.target.closest('[data-ai-question]');
+  const button = event.target.closest('[data-suggestion-question], [data-ai-question]');
   const prompt = $('#aiPrompt');
   if (!button || !prompt) return false;
-  prompt.value = button.dataset.aiQuestion || '';
+  playSuggestionUiSound('select');
+  prompt.value = button.dataset.suggestionQuestion || button.dataset.aiQuestion || '';
   state.memory.lastSelectedCategory = button.dataset.aiCategory || '';
   saveMemory();
+  prompt.focus();
   submitQuestion();
   return true;
 }
 
 function handleSuggestionToggle(event) {
-  const button = event.target.closest('[data-ai-suggestion-toggle]');
+  const button = event.target.closest('[data-suggestion-group-trigger], [data-ai-suggestion-toggle]');
   const host = $('#aiSuggestions');
   if (!button || !host) return false;
 
-  host.querySelectorAll('[data-ai-suggestion-toggle]').forEach(toggle => {
-    const isCurrent = toggle === button;
-    const panel = document.getElementById(toggle.getAttribute('aria-controls'));
-    toggle.setAttribute('aria-expanded', String(isCurrent));
-    toggle.closest('.ai-suggestion-group')?.classList.toggle('open', isCurrent);
-    if (panel) panel.hidden = !isCurrent;
-  });
+  const groupId = button.dataset.suggestionGroupTrigger || button.dataset.aiSuggestionToggle;
+  toggleSuggestionGroup(groupId);
   return true;
+}
+
+function closeAllSuggestionGroups(exceptId = '') {
+  const host = $('#aiSuggestions');
+  if (!host) return;
+  host.querySelectorAll('[data-suggestion-group-trigger], [data-ai-suggestion-toggle]').forEach(trigger => {
+    const groupId = trigger.dataset.suggestionGroupTrigger || trigger.dataset.aiSuggestionToggle;
+    if (exceptId && groupId === exceptId) return;
+    closeSuggestionGroup(groupId, { silent: true });
+  });
+}
+
+function openSuggestionGroup(groupId, options = {}) {
+  const host = $('#aiSuggestions');
+  const trigger = host?.querySelector(`[data-suggestion-group-trigger="${CSS.escape(groupId)}"]`);
+  const panel = trigger ? document.getElementById(trigger.getAttribute('aria-controls')) : null;
+  if (!trigger || !panel) return;
+
+  closeAllSuggestionGroups(groupId);
+  trigger.setAttribute('aria-expanded', 'true');
+  panel.setAttribute('aria-hidden', 'false');
+  panel.style.maxHeight = `${panel.scrollHeight}px`;
+  trigger.closest('.ai-suggestion-group')?.classList.add('is-open', 'open');
+  if (!options.silent) playSuggestionUiSound('open');
+}
+
+function closeSuggestionGroup(groupId, options = {}) {
+  const host = $('#aiSuggestions');
+  const trigger = host?.querySelector(`[data-suggestion-group-trigger="${CSS.escape(groupId)}"]`);
+  const panel = trigger ? document.getElementById(trigger.getAttribute('aria-controls')) : null;
+  if (!trigger || !panel) return;
+
+  trigger.setAttribute('aria-expanded', 'false');
+  panel.setAttribute('aria-hidden', 'true');
+  panel.style.maxHeight = '0px';
+  trigger.closest('.ai-suggestion-group')?.classList.remove('is-open', 'open');
+  if (!options.silent) playSuggestionUiSound('close');
+}
+
+function toggleSuggestionGroup(groupId) {
+  const trigger = $(`[data-suggestion-group-trigger="${CSS.escape(groupId)}"]`);
+  const isOpen = trigger?.getAttribute('aria-expanded') === 'true';
+  if (isOpen) closeSuggestionGroup(groupId);
+  else openSuggestionGroup(groupId);
+}
+
+function syncSuggestionPanelHeights() {
+  const host = $('#aiSuggestions');
+  if (!host) return;
+  host.querySelectorAll('.ai-suggestion-panel[aria-hidden="false"]').forEach(panel => {
+    panel.style.maxHeight = `${panel.scrollHeight}px`;
+  });
+}
+
+function playSuggestionUiSound(type = 'open') {
+  if (!SUGGESTION_SOUND_ENABLED) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    suggestionAudioContext ||= new AudioContext();
+    if (suggestionAudioContext.state === 'suspended') suggestionAudioContext.resume();
+
+    const now = suggestionAudioContext.currentTime;
+    const oscillator = suggestionAudioContext.createOscillator();
+    const gain = suggestionAudioContext.createGain();
+    const frequency = {
+      open: 520,
+      close: 320,
+      select: 440
+    }[type] || 420;
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(frequency, now);
+    if (type === 'open') oscillator.frequency.exponentialRampToValueAtTime(frequency * 1.18, now + 0.07);
+    if (type === 'close') oscillator.frequency.exponentialRampToValueAtTime(Math.max(160, frequency * 0.78), now + 0.07);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(type === 'select' ? 0.018 : 0.024, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+
+    oscillator.connect(gain);
+    gain.connect(suggestionAudioContext.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.1);
+  } catch (_) {
+    // Browser audio restrictions should never affect the assistant UI.
+  }
 }
 
 async function submitQuestion() {
@@ -426,33 +522,43 @@ function renderKnowledgeMeta() {
 function renderSuggestions() {
   const host = $('#aiSuggestions');
   if (!host) return;
+  const openFirst = !window.matchMedia('(max-width: 520px)').matches;
   host.innerHTML = `
-    <div class="ai-suggestion-accordion" role="list">
+    <div class="ai-suggestions-quick-head">
+      <span><i class="fa-solid fa-bolt"></i> وصول سريع</span>
+      <small>اختر نوع السؤال وافتح مجموعة واحدة فقط</small>
+    </div>
+    <div class="ai-suggestions-accordion ai-suggestion-accordion" role="list">
       ${AI_SUGGESTION_GROUPS.map((group, index) => {
         const panelId = `aiSuggestionPanel-${safeText(group.id)}`;
-        const open = index === 0;
+        const triggerId = `aiSuggestionTrigger-${safeText(group.id)}`;
+        const open = openFirst && index === 0;
         return `
-        <article class="ai-suggestion-group ${open ? 'open' : ''}" role="listitem">
-          <button class="ai-suggestion-group-toggle" type="button" aria-expanded="${open}" aria-controls="${panelId}" data-ai-suggestion-toggle="${safeText(group.id)}">
+        <article class="ai-suggestion-group ${open ? 'is-open open' : ''}" role="listitem">
+          <button id="${triggerId}" class="ai-suggestion-trigger ai-suggestion-group-toggle" type="button" aria-expanded="${open}" aria-controls="${panelId}" data-suggestion-group-trigger="${safeText(group.id)}" data-ai-suggestion-toggle="${safeText(group.id)}">
             <span class="ai-suggestion-group-icon"><i class="fa-solid ${safeText(group.icon || 'fa-sparkles')}"></i></span>
             <span>
               <strong>${safeText(group.title || group.label)}</strong>
               <small>${safeText(group.description || '')}</small>
             </span>
             <b>${Number(group.questions?.length || 0)}</b>
+            <i class="fa-solid fa-chevron-down ai-suggestion-arrow" aria-hidden="true"></i>
           </button>
-          <div class="ai-suggestion-group-list" id="${panelId}" ${open ? '' : 'hidden'}>
-            ${(group.questions || []).slice(0, 12).map(question => `
-              <button class="ai-suggestion-chip" data-ai-category="${safeText(group.id)}" data-ai-question="${safeText(question)}" type="button">
-                <span>${safeText(question)}</span>
-              </button>
-            `).join('')}
+          <div class="ai-suggestion-panel" id="${panelId}" role="region" aria-labelledby="${triggerId}" aria-hidden="${!open}" style="max-height:${open ? '420px' : '0px'}">
+            <div class="ai-suggestion-options ai-suggestion-group-list">
+              ${(group.questions || []).slice(0, 12).map(question => `
+                <button class="ai-suggestion-chip" data-ai-category="${safeText(group.id)}" data-suggestion-question="${safeText(question)}" data-ai-question="${safeText(question)}" type="button">
+                  <span>${safeText(question)}</span>
+                </button>
+              `).join('')}
+            </div>
           </div>
         </article>
       `;
       }).join('')}
     </div>
   `;
+  requestAnimationFrame(syncSuggestionPanelHeights);
 }
 
 function addMessage(role, content, meta = {}, options = {}) {
