@@ -1,6 +1,16 @@
 import { $, $all } from './ui.js';
 
-const validRoutes = ['home', 'match-center', 'archive', 'ai', 'radar', 'weather-prayer', 'injuries', 'qibla', 'security', 'guide', 'about'];
+const validRoutes = ['home', 'match-center', 'archive', 'ai', 'radar', 'weather-prayer', 'injuries', 'qibla', 'security', 'guide', 'about', 'settings'];
+const routeAliases = {
+  archive: 'match-center',
+  radar: 'settings',
+  'weather-prayer': 'settings',
+  injuries: 'settings',
+  qibla: 'settings',
+  security: 'settings',
+  guide: 'settings',
+  about: 'settings'
+};
 let currentRoute = 'home';
 let routerBound = false;
 
@@ -13,11 +23,12 @@ export function isValidRoute(route) {
 }
 
 export function navigate(route, options = {}) {
-  const next = validRoutes.includes(route) ? route : 'home';
+  const requested = validRoutes.includes(route) ? route : 'home';
+  const next = routeAliases[requested] || requested;
   currentRoute = next;
 
   $all('.page').forEach(page => page.classList.toggle('active', page.id === next));
-  $all('[data-route]').forEach(btn => btn.classList.toggle('active', btn.dataset.route === next));
+  $all('[data-route]').forEach(btn => btn.classList.toggle('active', (routeAliases[btn.dataset.route] || btn.dataset.route) === next));
 
   const page = $(`#${next}`);
   document.title = page?.dataset?.pageTitle ? `${page.dataset.pageTitle} | تأمين 2026` : 'تأمين 2026';
@@ -73,6 +84,16 @@ function bindRouteClicks() {
     event.preventDefault();
     event.stopPropagation();
     navigate(route);
+    if (trigger.dataset.aiWritingAction || trigger.dataset.aiQuestion) {
+      window.setTimeout(() => {
+        document.dispatchEvent(new CustomEvent('taamen:ai-load-prompt', {
+          detail: {
+            action: trigger.dataset.aiWritingAction || '',
+            prompt: trigger.dataset.aiQuestion || ''
+          }
+        }));
+      }, 80);
+    }
   }, true);
 }
 

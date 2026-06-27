@@ -1,6 +1,7 @@
 import { matchArchive, upcomingMatches, playerStats } from '../../data/site-data.js';
 import { $, $all, safeText, copyText, toast, debounce } from './ui.js';
 import { getLatestWeather, calculatePlayability } from './weather.js';
+import { getMatchDate, formatPalestineDate, formatPalestineTime } from './site-knowledge.js';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -23,22 +24,13 @@ function isValidDate(date) {
 }
 
 function getDateFromKey(match) {
-  const key = String(match?.dateKey || '');
-  if (!/^\d{8}$/.test(key)) return null;
-
-  const year = Number(key.slice(0, 4));
-  const month = Number(key.slice(4, 6)) - 1;
-  const day = Number(key.slice(6, 8));
-  const hour = Number(match?.hour ?? 19);
-  const minute = Number(match?.minute ?? 0);
-  const date = new Date(year, month, day, hour, minute, 0, 0);
-
+  const date = getMatchDate(match);
   return isValidDate(date) ? date : null;
 }
 
 function getExactMatchDate(match) {
   if (match?.dateISO) {
-    const date = new Date(match.dateISO);
+    const date = getMatchDate(match);
     if (isValidDate(date)) return date;
   }
 
@@ -46,20 +38,7 @@ function getExactMatchDate(match) {
 }
 
 export function getNextMatchDate(match = upcomingMatches[0], fromDate = new Date()) {
-  const exactDate = getExactMatchDate(match);
-  if (exactDate) return exactDate;
-
-  const target = new Date(fromDate);
-  const weekday = Number(match?.weekday ?? 5);
-  const hour = Number(match?.hour ?? 19);
-  const minute = Number(match?.minute ?? 0);
-  const dayDiff = (weekday - target.getDay() + 7) % 7;
-
-  target.setDate(target.getDate() + dayDiff);
-  target.setHours(hour, minute, 0, 0);
-  if (target <= fromDate) target.setDate(target.getDate() + 7);
-
-  return target;
+  return getMatchDate(match, fromDate) || getExactMatchDate(match) || new Date();
 }
 
 function getMatchEndDate(match) {
@@ -283,17 +262,8 @@ function formatSmartCountdownText(diff) {
 
 function formatMatchDate(match, options = {}) {
   const date = match?.date || getNextMatchDate(match);
-  const datePart = match?.dateLabel || date.toLocaleDateString('ar-PS', {
-    weekday: options.withWeekday === false ? undefined : 'long',
-    day: 'numeric',
-    month: '2-digit',
-    year: 'numeric'
-  });
-
-  const timePart = date.toLocaleTimeString('ar-PS', {
-    hour: 'numeric',
-    minute: '2-digit'
-  });
+  const datePart = match?.dateLabel || formatPalestineDate(date, { withWeekday: options.withWeekday !== false, month: '2-digit' });
+  const timePart = formatPalestineTime(date);
 
   return options.dateOnly ? datePart : `${datePart} في ${timePart}`;
 }

@@ -18,10 +18,79 @@ import { hasAIEndpoint, requestAIAnswer, testAIConnection } from './api-client.j
 import { AI_KNOWLEDGE_ENTRIES, AI_KNOWLEDGE_PACK } from './ai-knowledge-pack.js';
 import { AI_SUGGESTION_GROUPS } from './ai-response-templates.js';
 import { buildAIRequestPayload, generateLocalAnswer } from './ai-answer-engine.js';
+import { buildSiteKnowledge as buildSharedSiteKnowledge } from './site-knowledge.js';
 
 const MEMORY_KEY = 'taamen.ai.session.v2';
 const MAX_STORED_MESSAGES = 20;
 const SUGGESTION_SOUND_ENABLED = false;
+
+const CORE_SUGGESTION_GROUPS = [
+  {
+    id: 'start',
+    title: 'ترحيب وبداية',
+    description: 'بداية خفيفة بدون إغراق',
+    icon: 'fa-hand',
+    questions: ['مرحبا', 'شو الوضع؟', 'شو أقدر أسألك؟', 'عرفني على المنصة بسرعة']
+  },
+  {
+    id: 'match',
+    title: 'المباراة',
+    description: 'موعد، حالة، ومشاركة',
+    icon: 'fa-futbol',
+    questions: ['متى المباراة القادمة؟', 'شو حالة المباراة؟', 'شارك الحالة', 'اكتب إعلان مباراة', 'اكتب رسالة تذكير']
+  },
+  {
+    id: 'radar',
+    title: 'الرادار والتكتيك',
+    description: 'خطط وأدوار خماسية',
+    icon: 'fa-users-viewfinder',
+    questions: ['اشرح خطة 1-2-1', 'كيف نمنع المرتدات؟', 'شو أفضل توزيع 5 لاعبين؟', 'كيف نضغط بدون فراغات؟']
+  },
+  {
+    id: 'archive',
+    title: 'الأرشيف',
+    description: 'نتائج وملخصات محفوظة',
+    icon: 'fa-box-archive',
+    questions: ['شو آخر مباراة بالأرشيف؟', 'اعطني ملخص آخر 5 مباريات', 'كم مباراة محفوظة؟', 'لخص الأرشيف بسرعة']
+  },
+  {
+    id: 'writing',
+    title: 'كتابة للجروب',
+    description: 'نصوص جاهزة للنسخ',
+    icon: 'fa-pen-nib',
+    questions: ['اكتب إعلان مباراة', 'اكتب رسالة تذكير', 'اكتب ملخص تحديث', 'اكتب تنبيه قصير', 'اكتب وصف نتيجة', 'اكتب رسالة للجروب']
+  },
+  {
+    id: 'sports',
+    title: 'رياضة وخماسي',
+    description: 'نصائح لعب وتنظيم',
+    icon: 'fa-dumbbell',
+    questions: ['كيف أتحسن بالخماسي؟', 'كيف أكون كابتن أفضل؟', 'شو أفضل إحماء خفيف؟', 'كيف أقرأ المباراة؟']
+  },
+  {
+    id: 'technical',
+    title: 'تقنية وتطوير',
+    description: 'تشغيل، API، وحماية مفاتيح',
+    icon: 'fa-code',
+    questions: ['كيف أشغل الموقع محليا؟', 'شو يعني API؟', 'كيف أحمي API key؟', 'ليش يظهر Unexpected token <؟']
+  },
+  {
+    id: 'general',
+    title: 'أسئلة عامة',
+    description: 'تخطيط وشرح مختصر',
+    icon: 'fa-compass',
+    questions: ['ساعدني أخطط ليومي', 'قارن بين خيارين', 'اختصر الموضوع بثلاث نقاط', 'اشرح فكرة ببساطة']
+  }
+];
+
+const WRITING_ACTION_PROMPTS = {
+  'match-announcement': 'اكتب إعلان مباراة واتساب جاهز للنسخ من بيانات تأمين الحالية',
+  reminder: 'اكتب رسالة تذكير قصيرة للجروب عن المباراة القادمة',
+  update: 'اكتب ملخص تحديث قصير عن حالة تأمين الآن',
+  warning: 'اكتب تنبيه قصير للجروب بدون مبالغة',
+  result: 'اكتب وصف نتيجة آخر مباراة محفوظة',
+  group: 'اكتب رسالة للجروب بأسلوب واضح ومختصر'
+};
 
 const ROUTE_LABELS = [
   ['home', 'الرئيسية', 'ملخص المنصة والعدادات السريعة'],
@@ -87,6 +156,7 @@ export function initAIAssistant() {
 }
 
 export function buildSiteKnowledge() {
+  return buildSharedSiteKnowledge();
   const archived = [...matchArchive].sort((a, b) => Number(b.dateKey || 0) - Number(a.dateKey || 0));
   const upcoming = [...upcomingMatches].sort((a, b) => getMatchTime(a) - getMatchTime(b));
   const now = Date.now();
@@ -215,7 +285,7 @@ function bindAIEvents() {
     const copyButton = event.target.closest('[data-ai-copy]');
     if (copyButton) {
       const message = state.messages[Number(copyButton.dataset.aiCopy)];
-      if (message) copyText(message.content, 'تم نسخ رد المساعد');
+      if (message) copyText(message.content, 'تم النسخ.. جاهز للجروب! ⚽');
       return;
     }
 
@@ -227,6 +297,13 @@ function bindAIEvents() {
   });
 
   root?.addEventListener('click', event => {
+    const writingButton = event.target.closest('[data-ai-writing-action]');
+    if (writingButton) {
+      event.preventDefault();
+      loadPromptAndSubmit(WRITING_ACTION_PROMPTS[writingButton.dataset.aiWritingAction] || writingButton.dataset.aiQuestion || '');
+      return;
+    }
+
     const testButton = event.target.closest('#aiTestConnection');
     if (testButton) {
       event.preventDefault();
@@ -239,6 +316,10 @@ function bindAIEvents() {
     event.preventDefault();
     clearChat();
     toast('تم مسح محادثة المساعد', { icon: 'fa-eraser' });
+  });
+
+  document.addEventListener('taamen:ai-load-prompt', event => {
+    loadPromptAndSubmit(event.detail?.prompt || '');
   });
 }
 
@@ -253,6 +334,15 @@ function handleSuggestionClick(event) {
   prompt.focus();
   submitQuestion();
   return true;
+}
+
+function loadPromptAndSubmit(value) {
+  const prompt = $('#aiPrompt');
+  const text = String(value || '').trim();
+  if (!prompt || !text) return;
+  prompt.value = text;
+  prompt.focus();
+  submitQuestion();
 }
 
 function handleSuggestionToggle(event) {
@@ -381,7 +471,10 @@ async function submitQuestion() {
     });
 
     let result;
-    const mustStayLocal = analysis.safetyLevel === 'unsafe' || analysis.medicalSensitive;
+    const mustStayLocal = analysis.safetyLevel === 'unsafe' ||
+      analysis.medicalSensitive ||
+      analysis.needsRemoteAI === false ||
+      ['greeting_smalltalk', 'taamen_site', 'unsafe_sensitive'].includes(analysis.category);
 
     if (mustStayLocal) {
       setConnectionStatus('local');
@@ -523,13 +616,22 @@ function renderSuggestions() {
   const host = $('#aiSuggestions');
   if (!host) return;
   const openFirst = !window.matchMedia('(max-width: 520px)').matches;
+  const groups = CORE_SUGGESTION_GROUPS;
   host.innerHTML = `
+    <div class="ai-writing-actions" aria-label="أزرار كتابة سريعة">
+      <button type="button" class="ai-writing-action" data-ai-writing-action="match-announcement"><i class="fa-solid fa-bullhorn"></i> اكتب إعلان مباراة</button>
+      <button type="button" class="ai-writing-action" data-ai-writing-action="reminder"><i class="fa-solid fa-bell"></i> اكتب رسالة تذكير</button>
+      <button type="button" class="ai-writing-action" data-ai-writing-action="update"><i class="fa-solid fa-list-check"></i> اكتب ملخص تحديث</button>
+      <button type="button" class="ai-writing-action" data-ai-writing-action="warning"><i class="fa-solid fa-triangle-exclamation"></i> اكتب تنبيه قصير</button>
+      <button type="button" class="ai-writing-action" data-ai-writing-action="result"><i class="fa-solid fa-square-poll-vertical"></i> اكتب وصف نتيجة</button>
+      <button type="button" class="ai-writing-action" data-ai-writing-action="group"><i class="fa-solid fa-users"></i> اكتب رسالة للجروب</button>
+    </div>
     <div class="ai-suggestions-quick-head">
       <span><i class="fa-solid fa-bolt"></i> وصول سريع</span>
       <small>اختر نوع السؤال وافتح مجموعة واحدة فقط</small>
     </div>
     <div class="ai-suggestions-accordion ai-suggestion-accordion" role="list">
-      ${AI_SUGGESTION_GROUPS.map((group, index) => {
+      ${groups.map((group, index) => {
         const panelId = `aiSuggestionPanel-${safeText(group.id)}`;
         const triggerId = `aiSuggestionTrigger-${safeText(group.id)}`;
         const open = openFirst && index === 0;
@@ -546,7 +648,7 @@ function renderSuggestions() {
           </button>
           <div class="ai-suggestion-panel" id="${panelId}" role="region" aria-labelledby="${triggerId}" aria-hidden="${!open}" style="max-height:${open ? '420px' : '0px'}">
             <div class="ai-suggestion-options ai-suggestion-group-list">
-              ${(group.questions || []).slice(0, 12).map(question => `
+              ${(group.questions || []).slice(0, 8).map(question => `
                 <button class="ai-suggestion-chip" data-ai-category="${safeText(group.id)}" data-suggestion-question="${safeText(question)}" data-ai-question="${safeText(question)}" type="button">
                   <span>${safeText(question)}</span>
                 </button>

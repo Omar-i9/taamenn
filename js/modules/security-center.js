@@ -64,6 +64,22 @@ function renderSecurityPage() {
   const canOpenReport = reportUrl !== '#';
 
   return `
+    <section class="security-section glass-panel compact-security-policy">
+      <div class="security-section-head">
+        <span class="eyebrow"><i class="fa-solid fa-shield-halved"></i> الخصوصية والحماية</span>
+        <h2>حماية مختصرة وواضحة</h2>
+      </div>
+      <p>تستخدم منصة تأمين التخزين المحلي والكوكيز لحفظ تفضيلات بسيطة مثل اللغة والموافقة والإعدادات. لا يتم جمع كلمات مرور أو بيانات حساسة داخل الموقع، ولا يتم وضع مفاتيح الذكاء الاصطناعي داخل ملفات الواجهة العامة.</p>
+      <div class="security-action-row">
+        <button id="securityCookieSettings" class="primary-btn" type="button"><i class="fa-solid fa-sliders"></i> إدارة الكوكيز</button>
+        <button id="securityClearData" class="danger-btn" type="button"><i class="fa-solid fa-trash-can"></i> حذف بيانات تأمين من هذا الجهاز</button>
+        ${canOpenReport ? `<a class="ghost-btn link-btn" href="${safeText(reportUrl)}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> الإبلاغ عن مشكلة</a>` : ''}
+        <button id="securityCopyReport" class="ghost-btn" type="button"><i class="fa-solid fa-copy"></i> نسخ نموذج البلاغ</button>
+      </div>
+    </section>
+  `;
+
+  return `
     <div class="security-hero glass-panel">
       <div>
         <span class="eyebrow"><i class="fa-solid fa-shield-halved"></i> مركز الحماية</span>

@@ -139,10 +139,12 @@ export function analyzeQuestion(question) {
       : detectIntent(rawQuestion);
   const topics = detectTopics(normalizedQuestion, intent, taskIntents);
   const answerLength = detectAnswerLength(rawQuestion);
+  const category = categoryFor(intent, topics, taskIntents);
 
   return {
     rawQuestion,
     normalizedQuestion,
+    category,
     intent,
     intentLabel: INTENT_LABELS[intent] || INTENT_LABELS.unknown,
     topics,
@@ -151,6 +153,7 @@ export function analyzeQuestion(question) {
     needsSiteData: needsSiteData(intent, topics, taskIntents),
     needsGeneralKnowledge: needsGeneralKnowledge(intent, topics, taskIntents),
     needsWriting: intent === 'writing' || taskIntents.includes('writing'),
+    needsRemoteAI: needsRemoteAI(category),
     needsSafetyRefusal: unsafe,
     safetyLevel: unsafe ? 'unsafe' : (medicalSensitive || ['security', 'cookies_privacy'].includes(intent) ? 'sensitive' : 'safe'),
     medicalSensitive,
@@ -325,7 +328,7 @@ function answerSiteInfo(siteKnowledge) {
   if (!meta.name && !pages.length) return MISSING_TAAMEN_INFO;
   return [
     `${meta.name || 'تأمين'} منصة لتنظيم المباراة، الأرشيف، الرادار، الإصابات، الحماية، والمساعد الذكي.`,
-    pages.length ? `الصفحات المتاحة: ${pages.slice(0, 8).map(page => page.label).join('، ')}.` : '',
+    pages.length ? `الصفحات المتاحة: ${pages.slice(0, 8).map(page => typeof page === 'string' ? page : page.label).join('، ')}.` : '',
     meta.version ? `الإصدار الحالي: ${meta.version}.` : ''
   ].filter(Boolean).join('\n');
 }
@@ -414,7 +417,7 @@ function answerComparison() {
 }
 
 function safetyRefusal() {
-  return 'ما بقدر أساعد في اختراق أو سرقة أو تجاوز خصوصية. أقدر أساعدك بدل ذلك بحماية الحسابات: كلمة مرور قوية، تحقق ثنائي، عدم فتح روابط مشبوهة، والإبلاغ للإدارة عند الشك.';
+  return 'ما بقدر أساعد بهذا النوع من الطلبات، لكن أقدر أساعدك بحماية الحسابات، تفعيل المصادقة الثنائية، أو معرفة علامات الروابط المشبوهة.';
 }
 
 function injurySafety(siteKnowledge) {
@@ -520,4 +523,19 @@ function limitLines(lines, length) {
 function hasAny(normalizedText, keywords) {
   const normalized = normalizeArabic(normalizedText);
   return keywords.some(keyword => normalized.includes(normalizeArabic(keyword)));
+}
+
+function categoryFor(intent, topics, taskIntents) {
+  if (intent === 'unsafe_or_sensitive') return 'unsafe_sensitive';
+  if (intent === 'greeting' || intent === 'smalltalk') return 'greeting_smalltalk';
+  if (intent === 'writing' || taskIntents.includes('writing')) return 'writing_actions';
+  if (intent === 'technical') return 'technical_help';
+  if (intent === 'sports_general') return 'sports_tactical';
+  if (intent === 'tactical' && !topics.includes('taamen')) return 'sports_tactical';
+  if (['site_info', 'next_match', 'archive', 'injuries', 'tactical', 'security', 'cookies_privacy', 'ai_help'].includes(intent)) return 'taamen_site';
+  return 'general_help';
+}
+
+function needsRemoteAI(category) {
+  return ['writing_actions', 'sports_tactical', 'technical_help', 'general_help'].includes(category);
 }

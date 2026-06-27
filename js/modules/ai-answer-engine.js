@@ -122,6 +122,7 @@ function compactAnalysis(analysis) {
   return {
     rawQuestion: analysis.rawQuestion,
     normalizedQuestion: analysis.normalizedQuestion,
+    category: analysis.category,
     intent: analysis.intent,
     intentLabel: analysis.intentLabel,
     topics: analysis.topics,
@@ -130,6 +131,7 @@ function compactAnalysis(analysis) {
     needsSiteData: analysis.needsSiteData,
     needsGeneralKnowledge: analysis.needsGeneralKnowledge,
     needsWriting: analysis.needsWriting,
+    needsRemoteAI: analysis.needsRemoteAI,
     needsSafetyRefusal: analysis.needsSafetyRefusal,
     safetyLevel: analysis.safetyLevel,
     medicalSensitive: analysis.medicalSensitive,

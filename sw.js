@@ -1,4 +1,4 @@
-const cacheName = 'taamen-2026-v5-8-tactical-core-visuals';
+const cacheName = 'taamen-2026-v5-9-tactical-core-ux';
 
 const assets = [
   './',
@@ -36,6 +36,8 @@ const assets = [
   './js/modules/cookies.js',
   './js/modules/security-center.js',
   './js/modules/tactical.js',
+  './js/modules/tactical-core.js',
+  './js/modules/site-knowledge.js',
   './js/modules/ai-assistant.js',
   './js/modules/ai-answer-engine.js',
   './js/modules/ai-response-templates.js',

@@ -618,3 +618,197 @@ body.match-mode,
     animation: none;
   }
 }
+
+/* Tactical core merge layer */
+.legacy-route-shell {
+  display: none !important;
+}
+
+.tactical-living-panel,
+.merged-archive-shell,
+.team-readiness-card,
+.compact-privacy-card {
+  margin: clamp(16px, 3vw, 28px) auto;
+  max-width: var(--max-w);
+}
+
+.tactical-living-panel {
+  padding: clamp(18px, 3vw, 28px);
+  border-color: rgba(215,183,93,.26);
+}
+
+.living-head,
+.merged-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.living-head h2,
+.merged-section-head h2 {
+  margin: 4px 0 0;
+  font-family: var(--font-title);
+  letter-spacing: 0;
+}
+
+.living-head p,
+.merged-section-head p,
+.compact-privacy-card p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.living-mood-badge {
+  min-width: 104px;
+  padding: 9px 14px;
+  border-radius: var(--radius-pill);
+  text-align: center;
+  color: var(--bg-0);
+  background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+  box-shadow: var(--glow-gold);
+  font-weight: 800;
+}
+
+.tactical-living-panel[data-mood="match"] .living-mood-badge,
+.tactical-living-panel[data-mood="warm"] .living-mood-badge {
+  background: linear-gradient(135deg, var(--orange), var(--gold));
+}
+
+.tactical-living-panel[data-mood="live"] .living-mood-badge {
+  background: linear-gradient(135deg, var(--cyan), var(--orange));
+}
+
+.living-grid,
+.readiness-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.living-grid > div,
+.readiness-grid > span {
+  min-height: 94px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(234,242,255,.045);
+}
+
+.living-grid span,
+.readiness-grid b {
+  display: block;
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.living-grid strong,
+.readiness-grid span {
+  color: var(--text);
+}
+
+.living-grid small {
+  display: block;
+  margin-top: 6px;
+  color: var(--soft);
+  line-height: 1.45;
+}
+
+.living-actions,
+.privacy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.merged-archive-shell {
+  grid-column: 1 / -1;
+}
+
+.settings-merged-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  max-width: var(--max-w);
+  margin: 0 auto 32px;
+}
+
+.settings-merged-card {
+  min-width: 0;
+}
+
+.settings-merged-card > .page-heading {
+  margin-top: 18px;
+}
+
+.settings-source-guide .code-guide,
+.settings-source-about .about-actions,
+.settings-source-security .security-section {
+  margin-bottom: 0;
+}
+
+.compact-security-policy {
+  margin-top: 0;
+}
+
+.ai-writing-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.ai-writing-action {
+  min-height: 46px;
+  border: 1px solid rgba(215,183,93,.24);
+  border-radius: var(--radius-md);
+  background: rgba(215,183,93,.075);
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform var(--fast), background var(--fast), border-color var(--fast);
+}
+
+.ai-writing-action:hover {
+  transform: translateY(-2px);
+  border-color: rgba(215,183,93,.48);
+  background: rgba(215,183,93,.13);
+}
+
+.ai-writing-action:active {
+  transform: scale(.98);
+}
+
+@media (max-width: 900px) {
+  .living-grid,
+  .readiness-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .living-head,
+  .merged-section-head {
+    display: block;
+  }
+
+  .living-mood-badge {
+    display: inline-flex;
+    margin-top: 12px;
+  }
+
+  .living-grid,
+  .readiness-grid,
+  .ai-writing-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .living-actions > *,
+  .privacy-actions > * {
+    width: 100%;
+  }
+}

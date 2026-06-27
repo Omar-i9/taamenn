@@ -12,6 +12,7 @@ import { initQibla } from './modules/qibla.js';
 import { initDeviceInspector } from './modules/device-inspector.js';
 import { initShareCapture } from './modules/share-capture.js';
 import { initTactical } from './modules/tactical.js';
+import { initTacticalCoreShell } from './modules/tactical-core.js';
 import { initAIAssistant } from './modules/ai-assistant.js';
 import { initCookieConsent } from './modules/cookies.js';
 import { initSecurityCenter } from './modules/security-center.js';
@@ -99,6 +100,7 @@ async function refreshServices() {
     updateWeather(currentCity),
     updatePrayer(currentCity)
   ]);
+  document.dispatchEvent(new CustomEvent('taamen:services-refreshed'));
   renderMatchCenter(false);
   toast(`تم تحديث بيانات ${city.name}`, { icon: 'fa-rotate' });
 }
@@ -148,6 +150,7 @@ async function boot() {
   initCookieConsent();
   initMobileUX();
   initDeviceInspector();
+  initTacticalCoreShell();
   initRouter();
   initCitySwitcher();
   initSources();

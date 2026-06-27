@@ -1,7 +1,7 @@
 export const siteMeta = {
   name: 'تأمين 2026',
-  edition: 'Legacy Edition',
-  version: 'v5.1.0-ai-assistant-hub',
+  edition: 'Taamen Tactical Core',
+  version: 'Taamen Tactical Core Update',
   maintainer: 'Omar System',
   programmerPages: 'https://omar-i9.github.io/omar-i9/',
   releaseMode: 'المساعد الذكي المحلي مع تثبيت الرادار التكتيكي'

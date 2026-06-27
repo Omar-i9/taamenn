@@ -56,13 +56,26 @@ export function toast(message, options = {}) {
 
 export function copyText(text, successMessage = 'تم النسخ') {
   if (navigator.clipboard?.writeText) {
-    return navigator.clipboard.writeText(text).then(() => toast(successMessage, { icon: 'fa-copy' }));
+    return navigator.clipboard.writeText(text)
+      .then(() => toast(successMessage, { icon: 'fa-copy' }))
+      .catch(() => fallbackCopyText(text, successMessage));
   }
+  return fallbackCopyText(text, successMessage);
+}
+
+function fallbackCopyText(text, successMessage) {
   const area = document.createElement('textarea');
   area.value = text;
+  area.setAttribute('readonly', '');
+  area.style.position = 'fixed';
+  area.style.insetInlineStart = '-9999px';
   document.body.appendChild(area);
   area.select();
-  document.execCommand('copy');
+  try {
+    document.execCommand('copy');
+  } catch (_) {
+    toast('تعذر النسخ تلقائيا، حدد النص وانسخه يدويا', { icon: 'fa-copy', kind: 'error' });
+  }
   area.remove();
   toast(successMessage, { icon: 'fa-copy' });
   return Promise.resolve();
