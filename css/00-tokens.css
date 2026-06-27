@@ -1,45 +1,57 @@
 :root {
-  --font-main: 'Tajawal', system-ui, sans-serif;
-  --font-title: 'Reem Kufi', var(--font-main);
+  --font-main: 'IBM Plex Sans Arabic', 'Tajawal', system-ui, sans-serif;
+  --font-title: 'Changa', 'Reem Kufi', var(--font-main);
   --font-digital: 'Orbitron', monospace;
 
-  --bg-0: #030712;
-  --bg-1: #07111f;
-  --bg-2: #0d1b35;
-  --panel: rgba(10, 18, 34, .78);
-  --panel-strong: rgba(8, 14, 28, .94);
-  --panel-soft: rgba(255,255,255,.055);
-  --line: rgba(255,255,255,.095);
-  --line-strong: rgba(255,255,255,.18);
+  --bg-0: #061226;
+  --bg-1: #0B1830;
+  --bg-2: #10203D;
+  --panel: rgba(12, 24, 48, .78);
+  --panel-strong: rgba(8, 16, 34, .92);
+  --panel-soft: rgba(234,242,255,.055);
+  --surface-hover: rgba(215,183,93,.08);
+  --line: rgba(234,242,255,.11);
+  --line-strong: rgba(215,183,93,.28);
 
-  --text: #eef5ff;
-  --muted: rgba(238,245,255,.70);
-  --soft: rgba(238,245,255,.52);
+  --text: #EAF2FF;
+  --muted: #AFC2D9;
+  --soft: rgba(175,194,217,.72);
 
-  --gold: #e7c75f;
-  --cyan: #55d6ff;
-  --blue: #4f7cff;
-  --green: #40d99a;
-  --red: #ff5f6d;
-  --orange: #ff9b4d;
-  --violet: #8b5cf6;
+  --gold: #D7B75D;
+  --gold-soft: #F1D981;
+  --cyan: #55D6FF;
+  --blue: #587AA8;
+  --green: #31D27C;
+  --red: #FF5252;
+  --orange: #F59B45;
+  --violet: #6C7DA8;
 
-  --radius-xl: 30px;
-  --radius-lg: 22px;
-  --radius-md: 16px;
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
   --radius-pill: 999px;
 
-  --shadow-1: 0 14px 35px rgba(0,0,0,.28);
-  --shadow-2: 0 24px 70px rgba(0,0,0,.42);
-  --glow-cyan: 0 0 28px rgba(85,214,255,.16);
-  --glow-gold: 0 0 28px rgba(231,199,95,.18);
+  --shadow-1: 0 14px 34px rgba(0,0,0,.30);
+  --shadow-2: 0 26px 80px rgba(0,0,0,.46);
+  --shadow-press: 0 8px 18px rgba(0,0,0,.24);
+  --glow-cyan: 0 0 24px rgba(85,214,255,.14);
+  --glow-gold: 0 0 24px rgba(215,183,93,.18);
+  --glow-orange: 0 0 24px rgba(245,155,69,.14);
 
   --header-h: 78px;
   --max-w: 1240px;
 
-  --fast: 180ms ease;
-  --mid: 280ms cubic-bezier(.2,.8,.2,1);
-  --slow: 560ms cubic-bezier(.22,1,.36,1);
+  --space-1: 6px;
+  --space-2: 10px;
+  --space-3: 14px;
+  --space-4: 18px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --fast: 160ms cubic-bezier(.2,.8,.2,1);
+  --mid: 260ms cubic-bezier(.2,.8,.2,1);
+  --slow: 520ms cubic-bezier(.22,1,.36,1);
 }
 
 body.theme-day {

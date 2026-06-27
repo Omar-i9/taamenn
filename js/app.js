@@ -18,6 +18,39 @@ import { initSecurityCenter } from './modules/security-center.js';
 import { initAIFloatingChat } from './modules/ai-floating-chat.js';
 
 let currentCity = read('city', CONFIG.defaultCity);
+const BOOT_SPLASH_KEY = 'taamen.boot.seen.v1';
+
+function initBootSplash() {
+  try {
+    if (sessionStorage.getItem(BOOT_SPLASH_KEY) === '1') return;
+    sessionStorage.setItem(BOOT_SPLASH_KEY, '1');
+  } catch (_) {
+    return;
+  }
+
+  const splash = document.createElement('div');
+  splash.className = 'taamen-boot-splash';
+  splash.setAttribute('aria-hidden', 'true');
+  splash.innerHTML = `
+    <div class="boot-core">
+      <div class="boot-ball"><i class="fa-solid fa-futbol"></i></div>
+      <div class="boot-line"><span></span></div>
+      <div class="boot-text" id="bootSplashText">Initializing system</div>
+    </div>
+  `;
+  document.body.appendChild(splash);
+
+  const steps = ['Initializing system', 'Loading match core', 'Syncing AI', 'Ready'];
+  const label = splash.querySelector('#bootSplashText');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const interval = reduced ? 45 : 250;
+  steps.forEach((step, index) => {
+    window.setTimeout(() => {
+      if (label) label.textContent = step;
+    }, index * interval);
+  });
+  window.setTimeout(() => splash.remove(), reduced ? 260 : 1180);
+}
 
 function initClock() {
   const clock = $('#headerClock');
@@ -106,6 +139,7 @@ function initServiceWorker() {
 }
 
 async function boot() {
+  initBootSplash();
   createStars();
   revealOnScroll();
   initClock();

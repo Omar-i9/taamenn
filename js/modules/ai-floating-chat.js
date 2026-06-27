@@ -2,7 +2,7 @@ import { $, safeText } from './ui.js';
 
 const SESSION_KEY = 'taamen.ai.session.v2';
 const FLOAT_KEY = 'taamen.ai.floatState.v1';
-const SOUND_KEY = 'taamen.ai.soundEnabled.v1';
+const SOUND_KEY = 'taamen.sound.enabled.v1';
 
 const state = {
   bound: false,

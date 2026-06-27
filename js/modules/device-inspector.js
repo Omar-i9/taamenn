@@ -52,24 +52,8 @@ export function renderDeviceSignals() {
 }
 
 export function initTinyScreenWarning() {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const tooSmall = width <= 360 || height <= 560;
-  const key = 'taamen-small-screen-ok';
-  const overlay = $('#tinyScreenNotice');
-  const dismiss = $('#tinyScreenOk');
-  if (!overlay || !dismiss) return;
-
-  if (!tooSmall || localStorage.getItem(key) === '1') return;
-
-  overlay.classList.add('show');
-  document.body.classList.add('tiny-notice-open');
-
-  dismiss.addEventListener('click', () => {
-    localStorage.setItem(key, '1');
-    overlay.classList.remove('show');
-    document.body.classList.remove('tiny-notice-open');
-  }, { once: true });
+  $('#tinyScreenNotice')?.remove();
+  document.body.classList.remove('tiny-notice-open');
 }
 
 export function initDeviceInspector() {

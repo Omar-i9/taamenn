@@ -1,4 +1,4 @@
-const cacheName = 'taamen-2026-v5-7-ai-suggestions-accordion';
+const cacheName = 'taamen-2026-v5-8-tactical-core-visuals';
 
 const assets = [
   './',
@@ -29,6 +29,7 @@ const assets = [
   './css/23-ai-assistant.css',
   './css/24-security-privacy.css',
   './css/25-ai-floating-chat.css',
+  './css/26-tactical-core.css',
   './js/app.js',
   './js/config.js',
   './js/modules/router.js',

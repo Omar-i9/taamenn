@@ -21,7 +21,7 @@ import { buildAIRequestPayload, generateLocalAnswer } from './ai-answer-engine.j
 
 const MEMORY_KEY = 'taamen.ai.session.v2';
 const MAX_STORED_MESSAGES = 20;
-const SUGGESTION_SOUND_ENABLED = true;
+const SUGGESTION_SOUND_ENABLED = false;
 
 const ROUTE_LABELS = [
   ['home', 'الرئيسية', 'ملخص المنصة والعدادات السريعة'],
