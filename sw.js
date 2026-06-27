@@ -1,4 +1,4 @@
-const cacheName = 'taamen-2026-v5-9-tactical-core-ux';
+const cacheName = 'taamen-2026-v5-10-navigation-cleanup';
 
 const assets = [
   './',

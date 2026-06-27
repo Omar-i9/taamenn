@@ -627,7 +627,8 @@ body.match-mode,
 .tactical-living-panel,
 .merged-archive-shell,
 .team-readiness-card,
-.compact-privacy-card {
+.compact-privacy-card,
+.simple-settings-card {
   margin: clamp(16px, 3vw, 28px) auto;
   max-width: var(--max-w);
 }
@@ -724,6 +725,123 @@ body.match-mode,
   margin-top: 16px;
 }
 
+/* Tactical engine hidden from navigation, code preserved for legacy safety. */
+#homeRadarCard,
+.entry-card[data-route="radar"] {
+  display: none !important;
+}
+
+.more-page-grid {
+  width: min(100%, var(--max-w));
+  margin: 0 auto clamp(28px, 5vw, 48px);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.more-page-card,
+.settings-toggle-row {
+  min-width: 0;
+  border: 1px solid rgba(234,242,255,.11);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)),
+    rgba(12,24,48,.72);
+  color: var(--text);
+  box-shadow: var(--shadow-1), inset 0 1px 0 rgba(255,255,255,.04);
+  transition: transform var(--fast), border-color var(--fast), background var(--fast), box-shadow var(--fast);
+}
+
+.more-page-card {
+  min-height: 148px;
+  padding: 18px;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  text-align: right;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.more-page-card i,
+.settings-toggle-row i {
+  width: 42px;
+  height: 42px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  color: var(--bg-0);
+  background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+  box-shadow: var(--glow-gold);
+}
+
+.more-page-card strong,
+.settings-toggle-row strong {
+  display: block;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.more-page-card small,
+.settings-toggle-row small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.more-page-card:hover,
+.settings-toggle-row:hover {
+  transform: translateY(-3px);
+  border-color: rgba(215,183,93,.28);
+  background:
+    linear-gradient(180deg, rgba(215,183,93,.07), rgba(255,255,255,.015)),
+    rgba(12,24,48,.82);
+  box-shadow: var(--shadow-2), var(--glow-gold);
+}
+
+.more-page-card:active,
+.settings-toggle-row:active {
+  transform: translateY(1px) scale(.985);
+  box-shadow: var(--shadow-press);
+}
+
+.settings-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.settings-toggle-row {
+  min-height: 94px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+  cursor: pointer;
+}
+
+.settings-toggle-row b {
+  padding: 7px 10px;
+  border-radius: var(--radius-pill);
+  color: var(--gold-soft);
+  background: rgba(215,183,93,.08);
+  font-size: .78rem;
+}
+
+.tactical-living-panel.state-pulse {
+  animation: livingStatePulse .8s ease both;
+}
+
+@keyframes livingStatePulse {
+  0% { box-shadow: var(--shadow-1), 0 0 0 0 rgba(215,183,93,.2); }
+  55% { box-shadow: var(--shadow-2), 0 0 0 8px rgba(215,183,93,.06); }
+  100% { box-shadow: var(--shadow-1), 0 0 0 0 rgba(215,183,93,0); }
+}
+
 .merged-archive-shell {
   grid-column: 1 / -1;
 }
@@ -785,7 +903,8 @@ body.match-mode,
 
 @media (max-width: 900px) {
   .living-grid,
-  .readiness-grid {
+  .readiness-grid,
+  .more-page-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -803,12 +922,61 @@ body.match-mode,
 
   .living-grid,
   .readiness-grid,
-  .ai-writing-actions {
+  .ai-writing-actions,
+  .more-page-grid,
+  .settings-action-grid {
     grid-template-columns: 1fr;
   }
 
   .living-actions > *,
   .privacy-actions > * {
     width: 100%;
+  }
+
+  .more-page-card {
+    min-height: 112px;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .settings-toggle-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .settings-toggle-row b {
+    grid-column: 2;
+    width: fit-content;
+  }
+
+  .ai-chat-shell,
+  .ai-suggestions,
+  .ai-hero-card {
+    border-radius: var(--radius-lg);
+  }
+
+  .ai-input-bar {
+    gap: 8px;
+  }
+
+  .ai-input-bar textarea {
+    min-height: 48px;
+    max-height: 132px;
+    font-size: 1rem;
+  }
+
+  .ai-message-body {
+    max-width: min(100%, 92vw);
+    overflow-wrap: anywhere;
+  }
+
+  .ai-floating-chat {
+    right: 10px;
+    bottom: max(76px, calc(env(safe-area-inset-bottom) + 76px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tactical-living-panel.state-pulse {
+    animation: none;
   }
 }

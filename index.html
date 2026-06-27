@@ -61,41 +61,10 @@
 
       <nav class="desktop-nav compact-nav" aria-label="التنقل الرئيسي">
         <button data-route="home" class="nav-link active" type="button"><i class="fa-solid fa-house"></i><span>الرئيسية</span></button>
-        <button data-route="match-center" class="nav-link" type="button"><i class="fa-solid fa-calendar-check"></i><span>المباراة</span></button>
+        <button data-route="match-center" class="nav-link" type="button"><i class="fa-solid fa-calendar-check"></i><span>مركز المباراة</span></button>
+        <button data-route="archive" class="nav-link" type="button"><i class="fa-solid fa-box-archive"></i><span>الأرشيف</span></button>
         <button data-route="ai" class="nav-link nav-link-feature" type="button"><i class="fa-solid fa-brain"></i><span>المساعد الذكي</span></button>
-        <button data-route="settings" class="nav-link nav-link-security" type="button"><i class="fa-solid fa-heart-pulse"></i><span>الصحة والإعدادات</span></button>
-
-        <div class="more-nav" id="moreNav">
-          <button class="nav-link more-nav-btn" id="moreNavToggle" data-more-toggle type="button" aria-expanded="false" aria-controls="moreNavPanel">
-            <i class="fa-solid fa-wand-magic-sparkles"></i><span>المزيد</span><i class="fa-solid fa-chevron-down more-arrow"></i>
-          </button>
-          <div class="more-nav-panel" id="moreNavPanel" aria-hidden="true">
-            <button data-route="weather-prayer" class="more-nav-item" type="button">
-              <i class="fa-solid fa-cloud-sun"></i>
-              <span><strong>الطقس والصلاة</strong><small>الجاهزية والمواقيت</small></span>
-            </button>
-            <button data-route="injuries" class="more-nav-item" type="button">
-              <i class="fa-solid fa-kit-medical"></i>
-              <span><strong>الإصابات</strong><small>الحالات والرجوع</small></span>
-            </button>
-            <button data-route="qibla" class="more-nav-item" type="button">
-              <i class="fa-solid fa-compass"></i>
-              <span><strong>القبلة</strong><small>بوصلة الجهاز</small></span>
-            </button>
-            <button data-route="guide" class="more-nav-item" type="button">
-              <i class="fa-solid fa-book-open"></i>
-              <span><strong>دليل الاستخدام</strong><small>شرح كل صفحة وزر</small></span>
-            </button>
-            <button data-route="about" class="more-nav-item" type="button">
-              <i class="fa-solid fa-circle-info"></i>
-              <span><strong>عن المنصة</strong><small>الفكرة والمصادر والتواصل</small></span>
-            </button>
-            <a class="more-nav-item programmer-more" href="https://omar-i9.github.io/omar-i9/" target="_blank" rel="noopener noreferrer">
-              <i class="fa-solid fa-code"></i>
-              <span><strong>صفحات المبرمج</strong><small>روابط عمر ومشاريعه</small></span>
-            </a>
-          </div>
-        </div>
+        <button data-route="more" class="nav-link nav-link-security" type="button"><i class="fa-solid fa-layer-group"></i><span>المزيد</span></button>
       </nav>
 
       <div class="header-tools">
@@ -125,9 +94,10 @@
 
       <div class="mobile-nav-group mobile-nav-main">
         <button data-route="home" class="mobile-nav-link" type="button"><i class="fa-solid fa-house"></i><span>الرئيسية</span><small>لوحة القيادة</small></button>
-        <button data-route="match-center" class="mobile-nav-link" type="button"><i class="fa-solid fa-calendar-check"></i><span>المباراة</span><small>الموعد والعداد</small></button>
+        <button data-route="match-center" class="mobile-nav-link" type="button"><i class="fa-solid fa-calendar-check"></i><span>مركز المباراة</span><small>الموعد والعداد</small></button>
+        <button data-route="archive" class="mobile-nav-link" type="button"><i class="fa-solid fa-box-archive"></i><span>الأرشيف</span><small>بحث ونتائج سابقة</small></button>
         <button data-route="ai" class="mobile-nav-link" type="button"><i class="fa-solid fa-brain"></i><span>المساعد الذكي</span><small>تحليل محلي للبيانات</small></button>
-        <button data-route="settings" class="mobile-nav-link" type="button"><i class="fa-solid fa-heart-pulse"></i><span>الصحة والإعدادات</span><small>الرادار والخصوصية</small></button>
+        <button data-route="more" class="mobile-nav-link" type="button"><i class="fa-solid fa-layer-group"></i><span>المزيد</span><small>الصحة وباقي الصفحات</small></button>
       </div>
 
       <div class="mobile-nav-label">أقسام مساعدة</div>
@@ -330,7 +300,7 @@
             <h3>إجراءات سريعة</h3>
             <button id="shareMatchBtn" class="primary-btn full" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة الموعد</button>
             <button class="primary-btn full" data-route="ai" type="button"><i class="fa-solid fa-brain"></i> اسأل المساعد</button>
-            <button class="primary-btn full" data-route="radar" type="button"><i class="fa-solid fa-users-viewfinder"></i> فتح الرادار</button>
+            <button class="primary-btn full" data-route="more" type="button"><i class="fa-solid fa-layer-group"></i> فتح المزيد</button>
             <button class="ghost-btn full" data-route="archive" type="button"><i class="fa-solid fa-box-archive"></i> فتح الأرشيف</button>
             <button id="copyMatchBtn" class="ghost-btn full" type="button"><i class="fa-solid fa-copy"></i> نسخ النص</button>
           </div>

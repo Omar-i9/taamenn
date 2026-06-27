@@ -1,16 +1,7 @@
 import { $, $all } from './ui.js';
 
-const validRoutes = ['home', 'match-center', 'archive', 'ai', 'radar', 'weather-prayer', 'injuries', 'qibla', 'security', 'guide', 'about', 'settings'];
-const routeAliases = {
-  archive: 'match-center',
-  radar: 'settings',
-  'weather-prayer': 'settings',
-  injuries: 'settings',
-  qibla: 'settings',
-  security: 'settings',
-  guide: 'settings',
-  about: 'settings'
-};
+const validRoutes = ['home', 'match-center', 'archive', 'ai', 'more', 'radar', 'weather-prayer', 'injuries', 'qibla', 'security', 'guide', 'about', 'settings'];
+const routeAliases = {};
 let currentRoute = 'home';
 let routerBound = false;
 
