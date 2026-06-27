@@ -1,9 +1,9 @@
-.background-shell { position: fixed; inset: 0; pointer-events: none; z-index: -10; overflow: hidden; }
+.background-shell { position: fixed; inset: 0; width: 100vw; max-width: 100vw; pointer-events: none; z-index: -10; overflow: hidden; overflow: clip; }
 .bg-orb { position: absolute; width: 420px; height: 420px; border-radius: 50%; filter: blur(45px); opacity: .28; }
 .bg-orb-one { top: -120px; right: 8%; background: var(--cyan); animation: orbFloat 12s ease-in-out infinite; }
 .bg-orb-two { bottom: 5%; left: 4%; background: var(--violet); animation: orbFloat 16s ease-in-out infinite reverse; }
 @keyframes orbFloat { 50% { transform: translateY(35px) translateX(-18px) scale(1.08); } }
-.stars-layer { position: absolute; inset: 0; opacity: .8; }
+.stars-layer { position: absolute; inset: 0; width: 100%; max-width: 100%; overflow: hidden; overflow: clip; opacity: .8; }
 .star { position: absolute; border-radius: 50%; background: #fff; box-shadow: 0 0 8px #fff; animation: twinkle var(--d) infinite alternate; opacity: .4; }
 @keyframes twinkle { to { opacity: 1; transform: scale(1.25); } }
 .theme-day .stars-layer { opacity: 0; }

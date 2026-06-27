@@ -1,2 +1,8 @@
 tmp-chrome-v5-radar/
 tmp-chrome*/
+node_modules/
+dist/
+coverage/
+.DS_Store
+Thumbs.db
+*.log

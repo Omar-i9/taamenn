@@ -47,16 +47,16 @@ export const defaultPlayers = [
 ];
 
 export const playerStats = [
-  { name: 'يوسف', goals: 2, assists: 3, saves: 0, rating: 9.7 },
-  { name: 'عمر', goals: 2, assists: 1, saves: 1, rating: 9.8 },
-  { name: 'كريم', goals: 1, assists: 4, saves: 0, rating: 9.9 },
-  { name: 'سكافي', goals: 0, assists: 0, saves: 5, rating: 8.8 },
-  { name: 'خضر', goals: 4, assists: 1, saves: 0, rating: 9.9 },
-  { name: 'أبو تركي', goals: 2, assists: 2, saves: 0, rating: 9.8 },
-  { name: 'سويركي', goals: 4, assists: 5, saves: 0, rating: 10 },
-  { name: 'زيد', goals: 5, assists: 3, saves: 0, rating: 10 },
-  { name: 'أبو زغير', goals: 0, assists: 0, saves: 6, rating: 9.6 },
-  { name: 'محمد علي', goals: 1, assists: 2, saves: 7, rating: 9.4 }
+  { name: 'يوسف', goals: 0, assists: 1, saves: 3, rating: 7.9 },
+  { name: 'عمر', goals: 2, assists: 3, saves: 4, rating: 9.4 },
+  { name: 'كريم', goals: 2, assists: 1, saves: 1, rating: 8.9 },
+  { name: 'سكافي', goals: 2, assists: 0, saves: 0, rating: 6.8 },
+  { name: 'مؤمن', goals: 2, assists: 1, saves: 2, rating: 9.2 },
+  { name: 'هاني', goals: 0, assists: 2, saves: 9, rating: 9.1 },
+  { name: 'عمرو', goals: 0, assists: 1, saves: 5, rating: 7.7 },
+  { name: 'ابراهيم', goals: 0, assists: 1, saves: 7, rating: 8.5 },
+  { name: 'أبو زغير', goals: 0, assists: 0, saves: 2, rating: 7.1 },
+  { name: 'محمد علي', goals: 6, assists: 0, saves: 0, rating: 9.7 }
 ];
 
 
@@ -159,31 +159,10 @@ export const tactics = {
 
 export const upcomingMatches = [
   {
-    id: 'UP-004',
-    title: 'مواجهة الجمعة',
-    team1: 'عمر',
-    team2: 'كريم',
-    location: 'ملعب سيدات الخليل',
-    dateLabel: '19/06/2026',
-    dateKey: 20260619,
-    dateISO: '2026-06-19T20:00:00',
-    exactDate: true,
-    isPlaceholder: true,
-    priority: 2,
-    scheduleStatus: 'pending',
-    weekday: 5,
-    hour: 20,
-    minute: 0,
-    durationMinutes: 60,
-    note: 'الديربي التقليدي بين الفريقين',
-    heatLabel: 'قادم'
-  },
-
-  {
     id: 'UP-005',
     title: 'رد الثأر',
     team1: 'عمر',
-    team2: 'كريم التميمي',
+    team2: 'كريم',
     location: 'ملعب سيدات الخليل',
     dateLabel: '26/06/2026',
     dateKey: 20260626,
@@ -290,6 +269,13 @@ export const matchArchive = [
     details: {
       team1: { possession: 60, shots: 27, onTarget: 17, saves: 4, assists: 5, passes: 140, fouls: 5, corners: 8 },
       team2: { possession: 40, shots: 20, onTarget: 9, saves: 9, assists: 3, passes: 90, fouls: 8, corners: 5 }
+    }
+  },
+      {
+    id: 'M-206', type: 'normal', team1: 'عمر', team2: 'كريم', score1: 9, score2: 4, status: 'انتهت', dateLabel: '19/06/2026', dateKey: 20260619, story: 'لم تكن مباراةً عابرة… كانت إثباتَ مقام، وكسرةَ عين، وانتصارًا يُروى.',
+    details: {
+      team1: { possession: 61, shots: 27, onTarget: 20, saves: 6, assists: 5, passes: 120, fouls: 2, corners: 7 },
+      team2: { possession: 39, shots: 18, onTarget: 10, saves: 11, assists: 3, passes: 90, fouls: 5, corners: 5 }
     }
   }
 ];
