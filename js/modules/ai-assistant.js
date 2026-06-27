@@ -1,4 +1,8 @@
 import {
+  security,
+  tactics,
+  roleOptions,
+  instructionOptions,
   siteMeta,
   sources,
   teams,
@@ -6,30 +10,62 @@ import {
   playerStats,
   upcomingMatches,
   matchArchive,
-  guideSections,
-  dhikrList
+  guideSections
 } from '../../data/site-data.js';
 import { injuryCases, injuryMeta, injurySeverity } from '../../data/injuries-data.js';
 import { $, safeText, copyText, toast } from './ui.js';
 import { hasAIEndpoint, requestAIAnswer, testAIConnection } from './api-client.js';
+import { AI_KNOWLEDGE_ENTRIES, AI_KNOWLEDGE_PACK } from './ai-knowledge-pack.js';
+import { AI_SUGGESTION_GROUPS } from './ai-response-templates.js';
+import { buildAIRequestPayload, generateLocalAnswer } from './ai-answer-engine.js';
+
+const MEMORY_KEY = 'taamen.ai.session.v2';
+const MAX_STORED_MESSAGES = 20;
 
 const ROUTE_LABELS = [
-  ['home', 'الرئيسية'],
-  ['match-center', 'المباراة القادمة'],
-  ['archive', 'الأرشيف'],
-  ['ai', 'المساعد الذكي'],
-  ['radar', 'الرادار التكتيكي'],
-  ['weather-prayer', 'الطقس والصلاة'],
-  ['injuries', 'الإصابات'],
-  ['qibla', 'القبلة'],
-  ['guide', 'دليل الاستخدام'],
-  ['about', 'عن المنصة']
+  ['home', 'الرئيسية', 'ملخص المنصة والعدادات السريعة'],
+  ['match-center', 'المباراة القادمة', 'موعد المباراة القادمة وتفاصيلها'],
+  ['archive', 'الأرشيف', 'نتائج المباريات السابقة'],
+  ['ai', 'المساعد الذكي', 'مساعد تأمين الذكي'],
+  ['radar', 'الرادار التكتيكي', 'خطط وتمركز لاعبي الخماسي'],
+  ['security', 'مركز الحماية', 'خصوصية وأمان المنصة'],
+  ['weather-prayer', 'الطقس والصلاة', 'الطقس ومواقيت الصلاة'],
+  ['injuries', 'الإصابات', 'سجل الإصابات والحالات'],
+  ['qibla', 'القبلة', 'اتجاه القبلة'],
+  ['guide', 'دليل الاستخدام', 'شرح صفحات المنصة'],
+  ['about', 'عن المنصة', 'هوية المنصة ومصادرها']
 ];
+
+const INTENT_LABELS = {
+  site_info: 'بيانات الموقع',
+  next_match: 'المباراة',
+  archive: 'الأرشيف',
+  injuries: 'الإصابات',
+  tactical: 'تكتيك',
+  security: 'حماية',
+  ai_help: 'مساعدة AI',
+  writing: 'كتابة',
+  study: 'دراسة',
+  technical: 'تقنية',
+  general: 'عام',
+  unsafe_or_sensitive: 'حساس'
+};
+
+const SOURCE_LABELS = {
+  'site-data': 'بيانات تأمين',
+  'local-knowledge-pack': 'معرفة محلية',
+  'local-rules': 'قواعد محلية',
+  gemini: 'Gemini',
+  backend: 'Backend',
+  remote: 'AI خارجي'
+};
 
 const state = {
   bound: false,
+  pending: false,
   messages: [],
   knowledge: null,
+  memory: null,
   lastMode: hasAIEndpoint() ? 'ready' : 'local'
 };
 
@@ -38,11 +74,12 @@ export function initAIAssistant() {
   if (!root || state.bound) return;
 
   state.bound = true;
+  state.memory = loadMemory();
   state.knowledge = buildSiteKnowledge();
   renderStatus();
   renderKnowledgeMeta();
   renderSuggestions();
-  resetChat();
+  startChat();
   bindAIEvents();
 }
 
@@ -53,41 +90,90 @@ export function buildSiteKnowledge() {
   const futureUpcoming = upcoming.find(match => getMatchTime(match) >= now) || upcoming[0] || null;
   const injuries = splitInjuries(injuryCases);
   const topPlayer = [...playerStats].sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0))[0] || null;
-  const availablePages = ROUTE_LABELS.filter(([id]) => Boolean(document.getElementById(id)))
-    .map(([id, label]) => ({ id, label }));
+  const availablePages = ROUTE_LABELS
+    .filter(([id]) => Boolean(document.getElementById(id)))
+    .map(([id, label, description]) => ({
+      id,
+      label: cleanRouteLabel(id, label),
+      description: cleanRouteDescription(id, description),
+      route: `#${id}`
+    }));
 
   return {
-    meta: { ...siteMeta },
+    meta: {
+      name: siteMeta.name,
+      edition: siteMeta.edition,
+      version: siteMeta.version,
+      aiStatus: hasAIEndpoint() ? 'backend-ready' : 'local-fallback',
+      lastUpdate: siteMeta.releaseMode,
+      environment: location.hostname || 'local'
+    },
+    pages: availablePages,
     teams: { ...teams },
-    playersCount: defaultPlayers.length,
-    latestMatch: archived[0] || null,
-    upcomingMatch: futureUpcoming,
-    archiveSummary: {
+    nextMatch: formatNextMatch(futureUpcoming),
+    archive: {
       total: matchArchive.length,
-      latestFive: archived.slice(0, 5)
+      latestMatch: archived[0] || null,
+      recentMatches: archived.slice(0, 5),
+      champions: summarizeArchiveChampions(matchArchive),
+      summary: `${matchArchive.length} مباراة محفوظة`
     },
-    injuriesSummary: {
-      meta: { ...injuryMeta },
-      active: injuries.active,
-      recovered: injuries.recovered,
-      severityLabels: Object.fromEntries(Object.entries(injurySeverity).map(([key, value]) => [key, value.label]))
+    injuries: {
+      active: injuries.active.map(compactInjury),
+      recovered: injuries.recovered.map(compactInjury).slice(0, 8),
+      notes: injuryMeta.note,
+      lastUpdated: injuryMeta.updatedAt
     },
-    playerStatsSummary: {
+    tactical: {
+      available: Boolean(document.getElementById('radar')),
+      formations: Object.values(tactics).map(item => ({
+        id: item.id,
+        name: item.name,
+        description: item.description
+      })),
+      roles: roleOptions.filter(item => item.value).map(item => item.label),
+      instructions: instructionOptions.filter(item => item.value).map(item => item.label),
+      savedPlayersCount: defaultPlayers.length,
+      notes: 'الرادار يعرض تمركزات خماسية قابلة للحفظ محليا.'
+    },
+    security: {
+      status: security.status,
+      privacyMode: security.privacyMode,
+      emergencyMode: security.emergencyMode,
+      cookiePolicy: { ...security.cookiePolicy },
+      aiProtection: { ...security.aiProtection },
+      lastReviewLabel: security.lastReviewLabel
+    },
+    ai: {
+      mode: hasAIEndpoint() ? 'remote-with-local-fallback' : 'local-only',
+      backendProvider: hasAIEndpoint() ? 'Replit proxy' : 'none',
+      fallbackEnabled: true,
+      capabilities: [
+        'أسئلة تأمين من بيانات الموقع',
+        'أسئلة عامة من حزمة معرفة محلية',
+        'تقسيم الأسئلة المركبة',
+        'رفض الطلبات الضارة',
+        'رجوع محلي عند فشل الخادم'
+      ],
+      limitations: [
+        'لا يخترع مباريات أو إصابات غير موجودة',
+        'لا يقدم تشخيصا طبيا أو أدوية',
+        'لا يقدم خطوات اختراق أو تجاوز'
+      ]
+    },
+    playerStats: {
       total: playerStats.length,
       topPlayer,
       leaders: [...playerStats].sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0)).slice(0, 5)
     },
-    pagesSummary: {
-      available: availablePages,
-      guideCount: guideSections.length,
-      radarEnabled: Boolean(document.getElementById('radar'))
-    },
-    releaseSummary: {
-      version: siteMeta.version,
-      mode: siteMeta.releaseMode,
-      sources: sources.map(source => source.title),
-      dhikrCount: dhikrList.length
-    }
+    quickFacts: [
+      `${matchArchive.length} مباراة في الأرشيف`,
+      `${injuries.active.length} إصابة نشطة`,
+      `${availablePages.length} صفحة متاحة`,
+      `${Object.keys(tactics).length} تشكيلات تكتيكية`,
+      `${AI_KNOWLEDGE_PACK.categories.length} مجالات معرفة عامة`
+    ],
+    sources: sources.map(source => source.title)
   };
 }
 
@@ -110,13 +196,12 @@ function bindAIEvents() {
   });
 
   suggestions?.addEventListener('click', event => {
-    const button = event.target.closest('[data-ai-question]');
-    if (!button || !prompt) return;
-    prompt.value = button.dataset.aiQuestion || '';
-    submitQuestion();
+    if (handleSuggestionClick(event)) return;
+    handleSuggestionToggle(event);
   });
-
   messages?.addEventListener('click', event => {
+    if (handleSuggestionClick(event)) return;
+
     const copyButton = event.target.closest('[data-ai-copy]');
     if (copyButton) {
       const message = state.messages[Number(copyButton.dataset.aiCopy)];
@@ -135,7 +220,6 @@ function bindAIEvents() {
     const testButton = event.target.closest('#aiTestConnection');
     if (testButton) {
       event.preventDefault();
-      event.stopPropagation();
       testBackendConnection();
       return;
     }
@@ -143,55 +227,145 @@ function bindAIEvents() {
     const clearButton = event.target.closest('#aiClearChat');
     if (!clearButton) return;
     event.preventDefault();
-    event.stopPropagation();
-    resetChat();
+    clearChat();
     toast('تم مسح محادثة المساعد', { icon: 'fa-eraser' });
   });
 }
 
+function handleSuggestionClick(event) {
+  const button = event.target.closest('[data-ai-question]');
+  const prompt = $('#aiPrompt');
+  if (!button || !prompt) return false;
+  prompt.value = button.dataset.aiQuestion || '';
+  state.memory.lastSelectedCategory = button.dataset.aiCategory || '';
+  saveMemory();
+  submitQuestion();
+  return true;
+}
+
+function handleSuggestionToggle(event) {
+  const button = event.target.closest('[data-ai-suggestion-toggle]');
+  const host = $('#aiSuggestions');
+  if (!button || !host) return false;
+
+  host.querySelectorAll('[data-ai-suggestion-toggle]').forEach(toggle => {
+    const isCurrent = toggle === button;
+    const panel = document.getElementById(toggle.getAttribute('aria-controls'));
+    toggle.setAttribute('aria-expanded', String(isCurrent));
+    toggle.closest('.ai-suggestion-group')?.classList.toggle('open', isCurrent);
+    if (panel) panel.hidden = !isCurrent;
+  });
+  return true;
+}
+
 async function submitQuestion() {
+  if (state.pending) return;
   const prompt = $('#aiPrompt');
   const value = String(prompt?.value || '').trim();
   if (!value) return;
 
+  state.pending = true;
   addMessage('user', value);
+  rememberQuestion(value);
   prompt.value = '';
   setTyping(true);
 
-  const knowledge = state.knowledge || buildSiteKnowledge();
+  const knowledge = buildSiteKnowledge();
+  state.knowledge = knowledge;
+  renderKnowledgeMeta();
   const pageContext = getCurrentPageContext();
-  let answer = '';
+  state.memory.currentPage = pageContext.label;
 
-  if (hasAIEndpoint()) {
-    const remote = await requestAIAnswer({
+  try {
+    const { payload, analysis, retrieval } = buildAIRequestPayload({
       question: value,
       siteKnowledge: knowledge,
-      pageContext
+      pageContext,
+      conversationContext: state.memory
     });
 
-    if (remote.ok) {
-      setConnectionStatus('online');
-      answer = remote.answer;
-    } else {
-      setConnectionStatus('fallback');
-      answer = `${localStatusMessage()}\n\n${generateLocalAnswer(value, knowledge)}`;
-      console.warn('[Taamen AI] Backend unavailable, using local fallback:', remote.reason);
-    }
-  } else {
-    setConnectionStatus('local');
-    answer = generateLocalAnswer(value, knowledge);
-  }
+    let result;
+    const mustStayLocal = analysis.safetyLevel === 'unsafe' || analysis.medicalSensitive;
 
-  setTyping(false);
-  addMessage('assistant', answer);
+    if (mustStayLocal) {
+      setConnectionStatus('local');
+      result = generateLocalAnswer({ question: value, siteKnowledge: knowledge, analysis, retrieval });
+    } else if (hasAIEndpoint()) {
+      const remote = await requestAIAnswer(payload);
+      if (remote.ok) {
+        setConnectionStatus('online');
+        state.memory.remoteRecentlySucceeded = true;
+        result = {
+          answer: remote.answer,
+          mode: 'remote',
+          provider: remote.provider,
+          model: remote.model,
+          intent: analysis.intent,
+          topics: analysis.topics,
+          sources: makeRemoteSources(remote, analysis, retrieval),
+          followups: fallbackFollowups(analysis.intent),
+          reason: ''
+        };
+      } else {
+        setConnectionStatus('fallback');
+        state.memory.remoteRecentlySucceeded = false;
+        result = generateLocalAnswer({
+          question: value,
+          siteKnowledge: knowledge,
+          analysis,
+          retrieval,
+          failureReason: remote.reason
+        });
+        console.warn('[Taamen AI] Backend unavailable, using local fallback:', remote.reason, remote);
+      }
+    } else {
+      setConnectionStatus('local');
+      result = generateLocalAnswer({ question: value, siteKnowledge: knowledge, analysis, retrieval });
+    }
+
+    addMessage('assistant', result.answer, result);
+  } catch (error) {
+    setConnectionStatus('fallback');
+    const fallback = generateLocalAnswer({
+      question: value,
+      siteKnowledge: knowledge,
+      failureReason: error?.message || 'LOCAL_ENGINE_ERROR'
+    });
+    addMessage('assistant', fallback.answer, fallback);
+    console.warn('[Taamen AI] Local answer engine error:', error);
+  } finally {
+    setTyping(false);
+    state.pending = false;
+    saveMemory();
+  }
 }
 
-function resetChat() {
+function startChat() {
   state.messages = [];
   const messages = $('#aiMessages');
   if (messages) messages.innerHTML = '';
-  const intro = `${introStatusMessage()}\n\nأنا أقرأ بيانات الموقع فقط: المباريات، الأرشيف، الإصابات، الصفحات، وحالة الإصدار. اسألني وسأعطيك جوابًا من المساعد الذكي، وإذا تعذر الاتصال أرجع للوضع المحلي تلقائيًا.`;
-  addMessage('assistant', intro);
+  if (state.memory?.messages?.length) {
+    state.memory.messages.forEach(message => {
+      addMessage(message.role, message.content, message.meta || {}, { skipMemory: true });
+    });
+    document.dispatchEvent(new CustomEvent('taamen:ai-session-updated', { detail: getConversationSnapshot() }));
+    return;
+  }
+  addMessage('assistant', cleanIntroMessage(), {
+    mode: hasAIEndpoint() ? 'ready' : 'local',
+    provider: 'taamen-local',
+    intent: 'ai_help',
+    topics: ['taamen', 'general'],
+    sources: ['site-data', 'local-knowledge-pack'],
+    followups: ['متى المباراة القادمة؟', 'اشرحلي توزيع 1-2-1', 'اكتب إعلان واتساب قصير']
+  }, { skipMemory: true });
+}
+
+function clearChat() {
+  state.memory = emptyMemory();
+  localStorage.removeItem(MEMORY_KEY);
+  startChat();
+  document.dispatchEvent(new CustomEvent('taamen:ai-session-updated', { detail: getConversationSnapshot() }));
 }
 
 function renderStatus() {
@@ -215,11 +389,11 @@ function setConnectionStatus(mode = 'local') {
     },
     fallback: {
       icon: 'fa-triangle-exclamation',
-      text: 'تعذر الاتصال، تم الرجوع للوضع المحلي'
+      text: 'تعذر الاتصال، تم الرجوع للمحلي'
     },
     local: {
       icon: 'fa-house-signal',
-      text: 'يعمل محليًا'
+      text: 'يعمل محليا'
     },
     testing: {
       icon: 'fa-spinner fa-spin',
@@ -227,7 +401,14 @@ function setConnectionStatus(mode = 'local') {
     }
   };
 
-  const current = map[mode] || map.local;
+  const cleanStatusText = {
+    ready: 'جاهز للاتصال بالذكاء الاصطناعي',
+    online: 'متصل بالذكاء الاصطناعي',
+    fallback: 'تعذر الاتصال، تم الرجوع للمحلي',
+    local: 'يعمل محليا',
+    testing: 'يتم اختبار الاتصال'
+  };
+  const current = { ...(map[mode] || map.local), text: cleanStatusText[mode] || cleanStatusText.local };
   status.dataset.status = mode;
   status.innerHTML = `
     <i class="fa-solid ${current.icon}"></i>
@@ -239,42 +420,46 @@ function renderKnowledgeMeta() {
   const node = $('#aiKnowledgeMeta');
   if (!node || !state.knowledge) return;
   const knowledge = state.knowledge;
-  node.textContent = `${knowledge.archiveSummary.total} مباراة محفوظة - ${knowledge.injuriesSummary.active.length} حالة نشطة - ${knowledge.pagesSummary.available.length} صفحات`;
+  node.textContent = `${knowledge.archive.total} مباراة محفوظة - ${knowledge.injuries.active.length} إصابة نشطة - ${AI_KNOWLEDGE_ENTRIES.length} مقطع معرفة محلي`;
 }
 
 function renderSuggestions() {
   const host = $('#aiSuggestions');
-  if (!host || !state.knowledge) return;
-  host.innerHTML = buildSuggestions(state.knowledge).map(question => `
-    <button class="ai-suggestion-chip" data-ai-question="${safeText(question)}" type="button">
-      <i class="fa-solid fa-sparkles"></i>
-      <span>${safeText(question)}</span>
-    </button>
-  `).join('');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="ai-suggestion-accordion" role="list">
+      ${AI_SUGGESTION_GROUPS.map((group, index) => {
+        const panelId = `aiSuggestionPanel-${safeText(group.id)}`;
+        const open = index === 0;
+        return `
+        <article class="ai-suggestion-group ${open ? 'open' : ''}" role="listitem">
+          <button class="ai-suggestion-group-toggle" type="button" aria-expanded="${open}" aria-controls="${panelId}" data-ai-suggestion-toggle="${safeText(group.id)}">
+            <span class="ai-suggestion-group-icon"><i class="fa-solid ${safeText(group.icon || 'fa-sparkles')}"></i></span>
+            <span>
+              <strong>${safeText(group.title || group.label)}</strong>
+              <small>${safeText(group.description || '')}</small>
+            </span>
+            <b>${Number(group.questions?.length || 0)}</b>
+          </button>
+          <div class="ai-suggestion-group-list" id="${panelId}" ${open ? '' : 'hidden'}>
+            ${(group.questions || []).slice(0, 12).map(question => `
+              <button class="ai-suggestion-chip" data-ai-category="${safeText(group.id)}" data-ai-question="${safeText(question)}" type="button">
+                <span>${safeText(question)}</span>
+              </button>
+            `).join('')}
+          </div>
+        </article>
+      `;
+      }).join('')}
+    </div>
+  `;
 }
 
-function buildSuggestions(knowledge) {
-  const suggestions = [
-    'ما حالة الموقع وآخر تحديث؟',
-    'ما الصفحات الموجودة في الموقع؟',
-    'أعطني تقريرًا سريعًا للفريق.'
-  ];
-
-  if (knowledge.upcomingMatch) suggestions.unshift('متى المباراة القادمة؟');
-  if (knowledge.latestMatch) suggestions.splice(1, 0, 'ما آخر مباراة تم لعبها؟', 'ما نتيجة آخر مباراة؟');
-  if (knowledge.playerStatsSummary.topPlayer) suggestions.push('من أكثر لاعب تقييمًا؟');
-  if (knowledge.injuriesSummary.active.length) suggestions.push('ما الإصابات الحالية؟');
-  if (knowledge.injuriesSummary.recovered.length) suggestions.push('هل يوجد لاعبون تعافوا؟');
-  if (knowledge.archiveSummary.total) suggestions.push('أعطني ملخص آخر 5 مباريات.', 'ماذا يوجد داخل الأرشيف؟');
-  if (knowledge.upcomingMatch) suggestions.push('اكتب رسالة واتساب للمباراة القادمة.');
-
-  return [...new Set(suggestions)].slice(0, 12);
-}
-
-function addMessage(role, content) {
+function addMessage(role, content, meta = {}, options = {}) {
   const messages = $('#aiMessages');
   if (!messages) return;
-  const index = state.messages.push({ role, content }) - 1;
+
+  const index = state.messages.push({ role, content, meta }) - 1;
   const node = document.createElement('article');
   node.className = `ai-message ${role === 'user' ? 'from-user' : 'from-assistant'}`;
   node.innerHTML = `
@@ -282,24 +467,136 @@ function addMessage(role, content) {
       <i class="fa-solid ${role === 'user' ? 'fa-user' : 'fa-brain'}"></i>
     </div>
     <div class="ai-message-body">
-      <p>${safeText(content).replace(/\n/g, '<br>')}</p>
-      ${role === 'assistant' ? `
-        <div class="ai-message-actions">
-          <button type="button" data-ai-copy="${index}"><i class="fa-solid fa-copy"></i> نسخ</button>
-          <button type="button" data-ai-share="${index}"><i class="fa-solid fa-share-nodes"></i> مشاركة</button>
-        </div>
-      ` : ''}
+      ${renderMessageText(content)}
+      ${role === 'assistant' ? renderAssistantMeta(meta, index) : ''}
     </div>
   `;
   messages.appendChild(node);
   messages.scrollTop = messages.scrollHeight;
+
+  if (!options.skipMemory) {
+    rememberMessage(role, content, meta);
+    if (role === 'assistant') rememberAnswer(content, meta.intent);
+    saveMemory();
+    document.dispatchEvent(new CustomEvent('taamen:ai-session-updated', { detail: getConversationSnapshot() }));
+  }
+}
+
+function renderMessageText(content) {
+  const html = safeText(content)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+  return `<p>${html}</p>`;
+}
+
+function renderAssistantMeta(meta, index) {
+  const intent = cleanIntentLabel(meta.intent);
+  const provider = meta.provider || (meta.mode === 'remote' ? 'remote' : 'taamen-local');
+  const sourceBadges = [...new Set([provider, ...(meta.sources || [])])].filter(Boolean);
+  const topics = Array.isArray(meta.topics) ? meta.topics : [];
+  const followups = Array.isArray(meta.followups) ? meta.followups.slice(0, 3) : [];
+
+  return `
+    <div class="ai-message-meta">
+      <span class="ai-source-badge">${safeText(meta.mode === 'remote' ? 'AI خارجي' : 'محلي')}</span>
+      <span class="ai-source-badge">${safeText(intent)}</span>
+      ${meta.model ? `<span class="ai-source-badge">${safeText(meta.model)}</span>` : ''}
+      ${sourceBadges.slice(0, 4).map(source => `<span class="ai-source-badge">${safeText(cleanSourceLabel(source))}</span>`).join('')}
+    </div>
+    ${topics.length ? `<div class="ai-topic-row">${topics.slice(0, 5).map(topic => `<span>${safeText(topic)}</span>`).join('')}</div>` : ''}
+    ${followups.length ? `
+      <div class="ai-followups">
+        ${followups.map(question => `<button type="button" data-ai-question="${safeText(question)}">${safeText(question)}</button>`).join('')}
+      </div>
+    ` : ''}
+    <div class="ai-message-actions">
+      <button type="button" data-ai-copy="${index}"><i class="fa-solid fa-copy"></i> نسخ</button>
+      <button type="button" data-ai-share="${index}"><i class="fa-solid fa-share-nodes"></i> مشاركة</button>
+    </div>
+  `;
+}
+
+function cleanRouteLabel(id, fallback = '') {
+  const labels = {
+    home: 'الرئيسية',
+    'match-center': 'المباراة القادمة',
+    archive: 'الأرشيف',
+    ai: 'المساعد الذكي',
+    radar: 'الرادار التكتيكي',
+    security: 'مركز الحماية',
+    'weather-prayer': 'الطقس والصلاة',
+    injuries: 'الإصابات',
+    qibla: 'القبلة',
+    guide: 'دليل الاستخدام',
+    about: 'عن المنصة'
+  };
+  return labels[id] || fallback;
+}
+
+function cleanRouteDescription(id, fallback = '') {
+  const descriptions = {
+    home: 'ملخص المنصة والعدادات السريعة',
+    'match-center': 'موعد المباراة القادمة وتفاصيلها',
+    archive: 'نتائج المباريات السابقة',
+    ai: 'مساعد تأمين الذكي',
+    radar: 'خطط وتمركز لاعبي الخماسي',
+    security: 'خصوصية وأمان المنصة',
+    'weather-prayer': 'الطقس ومواقيت الصلاة',
+    injuries: 'سجل الإصابات والحالات',
+    qibla: 'اتجاه القبلة',
+    guide: 'شرح صفحات المنصة',
+    about: 'هوية المنصة ومصادرها'
+  };
+  return descriptions[id] || fallback;
+}
+
+function cleanIntentLabel(intent) {
+  const labels = {
+    greeting: 'تحية',
+    smalltalk: 'حديث خفيف',
+    site_info: 'بيانات تأمين',
+    next_match: 'المباراة',
+    archive: 'الأرشيف',
+    injuries: 'الإصابات',
+    tactical: 'تكتيك',
+    security: 'حماية',
+    cookies_privacy: 'كوكيز وخصوصية',
+    ai_help: 'مساعدة AI',
+    writing: 'كتابة',
+    sports_general: 'رياضة',
+    daily_life: 'عام',
+    study: 'دراسة',
+    technical: 'تقنية',
+    planning: 'تخطيط',
+    comparison: 'مقارنة',
+    multi_topic: 'مختلط',
+    unsafe_or_sensitive: 'حساس',
+    unknown: 'غير واضح'
+  };
+  return labels[intent] || 'عام';
+}
+
+function cleanSourceLabel(source) {
+  const labels = {
+    'site-data': 'بيانات تأمين',
+    'local-templates': 'قوالب محلية',
+    'local-knowledge-pack': 'معرفة عامة',
+    'local-rules': 'قواعد محلية',
+    'taamen-local': 'محلي',
+    backend: 'Backend',
+    gemini: 'Gemini',
+    remote: 'AI خارجي'
+  };
+  return labels[source] || source;
 }
 
 function setTyping(show) {
   const typing = $('#aiTyping');
   const button = $('#aiForm button[type="submit"]');
+  const prompt = $('#aiPrompt');
   if (typing) typing.hidden = !show;
   if (button) button.disabled = show;
+  if (prompt) prompt.disabled = show;
 }
 
 async function shareAnswer(text) {
@@ -314,160 +611,129 @@ async function shareAnswer(text) {
   await copyText(text, 'المشاركة غير مدعومة، تم نسخ الرد');
 }
 
-function generateLocalAnswer(question, knowledge) {
-  const q = normalize(question);
-
-  if (hasAny(q, ['قادمه', 'القادمه', 'موعد', 'متى المباراة', 'next', 'upcoming'])) {
-    return answerUpcoming(knowledge);
+async function testBackendConnection() {
+  if (!hasAIEndpoint()) {
+    setConnectionStatus('local');
+    toast('لا يوجد رابط Backend مضبوط، يعمل المساعد محليا', { icon: 'fa-house-signal' });
+    return;
   }
 
-  if (hasAny(q, ['اخر مباراه', 'اخر مباراة', 'نتيجه اخر', 'نتيجة آخر', 'latest', 'last match'])) {
-    return answerLatestMatch(knowledge);
-  }
+  setConnectionStatus('testing');
+  const result = await testAIConnection();
 
-  if (hasAny(q, ['اصابه', 'اصابات', 'مصاب', 'injury', 'injuries'])) {
-    return answerInjuries(knowledge);
+  if (result.ok) {
+    setConnectionStatus('online');
+    toast('الاتصال بالمساعد الذكي شغال', { icon: 'fa-circle-check' });
+  } else {
+    setConnectionStatus('fallback');
+    toast('تعذر الاتصال، سيعمل المساعد محليا', { icon: 'fa-triangle-exclamation' });
+    console.warn('[Taamen AI] Health check failed:', result.reason, result);
   }
-
-  if (hasAny(q, ['تعاف', 'recovered', 'healed'])) {
-    return answerRecovered(knowledge);
-  }
-
-  if (hasAny(q, ['صفحات', 'الصفحات', 'routes', 'pages'])) {
-    return answerPages(knowledge);
-  }
-
-  if (hasAny(q, ['تحديث', 'اصدار', 'إصدار', 'حاله الموقع', 'حالة الموقع', 'الرادار', 'version', 'status'])) {
-    return answerRelease(knowledge);
-  }
-
-  if (hasAny(q, ['افضل', 'أفضل', 'تقييم', 'mvp', 'لاعب'])) {
-    return answerTopPlayer(knowledge);
-  }
-
-  if (hasAny(q, ['واتساب', 'رساله', 'رسالة', 'whatsapp'])) {
-    return answerWhatsapp(knowledge);
-  }
-
-  if (hasAny(q, ['ارشيف', 'أرشيف', 'archive'])) {
-    return answerArchive(knowledge);
-  }
-
-  return answerQuickReport(knowledge);
 }
 
-function answerUpcoming(knowledge) {
-  const match = knowledge.upcomingMatch;
-  if (!match) return 'لا توجد مباراة قادمة محفوظة حاليًا في بيانات الموقع.';
-  return [
-    'المباراة القادمة:',
-    `- العنوان: ${match.title || 'غير محدد'}`,
-    `- الأطراف: ${match.team1 || 'غير محدد'} ضد ${match.team2 || 'غير محدد'}`,
-    `- التاريخ: ${match.dateLabel || formatDateFromMatch(match)}`,
-    `- الساعة: ${formatMatchTime(match)}`,
-    `- المكان: ${match.location || 'غير محدد'}`,
-    match.note ? `- ملاحظة: ${match.note}` : ''
-  ].filter(Boolean).join('\n');
+function getCurrentPageContext() {
+  const active = document.querySelector('section.page.active') || document.querySelector('section.page:not([hidden])');
+  const route = active?.id || 'unknown';
+  const found = ROUTE_LABELS.find(([id]) => id === route);
+  return {
+    id: route,
+    label: cleanRouteLabel(route, found?.[1] || route),
+    title: active?.dataset?.pageTitle || cleanRouteLabel(route, found?.[1] || route),
+    route: route === 'unknown' ? '' : `#${route}`
+  };
 }
 
-function answerLatestMatch(knowledge) {
-  const match = knowledge.latestMatch;
-  if (!match) return 'لا توجد مباريات محفوظة في الأرشيف حتى الآن.';
+function cleanIntroMessage() {
+  const endpoint = hasAIEndpoint()
+    ? 'أستخدم الخادم الذكي عند توفره، وأرجع للمحلي إذا تعذر الاتصال.'
+    : 'أعمل محليا الآن بدون خادم خارجي.';
   return [
-    'آخر مباراة محفوظة:',
-    formatMatch(match),
-    match.story ? `القصة: ${match.story}` : '',
-    match.details ? 'تتوفر تفاصيل إحصائية داخل الأرشيف لهذه المباراة.' : ''
-  ].filter(Boolean).join('\n');
-}
-
-function answerArchive(knowledge) {
-  const latest = knowledge.archiveSummary.latestFive;
-  if (!latest.length) return 'الأرشيف فارغ حاليًا.';
-  return [
-    `داخل الأرشيف يوجد ${knowledge.archiveSummary.total} مباراة محفوظة.`,
-    'آخر 5 مباريات:',
-    ...latest.map(match => `- ${formatMatch(match)}`)
+    'أهلا، أنا مساعد تأمين.',
+    endpoint,
+    'اسألني عن المباراة، الأرشيف، الرادار، الحماية، الكوكيز، أو أي سؤال عام مثل الكتابة والدراسة والتقنية.'
   ].join('\n');
 }
 
-function answerInjuries(knowledge) {
-  const active = knowledge.injuriesSummary.active;
-  if (!active.length) {
-    return 'لا توجد إصابات نشطة حاليًا حسب بيانات الموقع. توجد حالات متعافية محفوظة في السجل السابق إذا أردت عرضها.';
-  }
+function introMessage() {
+  const endpoint = hasAIEndpoint()
+    ? 'أحاول استخدام الخادم الذكي عند توفره، وأرجع محليا إذا تعذر الاتصال.'
+    : 'أعمل محليا الآن بدون خادم خارجي.';
   return [
-    'الإصابات الحالية:',
-    ...active.map(item => `- ${item.player}: ${item.caseName} - ${severityLabel(item, knowledge)} - ${item.status || 'تحت المتابعة'} - الرجوع المتوقع: ${item.expectedReturn || 'غير محدد'}`),
-    'تنبيه: هذه معلومات تنظيمية من الموقع وليست تشخيصًا طبيًا.'
+    'أهلا، أنا مساعد تأمين.',
+    endpoint,
+    'أستطيع الإجابة عن بيانات الموقع الرسمية، وأيضا عن أسئلة عامة مثل الكتابة، الدراسة، التقنية، والتكتيك، مع فصل واضح بين المصدرين.'
   ].join('\n');
 }
 
-function answerRecovered(knowledge) {
-  const recovered = knowledge.injuriesSummary.recovered;
-  if (!recovered.length) return 'لا توجد حالات تعافٍ محفوظة حاليًا.';
-  return [
-    'الحالات المتعافية:',
-    ...recovered.map(item => `- ${item.player}: ${item.caseName} - ${item.recoveryDate || item.expectedReturn || 'بدون تاريخ محدد'}`)
-  ].join('\n');
+function makeRemoteSources(remote, analysis, retrieval) {
+  const sources = Array.isArray(remote.sources) ? remote.sources : [];
+  if (remote.provider) sources.push(remote.provider);
+  if (analysis.needsSiteData) sources.push('site-data');
+  if (retrieval.entries.length) sources.push('local-knowledge-pack');
+  return [...new Set(sources)];
 }
 
-function answerPages(knowledge) {
-  return [
-    'الصفحات الموجودة في الموقع:',
-    ...knowledge.pagesSummary.available.map(page => `- ${page.label} (#${page.id})`),
-    knowledge.pagesSummary.radarEnabled ? 'الرادار موجود كصفحة فعالة داخل المشروع.' : 'الرادار غير ظاهر كصفحة فعالة حاليًا.'
-  ].join('\n');
+function fallbackFollowups(intent) {
+  const map = {
+    next_match: ['اكتب رسالة واتساب للمباراة', 'ما آخر مباراة في الأرشيف؟'],
+    archive: ['اعطني ملخص آخر 5 مباريات', 'من أعلى لاعب تقييما؟'],
+    injuries: ['ما الحالات المتعافية؟', 'اكتب تنبيه إصابة بدون تشخيص'],
+    tactical: ['اشرح توزيع 1-2-1', 'كيف نمنع المرتدات؟'],
+    security: ['كيف أبلغ عن رابط مشبوه؟', 'ما فائدة الكوكيز؟'],
+    writing: ['اختصرها أكثر', 'حولها لرسالة واتساب'],
+    study: ['حولها لخطة دراسة', 'اشرحها بمثال'],
+    technical: ['اشرح الفرق بين frontend و backend', 'كيف أحمي مفتاح API؟'],
+    general: ['حولها لخطة عملية', 'اعطني نسخة مختصرة']
+  };
+  return map[intent] || map.general;
 }
 
-function answerRelease(knowledge) {
-  return [
-    'حالة الموقع:',
-    `- الاسم: ${knowledge.meta.name || 'تأمين 2026'}`,
-    `- الإصدار: ${knowledge.releaseSummary.version || 'غير محدد'}`,
-    `- الوضع: ${knowledge.meta.edition || 'Legacy Edition'}`,
-    `- آخر وصف إصدار: ${knowledge.releaseSummary.mode || 'غير محدد'}`,
-    `- الرادار: ${knowledge.pagesSummary.radarEnabled ? 'مفعّل كصفحة داخل الموقع' : 'غير مفعّل'}`,
-    `- مصادر ظاهرة: ${knowledge.releaseSummary.sources.join('، ')}`
-  ].join('\n');
+function formatNextMatch(match) {
+  if (!match) return null;
+  return {
+    id: match.id,
+    title: match.title,
+    team1: match.team1,
+    team2: match.team2,
+    location: match.location,
+    dateLabel: match.dateLabel,
+    day: match.dateLabel || formatDateFromMatch(match),
+    time: formatMatchTime(match),
+    teams: [match.team1, match.team2].filter(Boolean),
+    rules: match.scheduleStatus || '',
+    notes: match.note || '',
+    heatLabel: match.heatLabel || ''
+  };
 }
 
-function answerTopPlayer(knowledge) {
-  const player = knowledge.playerStatsSummary.topPlayer;
-  if (!player) return 'لا توجد إحصائيات لاعبين محفوظة حاليًا.';
-  return [
-    'أعلى لاعب تقييمًا حسب البيانات:',
-    `- ${player.name}: تقييم ${player.rating}`,
-    `- أهداف: ${player.goals ?? 0}`,
-    `- أسيست: ${player.assists ?? 0}`,
-    `- تصديات: ${player.saves ?? 0}`
-  ].join('\n');
+function summarizeArchiveChampions(matches) {
+  const scores = new Map();
+  matches.forEach(match => {
+    const score1 = Number(match.score1);
+    const score2 = Number(match.score2);
+    if (!Number.isFinite(score1) || !Number.isFinite(score2) || score1 === score2) return;
+    const winner = score1 > score2 ? match.team1 : match.team2;
+    if (!winner) return;
+    scores.set(winner, (scores.get(winner) || 0) + 1);
+  });
+  return [...scores.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, wins]) => ({ name, wins }));
 }
 
-function answerWhatsapp(knowledge) {
-  const match = knowledge.upcomingMatch;
-  if (!match) return 'لا توجد مباراة قادمة حتى أبني رسالة واتساب دقيقة.';
-  return [
-    'رسالة واتساب جاهزة:',
-    `يا شباب، المباراة القادمة: ${match.team1 || 'الفريق الأول'} ضد ${match.team2 || 'الفريق الثاني'}.`,
-    `الموعد: ${match.dateLabel || formatDateFromMatch(match)} الساعة ${formatMatchTime(match)}.`,
-    `المكان: ${match.location || 'غير محدد'}.`,
-    match.note ? `ملاحظة: ${match.note}` : 'الحضور والجاهزية مهمين.'
-  ].filter(Boolean).join('\n');
-}
-
-function answerQuickReport(knowledge) {
-  const next = knowledge.upcomingMatch;
-  const latest = knowledge.latestMatch;
-  const top = knowledge.playerStatsSummary.topPlayer;
-  return [
-    'تقرير سريع لتأمين 2026:',
-    next ? `- القادم: ${next.team1} ضد ${next.team2} بتاريخ ${next.dateLabel || formatDateFromMatch(next)}.` : '- لا توجد مباراة قادمة محفوظة.',
-    latest ? `- آخر نتيجة: ${formatMatch(latest)}.` : '- لا توجد نتيجة أخيرة محفوظة.',
-    top ? `- أعلى تقييم: ${top.name} (${top.rating}).` : '- لا توجد إحصائيات لاعبين.',
-    `- الإصابات النشطة: ${knowledge.injuriesSummary.active.length}.`,
-    `- صفحات الموقع المتاحة: ${knowledge.pagesSummary.available.length}.`
-  ].join('\n');
+function compactInjury(item) {
+  return {
+    id: item.id,
+    player: item.player,
+    caseName: item.caseName,
+    severity: item.severity,
+    severityLabel: injurySeverity[item.severity]?.label || item.severity || '',
+    status: item.status,
+    expectedReturn: item.expectedReturn,
+    recoveryDate: item.recoveryDate,
+    effect: item.effect
+  };
 }
 
 function splitInjuries(items) {
@@ -514,10 +780,6 @@ function getDayTime(value) {
   return date.getTime();
 }
 
-function formatMatch(match) {
-  return `${match.team1 || 'فريق'} ${match.score1 ?? '-'} - ${match.score2 ?? '-'} ${match.team2 || 'فريق'} (${match.dateLabel || formatDateFromMatch(match)})`;
-}
-
 function formatMatchTime(match) {
   const date = new Date(getMatchTime(match));
   const hourValue = Number.isFinite(Number(match?.hour)) ? Number(match.hour) : date.getHours();
@@ -533,64 +795,93 @@ function formatDateFromMatch(match) {
   return new Intl.DateTimeFormat('ar-PS', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(time));
 }
 
-function severityLabel(item, knowledge) {
-  return knowledge.injuriesSummary.severityLabels[item.severity] || item.severity || 'غير محدد';
+function loadMemory() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(MEMORY_KEY) || '{}');
+    return {
+      ...emptyMemory(),
+      ...parsed,
+      lastQuestions: Array.isArray(parsed.lastQuestions) ? parsed.lastQuestions.slice(0, 10) : [],
+      lastAnswerSummaries: Array.isArray(parsed.lastAnswerSummaries) ? parsed.lastAnswerSummaries.slice(0, 10) : [],
+      messages: Array.isArray(parsed.messages) ? parsed.messages.slice(-MAX_STORED_MESSAGES) : []
+    };
+  } catch (_) {
+    return emptyMemory();
+  }
 }
 
-function normalize(value) {
+function emptyMemory() {
+  return {
+    version: 2,
+    lastQuestions: [],
+    lastAnswerSummaries: [],
+    messages: [],
+    currentPage: '',
+    lastSelectedCategory: '',
+    lastIntent: '',
+    remoteRecentlySucceeded: false
+  };
+}
+
+function rememberQuestion(question) {
+  state.memory.lastQuestions = uniqueRecent([sanitizeMemoryText(question), ...state.memory.lastQuestions], 10);
+}
+
+function rememberMessage(role, content, meta = {}) {
+  state.memory.messages = [
+    ...(state.memory.messages || []),
+    {
+      role,
+      content: sanitizeMemoryText(content),
+      meta: {
+        mode: meta.mode || '',
+        provider: meta.provider || '',
+        intent: meta.intent || '',
+        intentLabel: meta.intentLabel || '',
+        answerLength: meta.answerLength || '',
+        sources: Array.isArray(meta.sources) ? meta.sources.slice(0, 5) : []
+      },
+      savedAt: new Date().toISOString()
+    }
+  ].slice(-MAX_STORED_MESSAGES);
+}
+
+function rememberAnswer(answer, intent = '') {
+  state.memory.lastAnswerSummaries = uniqueRecent([sanitizeMemoryText(answer).slice(0, 220), ...state.memory.lastAnswerSummaries], 10);
+  state.memory.lastIntent = intent || state.memory.lastIntent;
+}
+
+function saveMemory() {
+  try {
+    state.memory.messages = (state.memory.messages || []).slice(-MAX_STORED_MESSAGES);
+    localStorage.setItem(MEMORY_KEY, JSON.stringify(state.memory));
+  } catch (_) {
+    // Ignore storage failures; the assistant still works without memory.
+  }
+}
+
+function sanitizeMemoryText(value) {
   return String(value || '')
-    .toLowerCase()
-    .replace(/[أإآ]/g, 'ا')
-    .replace(/ة/g, 'ه')
-    .replace(/[^\u0600-\u06FFa-z0-9\s]/g, ' ')
+    .replace(/(password|secret|token)\s*[:=]\s*\S+/gi, '$1=[محذوف]')
+    .replace(/(كلمة مرور|مفتاح|سر)\s*[:=]\s*\S+/gi, '$1=[محذوف]')
     .replace(/\s+/g, ' ')
-    .trim();
+    .trim()
+    .slice(0, 500);
 }
 
-function hasAny(text, keywords) {
-  return keywords.some(keyword => text.includes(normalize(keyword)));
+function uniqueRecent(items, limit) {
+  return [...new Set(items.filter(Boolean))].slice(0, limit);
 }
 
-async function testBackendConnection() {
-  if (!hasAIEndpoint()) {
-    setConnectionStatus('local');
-    toast('لا يوجد رابط Backend مضبوط، يعمل المساعد محليًا', { icon: 'fa-house-signal' });
-    return;
-  }
-
-  setConnectionStatus('testing');
-  const result = await testAIConnection();
-
-  if (result.ok) {
-    setConnectionStatus('online');
-    toast('الاتصال بالمساعد الذكي شغال', { icon: 'fa-circle-check' });
-  } else {
-    setConnectionStatus('fallback');
-    toast('تعذر الاتصال، سيعمل المساعد محليًا', { icon: 'fa-triangle-exclamation' });
-    console.warn('[Taamen AI] Health check failed:', result.reason);
-  }
-}
-
-function getCurrentPageContext() {
-  const active = document.querySelector('section.page.active');
-  if (!active) return 'unknown';
-  const route = active.id || 'unknown';
-  const label = ROUTE_LABELS.find(([id]) => id === route)?.[1] || route;
-  return `${label} (#${route})`;
-}
-
-function introStatusMessage() {
-  if (hasAIEndpoint()) {
-    return 'المساعد الذكي جاهز للاتصال عبر Replit Backend، وسيعود للوضع المحلي تلقائيًا إذا تعذر الاتصال.';
-  }
-
-  return 'المساعد الذكي غير متصل حاليًا، لكن يمكن عرض ملخص محلي من بيانات الموقع.';
-}
-
-function localStatusMessage() {
-  if (hasAIEndpoint()) {
-    return 'تعذر الاتصال بالمساعد الذكي عبر Replit، لذلك سأستخدم الوضع المحلي من بيانات الموقع بدل تعطيل الصفحة.';
-  }
-
-  return 'المساعد الذكي غير متصل حاليًا، لكن يمكن عرض ملخص محلي من بيانات الموقع.';
+function getConversationSnapshot() {
+  const messages = (state.memory?.messages || []).slice(-MAX_STORED_MESSAGES);
+  const lastAssistant = [...messages].reverse().find(message => message.role === 'assistant');
+  return {
+    key: MEMORY_KEY,
+    hasConversation: messages.some(message => message.role === 'user'),
+    route: document.body.dataset.route || '',
+    mode: state.lastMode,
+    lastAssistantPreview: lastAssistant?.content || '',
+    messages
+  };
 }

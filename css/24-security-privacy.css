@@ -3,6 +3,17 @@
   gap: 18px;
 }
 
+.desktop-nav.compact-nav .nav-link-security {
+  border: 1px solid rgba(85,214,255,.18);
+  background: linear-gradient(135deg, rgba(85,214,255,.10), rgba(231,199,95,.055));
+}
+
+.desktop-nav.compact-nav .nav-link-security.active,
+.desktop-nav.compact-nav .nav-link-security:hover {
+  color: #0c1424;
+  background: linear-gradient(135deg, var(--gold), #ffe896);
+}
+
 .security-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(260px, .6fr);
@@ -66,7 +77,7 @@
 }
 
 .security-status-grid {
-  grid-template-columns: repeat(6, minmax(150px, 1fr));
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
 }
 
 .security-card,
@@ -78,11 +89,26 @@
 
 .security-card {
   display: grid;
-  gap: 8px;
-  min-height: 190px;
+  gap: 10px;
+  min-height: 0;
 }
 
-.security-card i {
+.security-card-toggle {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 8px 10px;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  text-align: start;
+  font-family: var(--font-main);
+  cursor: pointer;
+}
+
+.security-card-toggle i {
   width: 42px;
   height: 42px;
   display: grid;
@@ -92,15 +118,25 @@
   background: rgba(231,199,95,.1);
 }
 
-.security-card span,
+.security-card-toggle span,
 .security-mini-card h3,
 .security-link-card h3 {
   font-weight: 900;
 }
 
-.security-card strong {
+.security-card-toggle strong {
+  grid-column: 2;
   color: var(--text);
   font-size: 1.05rem;
+}
+
+.security-card-toggle em,
+.security-details-toggle {
+  grid-column: 1 / -1;
+  width: fit-content;
+  color: #ffe896;
+  font-style: normal;
+  font-weight: 900;
 }
 
 .security-card p,
@@ -125,6 +161,15 @@
   margin-bottom: 14px;
 }
 
+.security-details-toggle {
+  margin-bottom: 12px;
+}
+
+.security-notice p[hidden],
+.security-card p[hidden] {
+  display: none;
+}
+
 .security-chip-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -145,6 +190,17 @@
   border-radius: 18px;
   padding: 16px;
   background: rgba(255,255,255,.045);
+}
+
+.security-mini-card i {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  color: var(--gold);
+  background: rgba(231,199,95,.1);
 }
 
 .security-mini-card ul,
@@ -215,6 +271,10 @@
 .security-rules {
   display: grid;
   gap: 8px;
+}
+
+.security-rules.compact {
+  margin-top: 16px;
 }
 
 .emergency-track {

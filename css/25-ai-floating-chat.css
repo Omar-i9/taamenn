@@ -1,0 +1,156 @@
+.ai-floating-chat {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(16px, calc(env(safe-area-inset-bottom) + 16px));
+  z-index: 5400;
+  width: min(340px, calc(100vw - 28px));
+  direction: rtl;
+}
+
+.ai-float-panel,
+.ai-float-bubble {
+  border: 1px solid rgba(85, 214, 255, .22);
+  background: rgba(8, 15, 32, .92);
+  color: var(--text);
+  box-shadow: 0 20px 46px rgba(0, 0, 0, .35);
+  backdrop-filter: blur(16px);
+}
+
+.ai-float-panel {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  animation: aiFloatOpen .22s ease both;
+}
+
+.ai-floating-chat[data-state="minimized"] {
+  width: auto;
+}
+
+.ai-float-head {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 34px 34px 34px;
+  gap: 8px;
+  align-items: center;
+}
+
+.ai-float-head strong {
+  display: block;
+  font-weight: 900;
+}
+
+.ai-float-head small {
+  color: var(--soft);
+  font-weight: 800;
+}
+
+.ai-float-mark,
+.ai-float-head button,
+.ai-float-bubble {
+  display: grid;
+  place-items: center;
+}
+
+.ai-float-mark,
+.ai-float-head button {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+}
+
+.ai-float-mark {
+  color: #07111f;
+  background: linear-gradient(135deg, #55d6ff, #ffe896);
+}
+
+.ai-float-head button {
+  border: 1px solid rgba(255,255,255,.1);
+  color: var(--text);
+  background: rgba(255,255,255,.055);
+  cursor: pointer;
+}
+
+.ai-float-panel p {
+  margin: 0;
+  color: var(--soft);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.ai-float-continue {
+  width: 100%;
+  min-height: 42px;
+}
+
+.ai-float-bubble {
+  width: 64px;
+  min-height: 64px;
+  border-radius: 22px;
+  cursor: pointer;
+  animation: aiFloatMinimize .18s ease both;
+}
+
+.ai-float-bubble i {
+  color: var(--gold);
+  font-size: 1.15rem;
+}
+
+.ai-float-bubble span {
+  font-family: var(--font-title);
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.ai-float-bubble small {
+  color: var(--soft);
+  font-size: .65rem;
+  font-weight: 800;
+}
+
+@keyframes aiFloatOpen {
+  from { opacity: 0; transform: translateY(12px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes aiFloatMinimize {
+  from { opacity: .7; transform: translateY(8px) scale(.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-float-panel,
+  .ai-float-bubble {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-floating-chat {
+    right: 10px;
+    bottom: max(78px, calc(env(safe-area-inset-bottom) + 78px));
+    width: min(320px, calc(100vw - 20px));
+  }
+}
+
+@media (max-width: 520px) {
+  .ai-float-head {
+    grid-template-columns: 34px minmax(0, 1fr) 32px 32px 32px;
+  }
+
+  .ai-float-panel {
+    padding: 12px;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .ai-floating-chat {
+    width: calc(100vw - 18px);
+    right: 9px;
+  }
+
+  .ai-floating-chat[data-state="minimized"] {
+    width: auto;
+  }
+}

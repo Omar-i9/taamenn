@@ -37,6 +37,7 @@
   <link rel="stylesheet" href="css/22-radar-rebuild.css" />
   <link rel="stylesheet" href="css/23-ai-assistant.css" />
   <link rel="stylesheet" href="css/24-security-privacy.css" />
+  <link rel="stylesheet" href="css/25-ai-floating-chat.css" />
 </head>
 <body class="theme-night">
   <div class="background-shell" aria-hidden="true">
@@ -62,6 +63,7 @@
         <button data-route="match-center" class="nav-link" type="button"><i class="fa-solid fa-calendar-check"></i><span>المباراة</span></button>
         <button data-route="archive" class="nav-link" type="button"><i class="fa-solid fa-box-archive"></i><span>الأرشيف</span></button>
         <button data-route="ai" class="nav-link nav-link-feature" type="button"><i class="fa-solid fa-brain"></i><span>المساعد الذكي</span></button>
+        <button data-route="security" class="nav-link nav-link-security" type="button"><i class="fa-solid fa-shield-halved"></i><span>الحماية والأمان</span></button>
 
         <div class="more-nav" id="moreNav">
           <button class="nav-link more-nav-btn" id="moreNavToggle" data-more-toggle type="button" aria-expanded="false" aria-controls="moreNavPanel">
@@ -79,10 +81,6 @@
             <button data-route="qibla" class="more-nav-item" type="button">
               <i class="fa-solid fa-compass"></i>
               <span><strong>القبلة</strong><small>بوصلة الجهاز</small></span>
-            </button>
-            <button data-route="security" class="more-nav-item" type="button">
-              <i class="fa-solid fa-shield-halved"></i>
-              <span><strong>الحماية والأمان</strong><small>الخصوصية والكوكيز</small></span>
             </button>
             <button data-route="guide" class="more-nav-item" type="button">
               <i class="fa-solid fa-book-open"></i>
@@ -131,6 +129,7 @@
         <button data-route="archive" class="mobile-nav-link" type="button"><i class="fa-solid fa-trophy"></i><span>الأرشيف</span><small>النتائج والتفاصيل</small></button>
         <button data-route="ai" class="mobile-nav-link" type="button"><i class="fa-solid fa-brain"></i><span>المساعد الذكي</span><small>تحليل محلي للبيانات</small></button>
         <button data-route="radar" class="mobile-nav-link" type="button"><i class="fa-solid fa-users-viewfinder"></i><span>الرادار</span><small>لوحة تكتيك 5 ضد 5</small></button>
+        <button data-route="security" class="mobile-nav-link" type="button"><i class="fa-solid fa-shield-halved"></i><span>الحماية والأمان</span><small>الخصوصية والكوكيز</small></button>
       </div>
 
       <div class="mobile-nav-label">أقسام مساعدة</div>
@@ -138,7 +137,6 @@
         <button data-route="weather-prayer" class="mobile-nav-link" type="button"><i class="fa-solid fa-cloud-sun"></i><span>الطقس والصلاة</span><small>الجاهزية والمواقيت</small></button>
         <button data-route="injuries" class="mobile-nav-link" type="button"><i class="fa-solid fa-kit-medical"></i><span>الإصابات</span><small>الحالات والرجوع</small></button>
         <button data-route="qibla" class="mobile-nav-link" type="button"><i class="fa-solid fa-compass"></i><span>القبلة</span><small>بوصلة الجهاز</small></button>
-        <button data-route="security" class="mobile-nav-link" type="button"><i class="fa-solid fa-shield-halved"></i><span>الحماية والأمان</span><small>الخصوصية والكوكيز</small></button>
         <button data-route="guide" class="mobile-nav-link" type="button"><i class="fa-solid fa-book-open"></i><span>دليل الاستخدام</span><small>شرح الصفحات</small></button>
         <button data-route="about" class="mobile-nav-link" type="button"><i class="fa-solid fa-circle-info"></i><span>عن المنصة</span><small>الفكرة والمصادر</small></button>
         <a class="mobile-nav-link mobile-social-link" href="https://omar-i9.github.io/omar-i9/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-link"></i><span>صفحات المبرمج</span><small>روابط عمر</small></a>
@@ -357,19 +355,22 @@
       <div class="page-heading reveal-up">
         <span class="eyebrow"><i class="fa-solid fa-brain"></i> Taamen AI Assistant</span>
         <h1>غرفة التحليل الذكي</h1>
-        <p>مساعد يقرأ بيانات الموقع فقط ويجاوب محليًا عند عدم وجود Backend. لا يعدل الملفات ولا يستخدم أي مفتاح داخل الواجهة.</p>
+        <p>مساعد يقرأ بيانات تأمين الرسمية، ويجيب أيضا عن الأسئلة العامة من حزمة معرفة محلية مع رجوع آمن عند تعذر الاتصال.</p>
       </div>
 
       <div class="ai-assistant-layout reveal-up delay-1" id="aiAssistant">
         <section class="ai-hero-card glass-panel">
           <div>
             <span class="eyebrow">المساعد الذكي</span>
-            <h2>اسأل عن الفريق والموقع</h2>
-            <p>المباريات، الأرشيف، الإصابات، الصفحات، التحديثات، ورسائل المشاركة من بيانات تأمين 2026 فقط.</p>
+            <h2>اسأل عن تأمين أو أي فكرة عامة</h2>
+            <p>المباريات، الأرشيف، الإصابات، الحماية، التكتيك، الكتابة، الدراسة، والتقنية. يفصل بين بيانات الموقع الرسمية والمعرفة العامة.</p>
           </div>
-          <div class="ai-status-pill" id="aiConnectionStatus" data-status="local">
-            <i class="fa-solid fa-circle-nodes"></i>
-            <span>يعمل محليًا</span>
+          <div class="ai-hero-actions">
+            <div class="ai-status-pill" id="aiConnectionStatus" data-status="local">
+              <i class="fa-solid fa-circle-nodes"></i>
+              <span>يعمل محليًا</span>
+            </div>
+            <button id="aiTestConnection" class="ghost-btn" type="button"><i class="fa-solid fa-plug-circle-check"></i> اختبار الاتصال</button>
           </div>
         </section>
 
@@ -395,7 +396,7 @@
 
           <form class="ai-input-bar" id="aiForm">
             <label class="sr-only" for="aiPrompt">اسأل المساعد عن الموقع</label>
-            <textarea id="aiPrompt" rows="2" placeholder="اسأل المساعد عن الموقع..." autocomplete="off"></textarea>
+            <textarea id="aiPrompt" rows="2" placeholder="اسأل عن تأمين، تكتيك، كتابة، دراسة، أو تقنية..." autocomplete="off"></textarea>
             <button class="primary-btn" type="submit"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
           </form>
         </section>
@@ -706,7 +707,7 @@
     <button id="shareCaptureBtn" class="primary-btn" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة اللقطة</button>
   </div>
 
-  <button id="floatingAiBtn" class="floating-ai-btn" data-route="ai" type="button" aria-label="فتح المساعد الذكي">
+  <button id="floatingAiBtn" class="floating-ai-btn" data-route="ai" type="button" aria-label="فتح المساعد الذكي" hidden>
     <span class="floating-ai-tooltip">المساعد الذكي</span>
     <b>AI</b>
   </button>

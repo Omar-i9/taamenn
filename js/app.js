@@ -15,6 +15,7 @@ import { initTactical } from './modules/tactical.js';
 import { initAIAssistant } from './modules/ai-assistant.js';
 import { initCookieConsent } from './modules/cookies.js';
 import { initSecurityCenter } from './modules/security-center.js';
+import { initAIFloatingChat } from './modules/ai-floating-chat.js';
 
 let currentCity = read('city', CONFIG.defaultCity);
 
@@ -120,6 +121,7 @@ async function boot() {
   initSecurityCenter();
   initMatchCenter();
   initAIAssistant();
+  initAIFloatingChat();
   initTactical();
   initInjuries();
   initQibla();

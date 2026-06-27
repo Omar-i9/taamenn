@@ -1,4 +1,4 @@
-const cacheName = 'taamen-2026-v5-3-security-privacy';
+const cacheName = 'taamen-2026-v5-6-ai-mobile-quality';
 
 const assets = [
   './',
@@ -28,6 +28,7 @@ const assets = [
   './css/22-radar-rebuild.css',
   './css/23-ai-assistant.css',
   './css/24-security-privacy.css',
+  './css/25-ai-floating-chat.css',
   './js/app.js',
   './js/config.js',
   './js/modules/router.js',
@@ -35,6 +36,12 @@ const assets = [
   './js/modules/security-center.js',
   './js/modules/tactical.js',
   './js/modules/ai-assistant.js',
+  './js/modules/ai-answer-engine.js',
+  './js/modules/ai-response-templates.js',
+  './js/modules/ai-template-engine.js',
+  './js/modules/ai-floating-chat.js',
+  './js/modules/ai-knowledge-pack.js',
+  './js/modules/ai-retrieval.js',
   './js/modules/api-client.js',
   './js/modules/storage.js',
   './js/modules/ui.js',
@@ -59,7 +66,10 @@ const assets = [
   './docs/V4_0_NAVIGATION_STABILITY_NOTES.md',
   './docs/V5_RADAR_REBUILD_NOTES.md',
   './docs/AI_ASSISTANT_GUIDE.md',
-  './docs/V5_2_SECURITY_PRIVACY_NOTES.md'
+  './docs/V5_2_SECURITY_PRIVACY_NOTES.md',
+  './docs/V5_3_MAINTENANCE_SECURITY_STABILITY_NOTES.md',
+  './docs/V5_4_AI_INTELLIGENCE_UPGRADE_NOTES.md',
+  './docs/V5_6_AI_ASSISTANT_INTERACTION_MOBILE_QUALITY_UPGRADE.md'
 ];
 
 self.addEventListener('install', event => {
@@ -87,6 +97,11 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
 
+  if (url.pathname.includes('/api/')) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
   // External services: never fall back to index.html for scripts/CSS/API files.
   if (url.origin !== self.location.origin) {
     event.respondWith(
@@ -101,8 +116,10 @@ self.addEventListener('fetch', event => {
 
       return fetch(request)
         .then(response => {
-          const copy = response.clone();
-          caches.open(cacheName).then(cache => cache.put(request, copy));
+          if (response.ok && response.type !== 'opaque') {
+            const copy = response.clone();
+            caches.open(cacheName).then(cache => cache.put(request, copy));
+          }
           return response;
         })
         .catch(() => {
