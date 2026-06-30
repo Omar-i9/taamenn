@@ -1,7 +1,9 @@
 import { $, $all } from './ui.js';
 
-const validRoutes = ['home', 'match-center', 'archive', 'ai', 'more', 'radar', 'weather-prayer', 'injuries', 'qibla', 'security', 'guide', 'about', 'settings'];
-const routeAliases = {};
+const validRoutes = ['home', 'match-center', 'archive', 'ai', 'more', 'radar', 'weather-prayer', 'injuries', 'qibla', 'device-check', 'security', 'guide', 'about', 'settings'];
+const routeAliases = {
+  settings: 'more'
+};
 let currentRoute = 'home';
 let routerBound = false;
 
@@ -116,6 +118,7 @@ function toggleMobileMenu(force) {
   toggle.classList.toggle('active', open);
   toggle.setAttribute('aria-expanded', String(open));
   menu.setAttribute('aria-hidden', String(!open));
+  syncMobileMenuVisual(menu, open);
   document.body.classList.toggle('nav-open', open);
 
   if (open) closeMoreNav();
@@ -129,7 +132,15 @@ export function closeMobileMenu() {
   toggle.classList.remove('active');
   toggle.setAttribute('aria-expanded', 'false');
   menu.setAttribute('aria-hidden', 'true');
+  syncMobileMenuVisual(menu, false);
   document.body.classList.remove('nav-open');
+}
+
+function syncMobileMenuVisual(menu, open) {
+  menu.style.opacity = open ? '1' : '0';
+  menu.style.visibility = open ? 'visible' : 'hidden';
+  menu.style.pointerEvents = open ? 'auto' : 'none';
+  menu.style.transform = open ? 'translate3d(0, 0, 0) scale(1)' : 'translate3d(0, -10px, 0) scale(.98)';
 }
 
 function bindMoreNav() {

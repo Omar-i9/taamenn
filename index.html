@@ -97,7 +97,7 @@
         <button data-route="match-center" class="mobile-nav-link" type="button"><i class="fa-solid fa-calendar-check"></i><span>مركز المباراة</span><small>الموعد والعداد</small></button>
         <button data-route="archive" class="mobile-nav-link" type="button"><i class="fa-solid fa-box-archive"></i><span>الأرشيف</span><small>بحث ونتائج سابقة</small></button>
         <button data-route="ai" class="mobile-nav-link" type="button"><i class="fa-solid fa-brain"></i><span>المساعد الذكي</span><small>تحليل محلي للبيانات</small></button>
-        <button data-route="more" class="mobile-nav-link" type="button"><i class="fa-solid fa-layer-group"></i><span>المزيد</span><small>الصحة وباقي الصفحات</small></button>
+        <button data-route="more" class="mobile-nav-link" type="button"><i class="fa-solid fa-layer-group"></i><span>المزيد</span><small>الصفحات المساندة</small></button>
       </div>
 
       <div class="mobile-nav-label">أقسام مساعدة</div>
@@ -105,6 +105,8 @@
         <button data-route="weather-prayer" class="mobile-nav-link" type="button"><i class="fa-solid fa-cloud-sun"></i><span>الطقس والصلاة</span><small>الجاهزية والمواقيت</small></button>
         <button data-route="injuries" class="mobile-nav-link" type="button"><i class="fa-solid fa-kit-medical"></i><span>الإصابات</span><small>الحالات والرجوع</small></button>
         <button data-route="qibla" class="mobile-nav-link" type="button"><i class="fa-solid fa-compass"></i><span>القبلة</span><small>بوصلة الجهاز</small></button>
+        <button data-route="device-check" class="mobile-nav-link" type="button"><i class="fa-solid fa-microchip"></i><span>فحص الجهاز</span><small>دعم المتصفح والمستشعرات</small></button>
+        <button data-route="security" class="mobile-nav-link" type="button"><i class="fa-solid fa-shield-halved"></i><span>الخصوصية</span><small>البيانات المحلية والتواصل</small></button>
         <button data-route="guide" class="mobile-nav-link" type="button"><i class="fa-solid fa-book-open"></i><span>دليل الاستخدام</span><small>شرح الصفحات</small></button>
         <button data-route="about" class="mobile-nav-link" type="button"><i class="fa-solid fa-circle-info"></i><span>عن المنصة</span><small>الفكرة والمصادر</small></button>
         <a class="mobile-nav-link mobile-social-link" href="https://omar-i9.github.io/omar-i9/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-link"></i><span>صفحات المبرمج</span><small>روابط عمر</small></a>
@@ -114,175 +116,47 @@
 
   <main class="app-shell">
     <section class="page active" id="home" data-page-title="الرئيسية">
-      <div class="hero-grid">
-        <div class="hero-card glass-panel reveal-up">
-          <div class="eyebrow"><i class="fa-solid fa-shield-halved"></i> الإصدار الملكي الليلي</div>
+      <section class="home-today-shell reveal-up" aria-label="لوحة اليوم">
+        <div class="home-hero-clean glass-panel">
+          <span class="eyebrow"><i class="fa-solid fa-calendar-day"></i> لوحة اليوم</span>
           <h1>تأمين 2026</h1>
-          <p>
-            منصة عربية فخمة للفريق: مباراة قادمة، أرشيف كامل، طقس وصلاة، إصابات، قبلة، وروابط واضحة.
-            كل شيء مقسم بملفات نظيفة عشان التعديل ما يتحول لحفلة تعذيب برمجية.
-          </p>
-          <div class="hero-actions">
-            <button class="primary-btn" data-route="match-center" type="button"><i class="fa-solid fa-play"></i> ابدأ من المباراة القادمة</button>
-            <button class="ghost-btn" data-route="archive" type="button"><i class="fa-solid fa-box-archive"></i> افتح الأرشيف</button>
+          <div class="home-date-line">
+            <strong id="homeMonthName">--</strong>
+            <span id="homeTodayDate">--</span>
           </div>
+          <button class="primary-btn home-primary-action" data-route="match-center" type="button">
+            <i class="fa-solid fa-calendar-check"></i> مركز المباراة
+          </button>
         </div>
 
-        <aside class="status-stack reveal-up delay-1">
-          <article class="status-card glass-panel">
-            <span class="status-label">حالة النظام</span>
-            <strong id="systemStatus">مفعل ومستقر</strong>
-            <small>آخر بناء: Legacy Build</small>
+        <div class="home-summary-grid">
+          <article class="home-summary-card glass-panel">
+            <span>المباراة</span>
+            <strong id="homeMatchTime">--</strong>
+            <small id="homeMatchText">بانتظار الموعد</small>
           </article>
-          <article class="status-card glass-panel">
-            <span class="status-label">المدينة النشطة</span>
-            <strong id="activeCityName">الخليل</strong>
-            <small>تستخدم للطقس ومواقيت الصلاة</small>
+          <article class="home-summary-card glass-panel">
+            <span>الصلاة القادمة</span>
+            <strong id="homeNextPrayer">--</strong>
+            <small id="homePrayerCountdown">--:--:--</small>
           </article>
-        </aside>
-      </div>
+          <article class="home-summary-card glass-panel">
+            <span>آخر نتيجة</span>
+            <strong id="lastMatchScore">--</strong>
+            <small id="lastMatchText">لا توجد بيانات بعد</small>
+          </article>
+          <article class="home-summary-card glass-panel">
+            <span>MVP الحالي</span>
+            <strong id="mvpName">--</strong>
+            <small id="mvpReason">يتم حسابه من البيانات</small>
+          </article>
+        </div>
 
-      <section class="dashboard-grid" aria-label="لوحة القيادة">
-        <article class="dashboard-card wide-card glass-panel reveal-up">
-          <div class="card-head">
-            <div>
-              <span class="eyebrow">مركز المباراة</span>
-              <h2>المباراة القادمة</h2>
-            </div>
-            <i class="fa-solid fa-futbol card-ghost-icon"></i>
-          </div>
-          <div class="next-match-mini" id="homeNextMatch"></div>
-        </article>
-
-        <article class="dashboard-card glass-panel reveal-up delay-1">
-          <div class="card-head compact">
-            <span class="eyebrow">جاهزية اللعب</span>
-            <i class="fa-solid fa-cloud-bolt"></i>
-          </div>
-          <strong class="large-value" id="playabilityScore">--</strong>
-          <p id="playabilityText">جاري قراءة الطقس...</p>
-        </article>
-
-        <article class="dashboard-card glass-panel reveal-up delay-2">
-          <div class="card-head compact">
-            <span class="eyebrow">الصلاة القادمة</span>
-            <i class="fa-solid fa-mosque"></i>
-          </div>
-          <strong class="large-value" id="homeNextPrayer">--</strong>
-          <p id="homePrayerCountdown">--:--:--</p>
-        </article>
-
-        <article class="dashboard-card glass-panel reveal-up delay-3">
-          <div class="card-head compact">
-            <span class="eyebrow">آخر نتيجة</span>
-            <i class="fa-solid fa-chart-line"></i>
-          </div>
-          <strong class="large-value" id="lastMatchScore">--</strong>
-          <p id="lastMatchText">لا توجد بيانات بعد</p>
-        </article>
-
-        <article class="dashboard-card glass-panel reveal-up delay-4">
-          <div class="card-head compact">
-            <span class="eyebrow">MVP الحالي</span>
-            <i class="fa-solid fa-star"></i>
-          </div>
-          <strong class="large-value" id="mvpName">--</strong>
-          <p id="mvpReason">يتم حسابه من البيانات</p>
-        </article>
-
-        <article id="homeAiCard" class="dashboard-card compact-service-card glass-panel reveal-up delay-5" data-route="ai">
-          <div class="card-head compact">
-            <span class="eyebrow">المساعد الذكي</span>
-            <i class="fa-solid fa-brain"></i>
-          </div>
-          <div class="home-service-mini">
-            <strong>قراءة محلية</strong>
-            <span>اسأل عن المباريات، الإصابات، الصفحات، وحالة الموقع.</span>
-          </div>
-          <small class="tap-note">اضغط لفتح غرفة التحليل</small>
-        </article>
-
-        <article id="homeRadarCard" class="dashboard-card compact-service-card glass-panel reveal-up delay-6" data-route="radar">
-          <div class="card-head compact">
-            <span class="eyebrow">الرادار التكتيكي</span>
-            <i class="fa-solid fa-users-viewfinder"></i>
-          </div>
-          <div class="home-service-mini">
-            <strong>5 ضد 5</strong>
-            <span>خطط جاهزة، سحب لاعبين، وأدوار محفوظة.</span>
-          </div>
-          <small class="tap-note">اضغط لفتح لوحة التخطيط</small>
-        </article>
-
-        <article id="homeInjuriesCard" class="dashboard-card compact-service-card glass-panel reveal-up delay-7" data-route="injuries">
-          <div class="card-head compact">
-            <span class="eyebrow">الإصابات</span>
-            <i class="fa-solid fa-kit-medical"></i>
-          </div>
-          <div id="homeInjuriesMini" class="home-service-mini"></div>
-        </article>
-
-        <article id="homeQiblaCard" class="dashboard-card compact-service-card glass-panel reveal-up delay-8" data-route="qibla">
-          <div class="card-head compact">
-            <span class="eyebrow">القبلة</span>
-            <i class="fa-solid fa-compass"></i>
-          </div>
-          <div class="home-qibla-mini">
-            <div class="mini-compass"><i id="homeQiblaNeedle" class="fa-solid fa-location-arrow"></i></div>
-            <div>
-              <strong id="homeQiblaDegree">--°</strong>
-              <span id="homeQiblaStatus">اضغط للتفعيل</span>
-            </div>
-          </div>
-          <small class="tap-note">اضغط للانتقال للصفحة</small>
-        </article>
-
-        <article class="dashboard-card compact-service-card glass-panel reveal-up delay-8" data-route="qibla">
-          <div class="card-head compact">
-            <span class="eyebrow">فحص الجهاز</span>
-            <i class="fa-solid fa-microchip"></i>
-          </div>
-          <div id="homeDeviceMini" class="home-service-mini"></div>
-        </article>
-      </section>
-
-      <section class="quick-entry-grid reveal-up">
-        <button class="entry-card" data-route="archive" type="button">
-          <i class="fa-solid fa-box-archive"></i>
-          <span>أرشيف المباريات</span>
-          <small>بحث، فلترة، إحصائيات، وتفاصيل</small>
-          <em>اضغط للانتقال للصفحة</em>
-        </button>
-        <button class="entry-card" data-route="ai" type="button">
-          <i class="fa-solid fa-brain"></i>
-          <span>المساعد الذكي</span>
-          <small>إجابات محلية من بيانات الموقع فقط</small>
-          <em>اضغط للانتقال للصفحة</em>
-        </button>
-        <button class="entry-card" data-route="radar" type="button">
-          <i class="fa-solid fa-users-viewfinder"></i>
-          <span>الرادار التكتيكي</span>
-          <small>لوحة 5 ضد 5 مع خطط جاهزة وتعديل اللاعبين</small>
-          <em>اضغط للانتقال للصفحة</em>
-        </button>
-        <button class="entry-card" data-route="weather-prayer" type="button">
-          <i class="fa-solid fa-cloud-sun-rain"></i>
-          <span>الطقس والصلاة</span>
-          <small>الخليل أو القدس مع حسابات مباشرة</small>
-          <em>اضغط للانتقال للصفحة</em>
-        </button>
-        <button class="entry-card" data-route="injuries" type="button">
-          <i class="fa-solid fa-kit-medical"></i>
-          <span>الإصابات والحالات</span>
-          <small>خطورة، مدة رجوع، تأثير، وسجل مخفي</small>
-          <em>اضغط للانتقال للصفحة</em>
-        </button>
-        <button class="entry-card" data-route="qibla" type="button">
-          <i class="fa-solid fa-compass"></i>
-          <span>القبلة والبوصلة</span>
-          <small>حساب اتجاه القبلة وفحص قدرات الجهاز</small>
-          <em>اضغط للانتقال للصفحة</em>
-        </button>
+        <div class="home-shortcuts-row" aria-label="اختصارات مختصرة">
+          <button class="ghost-btn" data-route="archive" type="button"><i class="fa-solid fa-box-archive"></i> الأرشيف</button>
+          <button class="ghost-btn" data-route="ai" type="button"><i class="fa-solid fa-brain"></i> المساعد</button>
+          <button class="ghost-btn" data-route="more" type="button"><i class="fa-solid fa-layer-group"></i> المزيد</button>
+        </div>
       </section>
     </section>
 
@@ -290,33 +164,10 @@
       <div class="page-heading reveal-up">
         <span class="eyebrow"><i class="fa-solid fa-calendar-check"></i> دورة حياة المباراة</span>
         <h1>مركز المباراة القادمة</h1>
-        <p>من هون بتشوف الموعد، الجاهزية، والمشاركة. إضافة المباريات الرسمية صارت من ملف البيانات عشان الأرشيف يظل مرتب وواضح.</p>
+        <p>المباراة الأقرب أولًا، ثم المواعيد القادمة بشكل مختصر وواضح.</p>
       </div>
 
-      <div class="match-center-grid">
-        <article class="glass-panel match-main-card reveal-up" id="matchCenterCard"></article>
-        <aside class="match-side-panel reveal-up delay-1">
-          <div class="glass-panel action-panel">
-            <h3>إجراءات سريعة</h3>
-            <button id="shareMatchBtn" class="primary-btn full" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة الموعد</button>
-            <button class="primary-btn full" data-route="ai" type="button"><i class="fa-solid fa-brain"></i> اسأل المساعد</button>
-            <button class="primary-btn full" data-route="more" type="button"><i class="fa-solid fa-layer-group"></i> فتح المزيد</button>
-            <button class="ghost-btn full" data-route="archive" type="button"><i class="fa-solid fa-box-archive"></i> فتح الأرشيف</button>
-            <button id="copyMatchBtn" class="ghost-btn full" type="button"><i class="fa-solid fa-copy"></i> نسخ النص</button>
-          </div>
-          <div class="glass-panel action-panel edit-guide-card">
-            <h3><i class="fa-solid fa-code"></i> تعديل المباريات</h3>
-            <p>الإضافة المحلية انشالت عشان الأرشيف يضل رسمي وثابت. أضف المباريات من ملف البيانات مباشرة.</p>
-            <ol>
-              <li>افتح <code>data/site-data.js</code>.</li>
-              <li>للمباريات السابقة عدّل مصفوفة <code>matchArchive</code>.</li>
-              <li>للمباريات القادمة عدّل مصفوفة <code>upcomingMatches</code>.</li>
-              <li>غيّر الإصدار في <code>siteMeta.version</code> عند كل تحديث كبير.</li>
-            </ol>
-            <button class="ghost-btn full" data-route="guide" type="button"><i class="fa-solid fa-book-open"></i> شرح كل الصفحات</button>
-          </div>
-        </aside>
-      </div>
+      <article class="glass-panel match-main-card reveal-up" id="matchCenterCard"></article>
     </section>
 
     <section class="page" id="ai" data-page-title="المساعد الذكي">
@@ -342,14 +193,6 @@
           </div>
         </section>
 
-        <section class="ai-suggestions glass-panel" aria-label="اقتراحات المساعد">
-          <div class="ai-section-head">
-            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> اقتراحات جاهزة</h3>
-            <small>تتغير حسب البيانات المتاحة</small>
-          </div>
-          <div class="ai-suggestion-list" id="aiSuggestions"></div>
-        </section>
-
         <section class="ai-chat-shell glass-panel" aria-label="محادثة المساعد الذكي">
           <div class="ai-chat-head">
             <div>
@@ -367,6 +210,14 @@
             <textarea id="aiPrompt" rows="2" placeholder="اسأل عن تأمين، تكتيك، كتابة، دراسة، أو تقنية..." autocomplete="off"></textarea>
             <button class="primary-btn" type="submit"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
           </form>
+        </section>
+
+        <section class="ai-suggestions glass-panel" aria-label="اقتراحات المساعد">
+          <div class="ai-section-head">
+            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> اقتراحات صغيرة</h3>
+            <small>افتح مجموعة واحدة عند الحاجة</small>
+          </div>
+          <div class="ai-suggestion-list" id="aiSuggestions"></div>
         </section>
       </div>
     </section>
@@ -444,15 +295,12 @@
       <div class="page-heading reveal-up">
         <span class="eyebrow"><i class="fa-solid fa-cloud-sun"></i> خدمات الملعب</span>
         <h1>الطقس ومواقيت الصلاة</h1>
-        <p>اختر الخليل أو القدس، والموقع يحدث الطقس ومواعيد الصلاة حسب الإحداثيات.</p>
+        <p>اختر مدينة فلسطينية، والموقع يحدث الطقس ومواقيت الصلاة حسب الإحداثيات.</p>
       </div>
 
       <div class="city-switcher glass-panel reveal-up delay-1">
         <label for="citySelect">المدينة</label>
-        <select id="citySelect" class="select-control">
-          <option value="hebron">الخليل - فلسطين</option>
-          <option value="jerusalem">القدس - فلسطين</option>
-        </select>
+        <select id="citySelect" class="select-control"></select>
         <button id="refreshServices" class="ghost-btn" type="button"><i class="fa-solid fa-rotate"></i> تحديث</button>
       </div>
 
@@ -483,9 +331,9 @@
 
     <section class="page" id="injuries" data-page-title="الإصابات والحالات">
       <div class="page-heading reveal-up">
-        <span class="eyebrow"><i class="fa-solid fa-kit-medical"></i> غرفة العلاج</span>
+        <span class="eyebrow"><i class="fa-solid fa-kit-medical"></i> لوحة الحالات</span>
         <h1>الإصابات والحالات</h1>
-        <p>متابعة اللاعبين، درجة الخطورة، مدة الرجوع، التأثير على اللعب، وسجل مخفي لكل حالة. تنظيم صحي، مش عيادة افتراضية تتفلسف على الناس.</p>
+        <p>حالة اللاعبين بسرعة: نشط، متعافي، يحتاج متابعة، أو غير محدد. لا توجد تشخيصات أو تعليمات علاج.</p>
       </div>
 
       <div class="injury-warning glass-panel reveal-up delay-1">
@@ -501,9 +349,9 @@
 
     <section class="page" id="qibla" data-page-title="القبلة والبوصلة">
       <div class="page-heading reveal-up">
-        <span class="eyebrow"><i class="fa-solid fa-compass"></i> القبلة والجهاز</span>
+        <span class="eyebrow"><i class="fa-solid fa-compass"></i> اتجاه القبلة</span>
         <h1>القبلة والبوصلة</h1>
-        <p>احسب اتجاه القبلة من موقعك. الجوال غالبًا يعطي بوصلة حية، اللابتوب غالبًا يعطيك درجة فقط لأنه لا يحمل مستشعرًا، يا للمفاجأة.</p>
+        <p>احسب اتجاه القبلة من موقعك أو من المدينة المختارة. فحص الجهاز صار في صفحة مستقلة.</p>
       </div>
 
       <div class="qibla-layout">
@@ -532,20 +380,23 @@
             <span><i class="fa-solid fa-compass-drafting"></i> اتجاه الجهاز: <b id="qiblaHeading">--°</b></span>
           </div>
         </article>
-
-        <aside class="device-panel glass-panel reveal-up delay-1">
-          <h3><i class="fa-solid fa-microchip"></i> فحص قدرات الجهاز</h3>
-          <p>هاي القائمة بتقول للمستخدم ليش البوصلة اشتغلت أو ليش قررت تدخل في إجازة غير مدفوعة.</p>
-          <ul id="deviceSignals" class="device-signals"></ul>
-          <div class="qibla-note">
-            <i class="fa-solid fa-shield-halved"></i>
-            <span>الحساب يتم محليًا بمعادلة اتجاه القبلة + APIs المتصفح: الموقع والبوصلة. لا يوجد مفتاح API مخفي ولا سحر أسود.</span>
-          </div>
-        </aside>
       </div>
     </section>
 
-    <section class="page" id="security" data-page-title="الحماية والأمان">
+    <section class="page" id="device-check" data-page-title="فحص الجهاز">
+      <div class="page-heading reveal-up">
+        <span class="eyebrow"><i class="fa-solid fa-microchip"></i> فحص الجهاز</span>
+        <h1>قدرات الجهاز</h1>
+        <p>ملخص صغير لدعم المتصفح والمستشعرات والتخزين. بدون لغة مخيفة وبدون تفاصيل تقنية زائدة.</p>
+      </div>
+
+      <article class="device-panel device-page-panel glass-panel reveal-up delay-1">
+        <h3><i class="fa-solid fa-list-check"></i> الدعم الحالي</h3>
+        <ul id="deviceSignals" class="device-signals"></ul>
+      </article>
+    </section>
+
+    <section class="page" id="security" data-page-title="الخصوصية">
       <div id="securityMount" class="security-shell reveal-up"></div>
     </section>
 
@@ -599,27 +450,35 @@
     <section class="page" id="about" data-page-title="عن المنصة">
       <div class="about-shell reveal-up">
         <div class="about-hero glass-panel">
-          <i class="fa-solid fa-crown about-icon"></i>
+          <i class="fa-solid fa-shield-halved about-icon"></i>
           <h1>عن تأمين 2026</h1>
-          <p>منصة صغيرة بفكرة واضحة: تنظيم الفريق بدل ما تضيع النتائج والمواعيد في محادثات واتساب لا يقرأها أحد.</p>
+          <p>منصة عربية عملية لتنظيم مباريات المجموعة، حفظ النتائج، متابعة المواعيد، وتشغيل مساعد ذكي يقرأ بيانات الموقع بدون تضخيم.</p>
         </div>
 
         <div class="about-grid">
           <article class="about-card glass-panel">
-            <h3><i class="fa-solid fa-bullseye"></i> فكرة المنصة</h3>
-            <p>تأمين 2026 منصة لتنظيم مباريات الفريق، تجهيز التشكيلات، متابعة النتائج، حفظ الأرشيف، ومراجعة جاهزية اللعب.</p>
+            <h3><i class="fa-solid fa-users"></i> من نحن</h3>
+            <p>تأمين مشروع مخصص لمجموعة الفريق: يجمع المواعيد والنتائج والصفحات المهمة في مكان واحد واضح.</p>
           </article>
           <article class="about-card glass-panel">
-            <h3><i class="fa-solid fa-layer-group"></i> ماذا تقدم؟</h3>
-            <p>رادار تكتيكي، مركز مباراة، أرشيف، طقس، مواقيت صلاة، مشاركة مواعيد، وتقسيم ملفات جاهز للصيانة.</p>
+            <h3><i class="fa-solid fa-layer-group"></i> ماذا تقدم المنصة</h3>
+            <p>مركز مباراة، أرشيف، طقس وصلاة، حالات اللاعبين، قبلة، خصوصية مختصرة، وروابط تواصل.</p>
           </article>
           <article class="about-card glass-panel">
-            <h3><i class="fa-solid fa-database"></i> مصادر البيانات</h3>
+            <h3><i class="fa-solid fa-code-branch"></i> كيف نطوّر النظام</h3>
+            <p>النظام مبني على ملفات كثيرة وسطور كثيرة، ويتحسن حسب احتياجات المجموعة بدل إضافة زينة لا تخدم الاستخدام.</p>
+          </article>
+          <article class="about-card glass-panel">
+            <h3><i class="fa-solid fa-brain"></i> الذكاء الاصطناعي</h3>
+            <p>المساعد الذكي يقرأ بيانات تأمين ويعطي ردودًا مختصرة أو نصوصًا جاهزة للنسخ، مع رفض الطلبات الحساسة محليًا.</p>
+          </article>
+          <article class="about-card glass-panel">
+            <h3><i class="fa-solid fa-user-shield"></i> الخصوصية والحماية</h3>
+            <p>التفضيلات البسيطة تحفظ محليًا عند الحاجة. لا يجب وضع مفاتيح AI أو أسرار خاصة داخل ملفات الواجهة العامة.</p>
+          </article>
+          <article class="about-card glass-panel">
+            <h3><i class="fa-solid fa-database"></i> تواصل ومصادر</h3>
             <ul id="sourcesList"></ul>
-          </article>
-          <article class="about-card glass-panel">
-            <h3><i class="fa-solid fa-code-branch"></i> حالة الإصدار</h3>
-            <p>Taamen Tactical Core: إصدار تكتيكي ثابت للتحديثات الكبيرة المتجمعة، مع صيانة هادئة بدون تضخيم.</p>
           </article>
         </div>
 

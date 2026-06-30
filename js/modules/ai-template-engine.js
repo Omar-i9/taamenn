@@ -316,7 +316,7 @@ function answerSecurity(siteKnowledge, question) {
 function answerAIHelp() {
   return [
     'أقدر أساعدك في:',
-    '- بيانات تأمين: المباراة، الأرشيف، الإصابات، الحماية، والرادار.',
+    '- بيانات تأمين: المباراة، الأرشيف، الإصابات، الطقس والصلاة، والخصوصية.',
     '- أسئلة عامة: كتابة، دراسة، تقنية، تخطيط، ونصائح خماسي.',
     'إذا المعلومة تخص تأمين وغير موجودة في بيانات الموقع، سأقول إنها غير متوفرة بدل التخمين.'
   ].join('\n');
@@ -327,7 +327,7 @@ function answerSiteInfo(siteKnowledge) {
   const pages = siteKnowledge?.pages || [];
   if (!meta.name && !pages.length) return MISSING_TAAMEN_INFO;
   return [
-    `${meta.name || 'تأمين'} منصة لتنظيم المباراة، الأرشيف، الرادار، الإصابات، الحماية، والمساعد الذكي.`,
+    `${meta.name || 'تأمين'} منصة لتنظيم المباراة، الأرشيف، الإصابات، الطقس والصلاة، الخصوصية، والمساعد الذكي.`,
     pages.length ? `الصفحات المتاحة: ${pages.slice(0, 8).map(page => typeof page === 'string' ? page : page.label).join('، ')}.` : '',
     meta.version ? `الإصدار الحالي: ${meta.version}.` : ''
   ].filter(Boolean).join('\n');

@@ -1,6 +1,5 @@
 import { matchArchive, upcomingMatches, playerStats } from '../../data/site-data.js';
 import { $, $all, safeText, copyText, toast, debounce } from './ui.js';
-import { getLatestWeather, calculatePlayability } from './weather.js';
 import { getMatchDate, formatPalestineDate, formatPalestineTime } from './site-knowledge.js';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -318,61 +317,66 @@ export function renderMatchCenter(showPulse = true) {
   const now = new Date();
   const diff = match.date - now;
   const heat = heatClass(diff);
-  const weather = getLatestWeather();
-  const play = weather ? calculatePlayability(weather.data.current) : null;
-  const upcoming = getAllUpcoming(now).slice(0, 5);
+  const upcoming = getAllUpcoming(now);
+  const following = upcoming.filter(item => item.id !== match.id).slice(0, 6);
 
   card.classList.toggle('is-hot', heat === 'is-hot');
   card.classList.toggle('is-live', heat === 'is-live');
 
   card.innerHTML = `
-    <div class="match-badge-line">
-      <span><i class="fa-solid fa-calendar"></i> ${safeText(match.title)}</span>
-      <span><i class="fa-solid fa-location-dot"></i> ${safeText(match.location)}</span>
-      <span class="heat-badge ${heat}"><i class="fa-solid fa-fire-flame-curved"></i> ${matchStatusLabel(match, diff)}</span>
+    <div class="match-focus-card">
+      <div class="match-badge-line">
+        <span><i class="fa-solid fa-calendar"></i> ${safeText(match.title || 'مباراة قادمة')}</span>
+        <span class="heat-badge ${heat}"><i class="fa-solid fa-clock"></i> ${safeText(matchStatusLabel(match, diff))}</span>
+      </div>
+      <div class="teams-line">
+        <strong>${safeText(match.team1)}</strong>
+        <b>ضد</b>
+        <strong>${safeText(match.team2)}</strong>
+      </div>
+      <div class="big-countdown ${heat} ${showPulse ? 'pulse-once' : ''}">${formatSmartCountdown(diff)}</div>
+      <div class="match-info-grid compact">
+        <div><span>الوقت</span><strong>${safeText(formatPalestineTime(match.date))}</strong></div>
+        <div><span>المكان</span><strong>${safeText(match.location || 'غير محدد')}</strong></div>
+        <div><span>النوع</span><strong>${safeText(match.title || 'مباراة')}</strong></div>
+      </div>
     </div>
-    <div class="teams-line">
-      <strong>${safeText(match.team1)}</strong>
-      <b>VS</b>
-      <strong>${safeText(match.team2)}</strong>
-    </div>
-    <div class="big-countdown ${heat} ${showPulse ? 'pulse-once' : ''}">${formatSmartCountdown(diff)}</div>
-    <p class="match-date-line">${safeText(formatMatchDate(match))}</p>
-    <div class="match-info-grid">
-      <div><span>الحالة</span><strong>${safeText(matchStatusLabel(match, diff))}</strong></div>
-      <div><span>جاهزية اللعب</span><strong>${play ? `${safeText(play.label)} ${play.score}%` : 'بانتظار الطقس'}</strong></div>
-      <div><span>ملاحظة</span><strong>${safeText(match.note)}</strong></div>
-    </div>
-    <div class="upcoming-strip" aria-label="المواعيد القادمة">
-      ${upcoming.map((item, index) => {
+    <div class="upcoming-compact-grid" aria-label="المواعيد القادمة">
+      ${following.map(item => {
         const itemDiff = item.date - now;
-        return `<article class="upcoming-pill ${heatClass(itemDiff)} ${index === 0 ? 'is-next' : ''}" data-match-id="${safeText(item.id)}">
-          <span>${safeText(item.title)}</span>
-          <strong>${formatSmartCountdown(itemDiff)}</strong>
-          <small>${safeText(item.location)}</small>
+        return `<article class="upcoming-pill compact ${heatClass(itemDiff)}" data-match-id="${safeText(item.id)}">
+          <span><i class="fa-solid fa-location-dot"></i> ${safeText(item.location || 'غير محدد')}</span>
+          <strong>${safeText(formatPalestineTime(item.date))}</strong>
+          <small>${safeText(item.team1)} ضد ${safeText(item.team2)}</small>
+          <em>${safeText(item.title || 'مباراة')}</em>
         </article>`;
-      }).join('')}
+      }).join('') || '<div class="empty-state compact">لا توجد مباريات أخرى حاليًا.</div>'}
     </div>
   `;
 }
 
 function renderHomeMatch() {
-  const container = $('#homeNextMatch');
-  if (!container) return;
+  renderHomeDate();
 
   const match = getPrimaryUpcoming();
+  const time = $('#homeMatchTime');
+  const text = $('#homeMatchText');
   if (!match) {
-    container.innerHTML = '<div class="mini-empty">لا توجد مباراة قادمة.</div>';
+    if (time) time.textContent = '--';
+    if (text) text.textContent = 'لا توجد مباراة قادمة';
     return;
   }
 
-  const diff = match.date - new Date();
-  container.innerHTML = `
-    <div class="mini-teams"><strong>${safeText(match.team1)}</strong><span>ضد</span><strong>${safeText(match.team2)}</strong></div>
-    <div class="mini-countdown ${heatClass(diff)}">${formatSmartCountdown(diff)}</div>
-    <p>${safeText(match.location)} - ${safeText(formatMatchDate(match))}</p>
-    <span class="mini-heat-label ${heatClass(diff)}"><i class="fa-solid fa-fire-flame-curved"></i> ${safeText(matchStatusLabel(match, diff))}</span>
-  `;
+  if (time) time.textContent = formatPalestineTime(match.date);
+  if (text) text.textContent = `${match.team1} ضد ${match.team2} - ${match.location || 'المكان غير محدد'}`;
+}
+
+function renderHomeDate() {
+  const now = new Date();
+  const month = new Intl.DateTimeFormat('ar', { month: 'long', timeZone: 'Asia/Hebron' }).format(now);
+  const day = new Intl.DateTimeFormat('ar', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Hebron' }).format(now);
+  if ($('#homeMonthName')) $('#homeMonthName').textContent = month;
+  if ($('#homeTodayDate')) $('#homeTodayDate').textContent = day;
 }
 
 function buildShareText() {
@@ -425,8 +429,18 @@ function bindArchive() {
   $('#archiveList')?.addEventListener('click', event => {
     const btn = event.target.closest('[data-toggle-match]');
     if (!btn) return;
-    archiveState.openId = archiveState.openId === btn.dataset.toggleMatch ? null : btn.dataset.toggleMatch;
+    archiveState.openId = btn.dataset.toggleMatch;
     renderArchive();
+  });
+
+  document.addEventListener('click', event => {
+    const overlay = event.target.closest('.archive-modal-overlay');
+    if (!event.target.closest('[data-archive-modal-close]') && event.target !== overlay) return;
+    closeArchiveModal();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && archiveState.openId) closeArchiveModal();
   });
 }
 
@@ -454,10 +468,12 @@ export function renderArchive() {
 
   if (!list.length) {
     host.innerHTML = '<div class="empty-state">لا توجد مباريات مطابقة. حتى الأرشيف عنده حدود للصبر.</div>';
+    renderArchiveModal(null);
     return;
   }
 
   host.innerHTML = list.map(match => matchCard(match)).join('');
+  renderArchiveModal(getAllMatches().find(match => match.id === archiveState.openId) || null);
 }
 
 function renderArchiveStats(list) {
@@ -512,7 +528,6 @@ function matchCard(match) {
           <span class="archive-id">${safeText(match.id)}</span>
           <strong>${match.score2} - ${match.score1}</strong>
           <small>${safeText(match.dateLabel)}</small>
-          <p>${safeText(match.story || 'مباراة مؤرشفة بدون وصف إضافي.')}</p>
         </div>
         <div class="archive-team ${winner === 'team2' ? 'winner' : ''}">
           <i class="fa-solid fa-shirt"></i>
@@ -522,17 +537,62 @@ function matchCard(match) {
       </div>
       <div class="archive-actions-row">
         <span><i class="fa-solid fa-bullseye"></i> ${totalGoals} هدف</span>
-        <span><i class="fa-solid fa-circle-info"></i> ${details ? 'إحصائيات كاملة' : 'ملخص تاريخي'}</span>
         <button class="details-button" data-toggle-match="${safeText(match.id)}" type="button">
-          <i class="fa-solid ${open ? 'fa-chevron-up' : 'fa-chart-simple'}"></i>
-          ${open ? 'إغلاق التفاصيل' : 'عرض التفاصيل'}
+          <i class="fa-solid fa-chart-simple"></i>
+          التفاصيل
         </button>
-      </div>
-      <div class="archive-details" ${open ? '' : 'hidden'}>
-        ${details ? detailedStats(match) : legacySummary(match)}
       </div>
     </article>
   `;
+}
+
+function renderArchiveModal(match) {
+  let modal = $('#archiveDetailsModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'archiveDetailsModal';
+    modal.className = 'archive-modal-overlay';
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(modal);
+  }
+
+  if (!match) {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = '';
+    return;
+  }
+
+  const winner = match.score1 > match.score2 ? match.team1 : match.score2 > match.score1 ? match.team2 : 'تعادل';
+  modal.innerHTML = `
+    <div class="archive-modal-panel" role="dialog" aria-modal="true" aria-labelledby="archiveModalTitle">
+      <button class="icon-button archive-modal-close" data-archive-modal-close type="button" aria-label="إغلاق التفاصيل">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="archive-modal-head">
+        <span class="eyebrow"><i class="fa-solid ${typeIcon(match.type)}"></i> ${typeLabel(match.type)}</span>
+        <h2 id="archiveModalTitle">${safeText(match.team1)} ضد ${safeText(match.team2)}</h2>
+        <strong>${match.score2} - ${match.score1}</strong>
+      </div>
+      <div class="archive-modal-summary">
+        <span><b>التاريخ</b>${safeText(match.dateLabel || '--')}</span>
+        <span><b>الحالة</b>${safeText(match.status || '--')}</span>
+        <span><b>الفائز</b>${safeText(winner)}</span>
+        <span><b>ID</b>${safeText(match.id)}</span>
+      </div>
+      ${match.story ? `<p class="archive-modal-story">${safeText(match.story)}</p>` : ''}
+      <div class="archive-modal-stats">
+        ${match.details ? detailedStats(match) : legacySummary(match)}
+      </div>
+    </div>
+  `;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeArchiveModal() {
+  archiveState.openId = null;
+  renderArchive();
 }
 
 function legacySummary(match) {

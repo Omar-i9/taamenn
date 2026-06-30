@@ -97,11 +97,12 @@ const ROUTE_LABELS = [
   ['match-center', 'المباراة القادمة', 'موعد المباراة القادمة وتفاصيلها'],
   ['archive', 'الأرشيف', 'نتائج المباريات السابقة'],
   ['ai', 'المساعد الذكي', 'مساعد تأمين الذكي'],
-  ['radar', 'الرادار التكتيكي', 'خطط وتمركز لاعبي الخماسي'],
-  ['security', 'مركز الحماية', 'خصوصية وأمان المنصة'],
+  ['more', 'المزيد', 'روابط الصفحات المساندة'],
+  ['security', 'الخصوصية', 'خصوصية وأدوات بيانات محلية'],
   ['weather-prayer', 'الطقس والصلاة', 'الطقس ومواقيت الصلاة'],
   ['injuries', 'الإصابات', 'سجل الإصابات والحالات'],
   ['qibla', 'القبلة', 'اتجاه القبلة'],
+  ['device-check', 'فحص الجهاز', 'قدرات المتصفح والمستشعرات'],
   ['guide', 'دليل الاستخدام', 'شرح صفحات المنصة'],
   ['about', 'عن المنصة', 'هوية المنصة ومصادرها']
 ];
@@ -615,20 +616,12 @@ function renderKnowledgeMeta() {
 function renderSuggestions() {
   const host = $('#aiSuggestions');
   if (!host) return;
-  const openFirst = !window.matchMedia('(max-width: 520px)').matches;
-  const groups = CORE_SUGGESTION_GROUPS;
+  const openFirst = false;
+  const groups = CORE_SUGGESTION_GROUPS.filter(group => group.id !== 'radar');
   host.innerHTML = `
-    <div class="ai-writing-actions" aria-label="أزرار كتابة سريعة">
-      <button type="button" class="ai-writing-action" data-ai-writing-action="match-announcement"><i class="fa-solid fa-bullhorn"></i> اكتب إعلان مباراة</button>
-      <button type="button" class="ai-writing-action" data-ai-writing-action="reminder"><i class="fa-solid fa-bell"></i> اكتب رسالة تذكير</button>
-      <button type="button" class="ai-writing-action" data-ai-writing-action="update"><i class="fa-solid fa-list-check"></i> اكتب ملخص تحديث</button>
-      <button type="button" class="ai-writing-action" data-ai-writing-action="warning"><i class="fa-solid fa-triangle-exclamation"></i> اكتب تنبيه قصير</button>
-      <button type="button" class="ai-writing-action" data-ai-writing-action="result"><i class="fa-solid fa-square-poll-vertical"></i> اكتب وصف نتيجة</button>
-      <button type="button" class="ai-writing-action" data-ai-writing-action="group"><i class="fa-solid fa-users"></i> اكتب رسالة للجروب</button>
-    </div>
     <div class="ai-suggestions-quick-head">
       <span><i class="fa-solid fa-bolt"></i> وصول سريع</span>
-      <small>اختر نوع السؤال وافتح مجموعة واحدة فقط</small>
+      <small>اقتراحات خفيفة، افتح مجموعة واحدة فقط</small>
     </div>
     <div class="ai-suggestions-accordion ai-suggestion-accordion" role="list">
       ${groups.map((group, index) => {
@@ -730,11 +723,12 @@ function cleanRouteLabel(id, fallback = '') {
     'match-center': 'المباراة القادمة',
     archive: 'الأرشيف',
     ai: 'المساعد الذكي',
-    radar: 'الرادار التكتيكي',
-    security: 'مركز الحماية',
+    more: 'المزيد',
+    security: 'الخصوصية',
     'weather-prayer': 'الطقس والصلاة',
     injuries: 'الإصابات',
     qibla: 'القبلة',
+    'device-check': 'فحص الجهاز',
     guide: 'دليل الاستخدام',
     about: 'عن المنصة'
   };
@@ -747,11 +741,12 @@ function cleanRouteDescription(id, fallback = '') {
     'match-center': 'موعد المباراة القادمة وتفاصيلها',
     archive: 'نتائج المباريات السابقة',
     ai: 'مساعد تأمين الذكي',
-    radar: 'خطط وتمركز لاعبي الخماسي',
-    security: 'خصوصية وأمان المنصة',
+    more: 'روابط الصفحات المساندة',
+    security: 'خصوصية وأدوات بيانات محلية',
     'weather-prayer': 'الطقس ومواقيت الصلاة',
     injuries: 'سجل الإصابات والحالات',
     qibla: 'اتجاه القبلة',
+    'device-check': 'قدرات المتصفح والمستشعرات',
     guide: 'شرح صفحات المنصة',
     about: 'هوية المنصة ومصادرها'
   };
@@ -858,7 +853,7 @@ function cleanIntroMessage() {
   return [
     'أهلا، أنا مساعد تأمين.',
     endpoint,
-    'اسألني عن المباراة، الأرشيف، الرادار، الحماية، الكوكيز، أو أي سؤال عام مثل الكتابة والدراسة والتقنية.'
+    'اسألني عن المباراة، الأرشيف، الخصوصية، الكوكيز، أو أي سؤال عام مثل الكتابة والدراسة والتقنية.'
   ].join('\n');
 }
 

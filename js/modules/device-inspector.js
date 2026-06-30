@@ -11,6 +11,14 @@ function getConnectionLabel() {
 }
 
 export function getDeviceCapabilities() {
+  let storage = false;
+  try {
+    const testKey = 'taamen-legacy:device-test';
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+    storage = true;
+  } catch (_) {}
+
   return {
     screen: `${window.innerWidth}×${window.innerHeight}`,
     geolocation: 'geolocation' in navigator,
@@ -20,6 +28,8 @@ export function getDeviceCapabilities() {
     touch: navigator.maxTouchPoints > 0,
     online: navigator.onLine,
     connection: getConnectionLabel(),
+    storage,
+    serviceWorker: 'serviceWorker' in navigator,
     standalone: window.matchMedia('(display-mode: standalone)').matches
   };
 }
@@ -30,12 +40,14 @@ export function renderDeviceSignals() {
   const cap = getDeviceCapabilities();
 
   const rows = [
-    ['حجم الشاشة', cap.screen, 'fa-mobile-screen-button'],
-    ['الموقع GPS', yesNo(cap.geolocation), 'fa-location-crosshairs'],
-    ['البوصلة', yesNo(cap.orientation), 'fa-compass'],
-    ['مشاركة النظام', yesNo(cap.share), 'fa-share-nodes'],
-    ['اللمس', yesNo(cap.touch), 'fa-hand-pointer'],
-    ['الاتصال', cap.online ? cap.connection : 'غير متصل', 'fa-wifi']
+    ['المتصفح', cap.screen, 'fa-window-maximize'],
+    ['مستشعرات الحركة', yesNo(cap.orientation), 'fa-compass'],
+    ['الموقع', yesNo(cap.geolocation), 'fa-location-crosshairs'],
+    ['localStorage', yesNo(cap.storage), 'fa-database'],
+    ['Service Worker', yesNo(cap.serviceWorker), 'fa-rotate'],
+    ['وضع العرض', cap.standalone ? 'تطبيق مثبت' : 'متصفح عادي', 'fa-display'],
+    ['الشبكة', cap.online ? cap.connection : 'غير متصل', 'fa-wifi'],
+    ['اللمس', yesNo(cap.touch), 'fa-hand-pointer']
   ];
 
   const html = rows.map(([label, value, icon]) => `
@@ -43,12 +55,7 @@ export function renderDeviceSignals() {
   `).join('');
 
   if (host) host.innerHTML = html;
-  if (homeHost) {
-    homeHost.innerHTML = `
-      <div class="mini-device-row"><i class="fa-solid fa-microchip"></i><strong>${cap.screen}</strong><span>${cap.touch ? 'جهاز لمس' : 'حاسوب/متصفح'}</span></div>
-      <small class="tap-note">اضغط للانتقال لصفحة القبلة والفحص</small>
-    `;
-  }
+  if (homeHost) homeHost.innerHTML = '';
 }
 
 export function initTinyScreenWarning() {

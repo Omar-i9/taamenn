@@ -84,7 +84,12 @@ function applyTheme(theme) {
 
 function initCitySwitcher() {
   const select = $('#citySelect');
-  if (select) select.value = currentCity;
+  if (select) {
+    select.innerHTML = Object.values(CONFIG.cities).map(city => (
+      `<option value="${city.key}">${city.name} - ${city.country}</option>`
+    )).join('');
+    select.value = CONFIG.cities[currentCity] ? currentCity : CONFIG.defaultCity;
+  }
   select?.addEventListener('change', () => {
     currentCity = select.value;
     write('city', currentCity);

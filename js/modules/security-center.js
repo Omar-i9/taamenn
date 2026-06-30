@@ -7,7 +7,7 @@ const noticeText = [
   'نؤكد أن الوضع الحالي تحت السيطرة، ولم يتم تسجيل تأثير فعلي مؤكد على حسابات المستخدمين. سيستمر نظام تأمين في متابعة أي نشاط غير طبيعي وتعزيز إجراءات الحماية عند الحاجة.'
 ].join('\n\n');
 
-const reportMessage = `مرحبا، عندي بلاغ أمني بخصوص منصة تأمين:
+const reportMessage = `مرحبا، عندي بلاغ خصوصية بخصوص منصة تأمين:
 نوع المشكلة:
 وقت حدوثها:
 الرابط أو الصفحة:
@@ -61,20 +61,41 @@ export function initSecurityCenter() {
 
 function renderSecurityPage() {
   const reportUrl = getReportUrl();
+  const adminUrl = getAdminUrl();
   const canOpenReport = reportUrl !== '#';
+  const canOpenAdmin = adminUrl !== '#';
 
   return `
     <section class="security-section glass-panel compact-security-policy">
       <div class="security-section-head">
-        <span class="eyebrow"><i class="fa-solid fa-shield-halved"></i> الخصوصية والحماية</span>
-        <h2>حماية مختصرة وواضحة</h2>
+        <span class="eyebrow"><i class="fa-solid fa-shield-halved"></i> الخصوصية</span>
+        <h2>خصوصية عملية وواضحة</h2>
       </div>
-      <p>تستخدم منصة تأمين التخزين المحلي والكوكيز لحفظ تفضيلات بسيطة مثل اللغة والموافقة والإعدادات. لا يتم جمع كلمات مرور أو بيانات حساسة داخل الموقع، ولا يتم وضع مفاتيح الذكاء الاصطناعي داخل ملفات الواجهة العامة.</p>
+      <p>تستخدم تأمين التخزين المحلي والكوكيز لحفظ تفضيلات بسيطة مثل الثيم والمدينة والموافقة. لا يتم حفظ كلمات مرور أو بيانات حساب حساسة داخل الواجهة.</p>
+      <div class="security-grid compact-privacy-grid">
+        <article class="security-mini-card">
+          <h3><i class="fa-solid fa-database"></i> ما قد يحفظ محليا</h3>
+          <ul>
+            <li>المدينة المختارة للطقس والصلاة</li>
+            <li>الثيم وموافقة الكوكيز</li>
+            <li>جلسة محادثة AI محلية عند استخدامها</li>
+          </ul>
+        </article>
+        <article class="security-mini-card">
+          <h3><i class="fa-solid fa-ban"></i> ما لا نحفظه هنا</h3>
+          <ul>
+            <li>لا كلمات مرور</li>
+            <li>لا بيانات حساب حساسة</li>
+            <li>لا مفاتيح AI داخل ملفات الواجهة العامة</li>
+          </ul>
+        </article>
+      </div>
       <div class="security-action-row">
         <button id="securityCookieSettings" class="primary-btn" type="button"><i class="fa-solid fa-sliders"></i> إدارة الكوكيز</button>
         <button id="securityClearData" class="danger-btn" type="button"><i class="fa-solid fa-trash-can"></i> حذف بيانات تأمين من هذا الجهاز</button>
-        ${canOpenReport ? `<a class="ghost-btn link-btn" href="${safeText(reportUrl)}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> الإبلاغ عن مشكلة</a>` : ''}
-        <button id="securityCopyReport" class="ghost-btn" type="button"><i class="fa-solid fa-copy"></i> نسخ نموذج البلاغ</button>
+        ${canOpenReport ? `<a class="ghost-btn link-btn" href="${safeText(reportUrl)}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> بلاغ خصوصية</a>` : ''}
+        ${canOpenAdmin ? `<a class="ghost-btn link-btn" href="${safeText(adminUrl)}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-headset"></i> تواصل مع الأدمن</a>` : ''}
+        <button id="securityCopyReport" class="ghost-btn" type="button"><i class="fa-solid fa-copy"></i> نسخ نموذج بلاغ</button>
       </div>
     </section>
   `;
@@ -246,4 +267,9 @@ function getReportUrl() {
   if (!reportLink?.url || reportLink.url === '#') return '#';
   const separator = reportLink.url.includes('?') ? '&' : '?';
   return `${reportLink.url}${separator}text=${encodeURIComponent(reportMessage)}`;
+}
+
+function getAdminUrl() {
+  const adminLink = security.links.find(link => link.type === 'admin');
+  return adminLink?.url && adminLink.url !== '#' ? adminLink.url : '#';
 }

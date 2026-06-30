@@ -60,7 +60,7 @@ function render() {
   compass?.classList.toggle('no-sensor', !hasHeading);
 
   if (hasBearing && hasHeading) status('البوصلة تعمل: لف الجهاز حتى يتجه السهم للأعلى.', 'ok');
-  else if (hasBearing) status('تم حساب اتجاه القبلة، لكن جهازك لا يرسل بوصلة حية. على اللابتوب هذا طبيعي، للأسف التقنية ما زالت تحب المفاجآت.', 'warn');
+  else if (hasBearing) status('البوصلة غير متاحة على هذا الجهاز. يمكنك استخدام الاتجاه اليدوي أو تفعيل صلاحيات الحركة إن كانت مدعومة.', 'warn');
 }
 
 function updatePosition(position) {

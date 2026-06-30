@@ -222,7 +222,7 @@ export function buildSiteKnowledge() {
       humidity: currentWeather.relative_humidity_2m ?? null
     } : null,
     systemMood: matchState.mood,
-    pages: ['home', 'match-center', 'radar', 'ai', 'settings'],
+    pages: ['home', 'match-center', 'archive', 'ai', 'more', 'weather-prayer', 'injuries', 'qibla', 'device-check', 'security', 'about'],
     meta: {
       name: siteMeta.name,
       edition: 'Taamen Tactical Core',
