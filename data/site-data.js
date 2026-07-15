@@ -180,14 +180,14 @@ export const upcomingMatches = [
   },
 
   {
-    id: 'UP-006',
-    title: 'مواجهة الجمعة',
+    id: 'UP-008',
+    title: 'المواجهة الحاسمة',
     team1: 'عمر',
-    team2: 'خضر',
+    team2: 'كريم',
     location: 'ملعب سيدات الخليل',
-    dateLabel: '03/07/2026',
-    dateKey: 20260703,
-    dateISO: '2026-07-03T19:00:00',
+    dateLabel: '03/17/2026',
+    dateKey: 20261703,
+    dateISO: '2026-17-03T19:00:00',
     exactDate: true,
     isPlaceholder: true,
     priority: 4,
@@ -200,26 +200,7 @@ export const upcomingMatches = [
     heatLabel: 'قادم'
   },
 
-  {
-    id: 'UP-007',
-    title: 'مواجهة الجمعة',
-    team1: 'غير محدد',
-    team2: 'غير محدد',
-    location: 'ملعب سيدات الخليل',
-    dateLabel: '10/07/2026',
-    dateKey: 20260710,
-    dateISO: '2026-07-10T19:00:00',
-    exactDate: true,
-    isPlaceholder: true,
-    priority: 5,
-    scheduleStatus: 'pending',
-    weekday: 5,
-    hour: 19,
-    minute: 0,
-    durationMinutes: 60,
-    note: 'الأطراف غير معروفة حاليًا، عدّل أسماء الفرق لاحقًا.',
-    heatLabel: 'قادم'
-  }
+  
 ];
 
 export const matchArchive = [
@@ -277,7 +258,22 @@ export const matchArchive = [
       team1: { possession: 61, shots: 27, onTarget: 20, saves: 6, assists: 5, passes: 120, fouls: 2, corners: 7 },
       team2: { possession: 39, shots: 18, onTarget: 10, saves: 11, assists: 3, passes: 90, fouls: 5, corners: 5 }
     }
+  },
+        {
+    id: 'M-207', type: 'friendly', team1: 'هاني', team2: 'غطاشة', score1: 7, score2: 1, status: 'انتهت', dateLabel: '3/07/2026', dateKey: 20260703, story: 'مباراة كانت تعاني من نقص عددي حيث صنفت من أزنى المباريات.',
+    details: {
+      team1: { possession: 50, shots: 13, onTarget: 11, saves: 1, assists: 5, passes: 100, fouls: 1, corners: 5 },
+      team2: { possession: 50, shots: 5, onTarget: 3, saves: 3, assists: 3, passes: 92, fouls: 3, corners: 4 }
+    }
+  },
+      {
+    id: 'M-208', type: 'normal', team1: 'عمر & كريم', team2: 'علامة', score1: 7, score2: 6, status: 'انتهت', dateLabel: '10/07/2026', dateKey: 20260710, story: 'لم تكن مباراةً عابرة… كانت إثباتَ مقام، وكسرةَ عين، وانتصارًا يُروى.',
+    details: {
+      team1: { possession: 55, shots: 21, onTarget: 16, saves: 6, assists: 5, passes: 122, fouls: 4, corners: 8 },
+      team2: { possession: 45, shots: 15, onTarget: 7, saves: 11, assists: 3, passes: 88, fouls: 6, corners: 6 }
+    }
   }
+
 ];
 
 export const guideSections = [
