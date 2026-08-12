@@ -6,7 +6,6 @@ export const siteMeta = {
   programmerPages: 'https://omar-i9.github.io/omar-i9/',
   releaseMode: 'المساعد الذكي المحلي مع تثبيت الرادار التكتيكي'
 };
-
 export const sources = [
   { title: 'Open-Meteo', text: 'مصدر الطقس الحالي والتوقعات بدون مفتاح API مكشوف.' },
   { title: 'Aladhan Prayer Times', text: 'مصدر مواقيت الصلاة حسب إحداثيات الخليل أو القدس.' },
@@ -17,7 +16,6 @@ export const sources = [
   { title: 'Device Orientation API', text: 'قراءة اتجاه الجهاز عند توفر البوصلة الحقيقية، خصوصًا على الهواتف.' },
   { title: 'Web Share API', text: 'مشاركة النصوص أو الصور من النظام مباشرة عند دعم المتصفح.' }
 ];
-
 export const teams = {
   home: {
     id: 'home',
