@@ -272,7 +272,32 @@ export const matchArchive = [
       team1: { possession: 55, shots: 21, onTarget: 16, saves: 6, assists: 5, passes: 122, fouls: 4, corners: 8 },
       team2: { possession: 45, shots: 15, onTarget: 7, saves: 11, assists: 3, passes: 88, fouls: 6, corners: 6 }
     }
-  }
+  },
+        {
+    id: 'M-209', type: 'normal', team1: 'عمر & كريم', team2: 'كريم تميمي', score1: 10, score2: 11, status: 'انتهت', dateLabel: '17/7/2026', dateKey: 20260710, story: 'قتال دام حتى آخر لحظات المباراة بنتجية لم ترضي المستضيف.',
+    details: {
+      team1: { possession: 51, shots: 21, onTarget: 16, saves: 12, assists: 7, passes: 110, fouls: 4, corners: 5 },
+      team2: { possession: 49, shots: 25, onTarget: 17, saves: 13, assists: 8, passes: 108, fouls: 6, corners: 4 }
+    },
+      {
+    id: 'M-210', type: 'normal', team1: 'عمر', team2: 'كريم', score1: 12, score2: 11, status: 'انتهت', dateLabel: '24/7/2026', dateKey: 20260710, story: 'تسجيل 4 اهداف بعد التاخر بـ3 اهداف والفوز بآخر الأنفاس!.',
+    details: {
+      team1: { possession: 54, shots: 20, onTarget: 16, saves: 4, assists: 9, passes: 77, fouls: 4, corners: 5 },
+      team2: { possession: 46, shots: 18, onTarget: 8, saves: 10, assists: 8, passes: 80, fouls: 6, corners: 4 }
+    },
+      {
+    id: 'M-211', type: 'normal', team1: 'عمر', team2: 'كريم', score1: 2, score2: 2, status: 'انتهت', dateLabel: '31/10/2026', dateKey: 20260710, story: 'مبارة بدفاع وهجوم قوي من كلا الطرفين انتهت بالتعادل بعد محاولات كثيرة',
+    details: {
+      team1: { possession: 50, shots: 17, onTarget: 8, saves: 6, assists: 2, passes: 85, fouls: 2, corners: 5 },
+      team2: { possession: 50, shots: 14, onTarget: 9, saves: 7, assists: 2, passes: 79, fouls: 4, corners: 6 }
+    },
+      {
+    id: 'M-212', type: 'normal', team1: 'عمر', team2: 'كريم', score1: 7, score2: 8, status: 'انتهت', dateLabel: '7/08/2026', dateKey: 20260710, story: 'كان التعادل قريباً ولكن قريباً وحده لم يكن كافياً.',
+    details: {
+      team1: { possession: 51, shots: 19, onTarget: 16, saves: 7, assists: 5, passes: 110, fouls: 2, corners: 9 },
+      team2: { possession: 49, shots: 22, onTarget: 18, saves: 9, assists: 6, passes: 104, fouls: 7, corners: 10 }
+    }
+
 
 ];
 
