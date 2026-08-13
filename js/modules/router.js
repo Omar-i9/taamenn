@@ -1,4 +1,5 @@
 import { $, $all } from './ui.js';
+import { isNormalNavigationAllowed } from './site-closure.js';
 
 const validRoutes = ['home', 'match-center', 'archive', 'ai', 'more', 'radar', 'weather-prayer', 'injuries', 'qibla', 'device-check', 'security', 'guide', 'about', 'settings'];
 const routeAliases = {
@@ -16,6 +17,13 @@ export function isValidRoute(route) {
 }
 
 export function navigate(route, options = {}) {
+  if (!isNormalNavigationAllowed()) {
+    closeMobileMenu();
+    closeMoreNav();
+    document.dispatchEvent(new CustomEvent('taamen:lifecycle-route-blocked', { detail: { route } }));
+    return;
+  }
+
   const requested = validRoutes.includes(route) ? route : 'home';
   const next = routeAliases[requested] || requested;
   currentRoute = next;

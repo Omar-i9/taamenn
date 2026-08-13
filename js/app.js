@@ -17,6 +17,7 @@ import { initAIAssistant } from './modules/ai-assistant.js';
 import { initCookieConsent } from './modules/cookies.js';
 import { initSecurityCenter } from './modules/security-center.js';
 import { initAIFloatingChat } from './modules/ai-floating-chat.js';
+import { initSiteLifecycle, SITE_PHASES } from './modules/site-closure.js';
 
 let currentCity = read('city', CONFIG.defaultCity);
 const BOOT_SPLASH_KEY = 'taamen.boot.seen.v1';
@@ -146,11 +147,21 @@ function initServiceWorker() {
 }
 
 async function boot() {
-  initBootSplash();
+  initTheme();
+  const lifecycle = initSiteLifecycle();
+  if (lifecycle.blockNormalBoot) {
+    initServiceWorker();
+    return;
+  }
+
+  if (lifecycle.delayNormalBoot) await lifecycle.ready;
+
+  if (![SITE_PHASES.ANNOUNCEMENT, SITE_PHASES.RETURN].includes(lifecycle.phase)) {
+    initBootSplash();
+  }
   createStars();
   revealOnScroll();
   initClock();
-  initTheme();
   initHeader();
   initCookieConsent();
   initMobileUX();

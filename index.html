@@ -39,8 +39,11 @@
   <link rel="stylesheet" href="css/24-security-privacy.css" />
   <link rel="stylesheet" href="css/25-ai-floating-chat.css" />
   <link rel="stylesheet" href="css/26-tactical-core.css" />
+  <link rel="stylesheet" href="css/27-site-closure.css" />
+  <link rel="stylesheet" href="maintenance/maintenance.css" />
 </head>
 <body class="theme-night">
+  <div id="maintenanceLayer"></div>
   <div class="background-shell" aria-hidden="true">
     <div class="bg-orb bg-orb-one"></div>
     <div class="bg-orb bg-orb-two"></div>
@@ -544,6 +547,9 @@
   </button>
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script type="module" src="js/app.js"></script>
+
+  <script src="maintenance/maintenance-config.js"></script>
+  <script src="maintenance/maintenance-content.js"></script>
+  <script src="maintenance/maintenance.js"></script>
 </body>
 </html>
