@@ -1,0 +1,17 @@
+{
+  "name": "TAAMEN — Football Command",
+  "short_name": "TAAMEN",
+  "description": "TAAMEN local-first football application: matches, archive, tactical board and team workspace.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#193940",
+  "theme_color": "#193940",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {"src":"/assets/taamen-brand-mark.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/assets/taamen-brand-mark.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}

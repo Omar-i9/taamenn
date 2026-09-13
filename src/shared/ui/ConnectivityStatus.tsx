@@ -1,0 +1,2 @@
+import { useEffect,useState } from 'react';
+export function ConnectivityStatus({language}:{language:'ar'|'en'}){const ar=language==='ar';const [online,setOnline]=useState(navigator.onLine);useEffect(()=>{const on=()=>setOnline(true),off=()=>setOnline(false);addEventListener('online',on);addEventListener('offline',off);return()=>{removeEventListener('online',on);removeEventListener('offline',off)}},[]);return <div className={`connectivity-status ${online?'online':'offline'}`} role="status"><i/> {online?(ar?'متصل':'ONLINE'):(ar?'دون اتصال':'OFFLINE')}</div>}

@@ -1,0 +1,16 @@
+import {useEffect,useState} from 'react';
+import {Bell,Check,CheckCheck,X,Trash2,Clock3,Archive} from'lucide-react';
+import {clearNotifications,deleteNotification,listNotifications,markAllNotificationsRead,markNotificationRead,type AppNotification}from'../services/notificationService';
+
+export function NotificationCenter({open,onClose,language,onChanged}:{open:boolean;onClose:()=>void;language:'ar'|'en';onChanged?:()=>void}){
+ const ar=language==='ar';const[items,setItems]=useState<AppNotification[]>([]);const[filter,setFilter]=useState<'all'|'unread'|'match'|'system'|'tactical'>('all');
+ useEffect(()=>{if(open)listNotifications().then(setItems)},[open]);if(!open)return null;
+ const shown=items.filter(x=>filter==='all'||filter===x.kind||(filter==='unread'&&!x.read));
+ const refresh=async()=>{setItems(await listNotifications());onChanged?.()};
+ const remove=async(id:string)=>{await deleteNotification(id);await refresh()};
+ return <div className="overlay" role="dialog" aria-modal="true" aria-label={ar?'الإشعارات':'Notifications'}><button className="overlay-backdrop" aria-label="close" onClick={onClose}/><aside className="notification-drawer">
+  <header><div><span className="eyebrow">TAAMEN / NOTIFICATIONS</span><h2>{ar?'الإشعارات':'Notifications'} <em>{items.filter(x=>!x.read).length}</em></h2></div><button className="icon-button" onClick={onClose}><X/></button></header>
+  <div className="notification-toolbar"><div className="filter-row">{(['all','unread','match','system','tactical'] as const).map(f=><button className={filter===f?'is-active':''} key={f} onClick={()=>setFilter(f)}>{f==='all'?(ar?'الكل':'All'):f==='unread'?(ar?'غير مقروء':'Unread'):f==='match'?(ar?'مباريات':'Matches'):f==='system'?(ar?'نظام':'System'):(ar?'تكتيك':'Tactical')}</button>)}</div><div className="notification-actions"><button onClick={async()=>{await markAllNotificationsRead();await refresh()}}><CheckCheck size={14}/>{ar?'تحديد الكل كمقروء':'Mark all as read'}</button><button onClick={async()=>{await clearNotifications();await refresh()}}><Trash2 size={14}/>{ar?'حذف الكل':'Delete all'}</button></div></div>
+  <div className="notification-list">{shown.length===0&&<div className="empty-state"><Bell/><strong>{ar?'لا توجد إشعارات':'No notifications'}</strong></div>}{shown.map(item=><article className={`notification-card ${item.read?'read':'unread'}`} key={item.id}><div className="notification-icon">{item.type==='archive'?<Archive size={17}/>:item.type==='match'?<Clock3 size={17}/>:<Bell size={17}/>}</div><div className="notification-copy"><strong>{ar?(item.titleAr||item.title):(item.title)}</strong><p>{ar?(item.messageAr||item.bodyAr||item.message||item.body):(item.message||item.body)}</p><small>{new Date(item.createdAt).toLocaleString(ar?'ar-PS':'en-US')}</small></div><div className="notification-item-actions">{!item.read&&<button className="icon-button" onClick={async()=>{await markNotificationRead(item.id);await refresh()}} aria-label={ar?'تحديد كمقروء':'Mark read'}><Check size={15}/></button>}<button className="icon-button" onClick={()=>remove(item.id)} aria-label={ar?'حذف الإشعار':'Delete notification'}><Trash2 size={15}/></button></div></article>)}</div>
+ </aside></div>;
+}

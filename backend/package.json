@@ -1,0 +1,11 @@
+{
+  "name": "taamen-2-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env src/server.mjs",
+    "start": "node --env-file-if-exists=.env src/server.mjs",
+    "test": "node --test test/",
+    "provision:members": "node --env-file-if-exists=.env scripts/provision-members.mjs"
+  }
+}

@@ -1,0 +1,573 @@
+/* TAAMEN 2.0 ProfileSetup — Mobile-First Compact Login Style */
+
+/* Base container — adapts to viewport */
+.profile-entry {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  background: radial-gradient(circle at 75% 0%, rgba(122, 191, 90, 0.08), transparent 28%), 
+              radial-gradient(circle at 10% 100%, rgba(186, 200, 217, 0.07), transparent 34%),
+              linear-gradient(135deg, #071316, #0e2328 58%, #071316);
+}
+
+/* Mobile container — compact, centered */
+.entry-container {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+}
+
+/* Mobile language button — compact top-right */
+.mobile-language {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid rgba(186, 200, 217, 0.2);
+  border-radius: 20px;
+  background: rgba(25, 57, 64, 0.6);
+  backdrop-filter: blur(10px);
+  color: var(--ta-pale, #BAC8D9);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+[dir=rtl] .mobile-language {
+  right: auto;
+  left: 0;
+}
+
+.mobile-language:hover {
+  background: rgba(25, 57, 64, 0.8);
+  border-color: rgba(155, 242, 114, 0.3);
+  color: var(--ta-lime, #9BF272);
+}
+
+/* Mobile branding — compact, not overwhelming */
+.mobile-branding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.mobile-logo {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(155, 242, 114, 0.15), rgba(25, 57, 64, 0.7));
+  border: 1px solid rgba(155, 242, 114, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  padding: 0;
+}
+
+.mobile-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.mobile-brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--ta-lime, #9BF272);
+}
+
+.brand-version {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--ta-pale, #BAC8D9);
+  opacity: 0.7;
+}
+
+/* Form container — dark glass, compact */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 20px;
+  border-radius: 20px;
+  background: rgba(20, 43, 49, 0.6);
+  border: 1px solid rgba(186, 200, 217, 0.12);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+}
+
+/* Avatar section — centered, compact */
+.avatar-section {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.avatar-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid rgba(155, 242, 114, 0.3);
+  background: rgba(25, 57, 64, 0.8);
+  display: grid;
+  place-items: center;
+  color: var(--ta-lime, #9BF272);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.avatar-circle:hover {
+  border-color: rgba(155, 242, 114, 0.5);
+  box-shadow: 0 0 0 4px rgba(155, 242, 114, 0.1);
+}
+
+.avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+
+.avatar-desktop-controls {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 14px;
+}
+
+[dir=rtl] .avatar-desktop-controls {
+  margin-left: 0;
+  margin-right: 14px;
+}
+
+.avatar-desktop-controls strong {
+  color: var(--ta-pale, #BAC8D9);
+  font-size: 14px;
+}
+
+.avatar-desktop-controls small {
+  color: var(--ta-muted, #BAC8D9);
+  font-size: 11px;
+}
+
+.photo-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.mini-action {
+  border: 1px solid rgba(186, 200, 217, 0.2);
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 10px;
+  color: var(--ta-pale, #BAC8D9);
+  transition: all 0.2s;
+}
+
+.mini-action:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text, #eaf2ff);
+}
+
+.avatar-change,
+.avatar-remove {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(186, 200, 217, 0.2);
+  background: rgba(25, 57, 64, 0.9);
+  display: grid;
+  place-items: center;
+  color: var(--ta-pale, #BAC8D9);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar-change {
+  bottom: 0;
+  right: 50%;
+  transform: translateX(50%) translateY(50%);
+}
+
+[dir=rtl] .avatar-change {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%) translateY(50%);
+}
+
+.avatar-remove {
+  top: 0;
+  right: 50%;
+  transform: translateX(50%) translateY(-50%);
+}
+
+[dir=rtl] .avatar-remove {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.avatar-change:hover,
+.avatar-remove:hover {
+  background: rgba(155, 242, 114, 0.2);
+  border-color: rgba(155, 242, 114, 0.4);
+  color: var(--ta-lime, #9BF272);
+}
+
+.mobile-only {
+  display: flex;
+}
+
+/* Form labels — compact */
+.form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--ta-pale, #BAC8D9);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.form-label input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(7, 19, 22, 0.6);
+  border: 1px solid rgba(186, 200, 217, 0.15);
+  color: var(--text, #eaf2ff);
+  font-size: 15px;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-label input::placeholder {
+  color: rgba(186, 200, 217, 0.4);
+}
+
+.form-label input:focus {
+  outline: none;
+  border-color: rgba(155, 242, 114, 0.5);
+  box-shadow: 0 0 0 3px rgba(155, 242, 114, 0.08);
+  background: rgba(7, 19, 22, 0.8);
+}
+
+/* Consent row — compact "Remember me" style */
+.consent-row {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.consent-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ta-lime, #9BF272);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.consent-text {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  color: var(--ta-pale, #BAC8D9);
+  font-size: 12px;
+  line-height: 1.5;
+  user-select: none;
+}
+
+.consent-label-text {
+  cursor: pointer;
+}
+
+.policy-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  border: none;
+  background: transparent;
+  color: var(--ta-lime, #9BF272);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.policy-link:hover {
+  background: rgba(155, 242, 114, 0.08);
+  text-decoration: underline;
+}
+
+/* Consent error state — subtle red glow */
+.consent-error {
+  border: none;
+  background: transparent;
+}
+
+.consent-error input[type="checkbox"] {
+  accent-color: #ffaaa3;
+}
+
+.consent-error .policy-link {
+  color: #ffaaa3;
+}
+
+.consent-error-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #ffaaa3;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.consent-arrow {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffaaa3;
+  animation: bounce-down 1s ease-in-out infinite;
+}
+
+@keyframes bounce-down {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+[dir=rtl] .consent-arrow {
+  left: auto;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+[dir=rtl] .consent-arrow svg {
+  transform: rotate(180deg);
+}
+
+/* Submit button — mobile touch-friendly */
+.mobile-submit {
+  min-height: 48px;
+  padding: 0 20px;
+  border: 1px solid rgba(155, 242, 114, 0.3);
+  border-radius: 12px;
+  background: var(--ta-lime, #9BF272);
+  color: #12251b;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 6px;
+}
+
+.mobile-submit:hover:not(:disabled) {
+  background: #a8ff9a;
+  border-color: rgba(155, 242, 114, 0.5);
+  transform: translateY(-1px);
+}
+
+.mobile-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.mobile-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Desktop layout — two-column, spacious */
+@media (min-width: 900px) {
+  .profile-entry {
+    padding: 40px 20px;
+  }
+
+  .entry-container {
+    max-width: 1100px;
+  }
+
+  .entry-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .mobile-language {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+
+  [dir=rtl] .mobile-language {
+    right: auto;
+    left: 20px;
+  }
+
+  .mobile-branding {
+    align-items: flex-start;
+    text-align: start;
+    margin-bottom: 0;
+  }
+
+  .mobile-logo {
+    width: 74px;
+    height: 74px;
+    border-radius: 20px;
+  }
+
+  .mobile-logo img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .brand-name {
+    font-size: clamp(32px, 5vw, 48px);
+  }
+
+  .brand-version {
+    font-size: 12px;
+  }
+
+  .mobile-brand-text {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .profile-form {
+    padding: 32px;
+    gap: 18px;
+  }
+
+  .avatar-section {
+    justify-content: flex-start;
+    margin-bottom: 18px;
+  }
+
+  .avatar-circle {
+    width: 74px;
+    height: 74px;
+    font-size: 24px;
+  }
+
+  .avatar-desktop-controls {
+    display: flex;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+
+  .form-label {
+    font-size: 14px;
+  }
+
+  .mobile-submit {
+    min-height: 42px;
+  }
+}
+
+/* Tablet adaptation */
+@media (min-width: 600px) and (max-width: 899px) {
+  .entry-container {
+    max-width: 540px;
+  }
+
+  .profile-form {
+    padding: 28px 24px;
+  }
+}
+
+/* Very small mobile */
+@media (max-width: 360px) {
+  .profile-entry {
+    padding: 16px 12px;
+  }
+
+  .profile-form {
+    padding: 20px 16px;
+    gap: 14px;
+  }
+
+  .mobile-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .mobile-logo img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .brand-name {
+    font-size: 18px;
+  }
+
+  .avatar-circle {
+    width: 64px;
+    height: 64px;
+    font-size: 18px;
+  }
+
+  .form-label input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
+
+/* RTL fixes */
+[dir=rtl] .profile-form input,
+[dir=rtl] .consent-text {
+  text-align: right;
+}
+
+[dir=rtl] .mobile-submit svg {
+  transform: rotate(180deg);
+}

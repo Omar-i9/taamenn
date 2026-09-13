@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "members": [
+    {
+      "id": "member-dev-owner",
+      "username": "dev-owner",
+      "displayName": "Dev Owner",
+      "arabicName": "مالك التطوير",
+      "role": "OWNER",
+      "active": true,
+      "memberCode": "user#DEV01",
+      "createdAt": 1700000000000
+    },
+    {
+      "id": "member-dev-member",
+      "username": "dev-member",
+      "displayName": "Dev Member",
+      "arabicName": "عضو التطوير",
+      "role": "MEMBER",
+      "active": true,
+      "memberCode": "user#DEV02",
+      "createdAt": 1700000000000
+    },
+    {
+      "id": "member-dev-inactive",
+      "username": "dev-inactive",
+      "displayName": "Dev Inactive",
+      "arabicName": "عضو موقوف",
+      "role": "MEMBER",
+      "active": false,
+      "memberCode": "user#DEV03",
+      "createdAt": 1700000000000
+    }
+  ],
+  "players": [
+    {
+      "id": "player-dev-1",
+      "displayName": "Sample Player One",
+      "role": "Player",
+      "preferredPosition": "ST",
+      "currentStatus": "active",
+      "legacyStats": {
+        "appearances": 4,
+        "wins": 2,
+        "losses": 1,
+        "draws": 1,
+        "goals": 5,
+        "assists": 2,
+        "saves": 0,
+        "averageRating": 7.4
+      }
+    },
+    {
+      "id": "player-dev-2",
+      "displayName": "Sample Player Two",
+      "role": "Player",
+      "preferredPosition": "GK",
+      "currentStatus": "active",
+      "legacyStats": {
+        "appearances": 4,
+        "wins": 1,
+        "losses": 2,
+        "draws": 1,
+        "goals": 0,
+        "assists": 0,
+        "saves": 11,
+        "averageRating": 6.9
+      }
+    }
+  ],
+  "matches": [
+    {
+      "id": "DEV-001",
+      "type": "normal",
+      "team1": "Sample Team A",
+      "team2": "Sample Team B",
+      "score1": 3,
+      "score2": 2,
+      "status": "ARCHIVED",
+      "dateLabel": "01/02/2026",
+      "dateKey": 20260201,
+      "dateISO": "2026-02-01",
+      "story": "Development fixture record. Not real TAAMEN data.",
+      "source": "legacy-taamenn",
+      "visibility": "PRIVATE"
+    },
+    {
+      "id": "DEV-002",
+      "type": "friendly",
+      "team1": "Sample Team C",
+      "team2": "Sample Team A",
+      "score1": 1,
+      "score2": 1,
+      "status": "ARCHIVED",
+      "dateLabel": "08/02/2026",
+      "dateKey": 20260208,
+      "dateISO": "2026-02-08",
+      "story": "Development fixture record. Not real TAAMEN data.",
+      "source": "legacy-taamenn",
+      "visibility": "PRIVATE"
+    }
+  ],
+  "notifications": [],
+  "performance": [],
+  "invitations": [],
+  "audit": [],
+  "tacticalPlan": null
+}

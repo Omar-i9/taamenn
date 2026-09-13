@@ -1,0 +1,23 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+
+.env
+.env.*
+!.env.example
+backend/.env
+
+# Operator data: real members, password hashes, recognition codes, private matches.
+# Never commit. Use backend/data.example.json for development.
+backend/data.json
+backend/data.json.tmp
+backend/data.json.corrupt-*
+
+# Real historical match snapshot used to seed the operator dataset.
+backend/legacy-private-matches.json
+
+# Server-side session store (hashed tokens).
+backend/sessions.json
+backend/sessions.json.tmp
+backend/sessions.json.corrupt-*
