@@ -73,19 +73,48 @@ export function isSecureRequest(req) {
 }
 
 export class HttpError extends Error {
-  constructor(status, message) {
+  constructor(status, message, { unreadBody = false } = {}) {
     super(message);
     this.status = status;
+    /** True when the request body was abandoned part-way and still needs draining. */
+    this.unreadBody = unreadBody;
   }
+}
+
+/**
+ * Discard the rest of an abandoned request body without buffering it.
+ *
+ * Closing the socket immediately makes a client that is still uploading see a
+ * connection reset instead of the 413 response, so the remainder is drained. The
+ * drain is capped in bytes and time so this cannot be used to hold resources open.
+ */
+export function drainRequest(req, { maxBytes = 4 * 1024 * 1024, timeoutMs = 2000 } = {}) {
+  if (req.readableEnded || req.destroyed) return;
+  let drained = 0;
+  const timer = setTimeout(() => req.destroy(), timeoutMs);
+  timer.unref?.();
+  req.on('data', chunk => {
+    drained += chunk.length;
+    if (drained > maxBytes) req.destroy();
+  });
+  req.on('end', () => clearTimeout(timer));
+  req.on('error', () => clearTimeout(timer));
+  req.resume();
 }
 
 /** Enforce the limit while streaming so an oversized body is never fully buffered. */
 export async function readJsonBody(req) {
+  const declared = Number(req.headers['content-length']);
+  if (Number.isFinite(declared) && declared > config.maxBodyBytes) {
+    throw new HttpError(413, 'Request body is too large.', { unreadBody: true });
+  }
   const chunks = [];
   let size = 0;
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > config.maxBodyBytes) throw new HttpError(413, 'Request body is too large.');
+    if (size > config.maxBodyBytes) {
+      throw new HttpError(413, 'Request body is too large.', { unreadBody: true });
+    }
     chunks.push(chunk);
   }
   if (!size) return {};

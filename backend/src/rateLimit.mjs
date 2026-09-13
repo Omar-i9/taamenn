@@ -25,24 +25,27 @@ export function createRateLimiter(options = {}) {
   return {
     /** Returns true when the attempt may proceed. */
     check(key, now = Date.now()) {
-      sweep(now);
       const entry = entries.get(key) || { count: 0, first: now, blockedUntil: 0 };
+      let allowed;
       if (entry.blockedUntil > now) {
-        entries.set(key, entry);
-        return false;
-      }
-      if (now - entry.first > windowMs) {
-        entry.count = 0;
-        entry.first = now;
-      }
-      entry.count += 1;
-      if (entry.count > maxAttempts) {
-        entry.blockedUntil = now + cooldownMs;
-        entries.set(key, entry);
-        return false;
+        allowed = false;
+      } else {
+        if (now - entry.first > windowMs) {
+          entry.count = 0;
+          entry.first = now;
+        }
+        entry.count += 1;
+        if (entry.count > maxAttempts) {
+          entry.blockedUntil = now + cooldownMs;
+          allowed = false;
+        } else {
+          allowed = true;
+        }
       }
       entries.set(key, entry);
-      return true;
+      // Sweep after recording, so the map size can never exceed the cap.
+      sweep(now);
+      return allowed;
     },
 
     /** Clear the budget after a legitimate success. */

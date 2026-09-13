@@ -2,7 +2,7 @@ import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.mjs';
-import { HttpError, json } from './http.mjs';
+import { HttpError, drainRequest, json } from './http.mjs';
 import { handleRequest } from './routes.mjs';
 import { seedLegacyMatchesIfEmpty, store } from './store.mjs';
 
@@ -12,7 +12,12 @@ export function createServer() {
       await handleRequest(req, res);
     } catch (error) {
       if (error instanceof HttpError) {
-        return json(req, res, error.status, { error: error.message });
+        if (!error.unreadBody) {
+          return json(req, res, error.status, { error: error.message });
+        }
+        // Answer first, then discard what the client is still sending.
+        json(req, res, error.status, { error: error.message }, { Connection: 'close' });
+        return drainRequest(req);
       }
       // Log server-side, return nothing internal to the client.
       console.error('[taamen] unhandled request error:', error);

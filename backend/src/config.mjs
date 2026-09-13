@@ -20,10 +20,11 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   isProduction: process.env.NODE_ENV === 'production',
 
-  dataFile: path.join(ROOT, 'data.json'),
-  exampleDataFile: path.join(ROOT, 'data.example.json'),
-  sessionFile: path.join(ROOT, 'sessions.json'),
-  legacyFile: path.join(ROOT, 'legacy-private-matches.json'),
+  // File locations are overridable so tests can run against a temporary dataset.
+  dataFile: process.env.TAAMEN_DATA_FILE || path.join(ROOT, 'data.json'),
+  exampleDataFile: process.env.TAAMEN_EXAMPLE_DATA_FILE || path.join(ROOT, 'data.example.json'),
+  sessionFile: process.env.TAAMEN_SESSION_FILE || path.join(ROOT, 'sessions.json'),
+  legacyFile: process.env.TAAMEN_LEGACY_FILE || path.join(ROOT, 'legacy-private-matches.json'),
 
   sessionTtlMs: Math.max(15 * MINUTE, Number(process.env.SESSION_TTL_MS || 8 * 60 * MINUTE)),
   sessionCookieName: 'taamen_session',

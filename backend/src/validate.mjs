@@ -61,8 +61,10 @@ export function tacticalPlan(body) {
       positionMode: player.positionMode === 'manual' ? 'manual' : 'auto',
     };
     for (const key of COORDINATE_KEYS) {
-      const value = Number(player[key]);
-      if (!Number.isFinite(value) || value < 0 || value > 100) {
+      // Strictly numeric: a coordinate arriving as a string is a client bug, not
+      // something to silently coerce into stored state.
+      const value = player[key];
+      if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 100) {
         throw new HttpError(400, `plan.players[${index}].${key} must be between 0 and 100.`);
       }
       out[key] = value;
