@@ -24,6 +24,10 @@ backend/sessions.json
 backend/sessions.json.tmp
 backend/sessions.json.corrupt-*
 
+# Validated KV export produced by `npm run kv:prepare`. Never commit operator data.
+backend/kv-data.json
+backend/kv-data.json.tmp
+
 # Playwright
 /test-results/
 /playwright-report/

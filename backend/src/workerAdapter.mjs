@@ -1,3 +1,4 @@
+import { emptyProductionDataset } from './kvMigration.mjs';
 import { applyEnv } from './config.mjs';
 import { createKvJsonFile } from './kvStore.mjs';
 import { setStores } from './runtime.mjs';
@@ -24,7 +25,11 @@ export function initWorkerRuntime(env, exampleData) {
         kv,
         key: 'data',
         validate: validateData,
-        createFallback: async () => exampleData || { schemaVersion: 1 },
+        createFallback: async () => {
+          // Production must not silently seed DEV-001/DEV-002. Local preview may opt in.
+          if (env.TAAMEN_SEED_EXAMPLE === 'true') return exampleData || emptyProductionDataset();
+          return emptyProductionDataset();
+        },
       }),
       sessions: createKvJsonFile({
         kv,

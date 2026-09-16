@@ -167,6 +167,19 @@ for (const entry of ['backend/data.json', 'backend/sessions.json', 'backend/lega
   }
 }
 
+const wranglerPath = path.join(root, 'wrangler.jsonc');
+if (!fs.existsSync(wranglerPath)) {
+  fail('wrangler.jsonc is missing');
+} else {
+  const wrangler = fs.readFileSync(wranglerPath, 'utf8');
+  if (!/"binding"\s*:\s*"TAAMEN_KV"/.test(wrangler)) {
+    fail('wrangler.jsonc must bind TAAMEN_KV');
+  }
+  if (/taamen-kv-replace-before-deploy|taamen-kv-local-preview/.test(wrangler)) {
+    fail('wrangler.jsonc still contains a placeholder KV namespace id');
+  }
+}
+
 // ---------------------------------------------------------------------------
 // 8. Official branding asset integrity.
 //     SHA-256 of the supplied TAAMEN brand mark committed with the product.

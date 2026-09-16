@@ -68,8 +68,8 @@ header with a token held in memory, and the CSRF story changes accordingly. That
 
 ## Backend configuration
 
-Copy `backend/.env.example` to `backend/.env`. See `docs/SECURITY.md` for the security
-meaning of each value.
+Copy `backend/.env.example` to `backend/.env`. Worker preview uses `.dev.vars` at the
+repo root. See `docs/SECURITY.md` and `docs/email/CONFIGURATION.md`.
 
 | Variable | Purpose |
 |---|---|
@@ -99,14 +99,73 @@ Workers runtime locally.
 - Shared API logic: `backend/src/routes.mjs` `handleFetch`.
 - Node adapter: `backend/src/server.mjs` (unchanged command: `npm run backend`).
 - Persistence: local Node uses `backend/data.json` / `backend/sessions.json`; the Worker
-  uses the `TAAMEN_KV` KV namespace. Replace the placeholder KV ids before a real deploy.
+  uses the `TAAMEN_KV` KV namespace (binding name `TAAMEN_KV`, keys `data` and `sessions`).
 - Copy `.dev.vars.example` to `.dev.vars` for local Worker secrets. Never commit it.
 - `EMAILJS_PRIVATE_KEY` and `TAAMEN_SUPPORT_RECIPIENT` stay off the frontend and off
   `VITE_*`. Public EmailJS identifiers may live in Wrangler `vars`; private values do not.
 - Do not put operator `data.json` in `dist/client/` or `public/`.
 
-This repository is prepared for Cloudflare deployment. Publishing to production and
-changing the Cloudflare dashboard are a later phase.
+### KV namespace (required before deploy)
+
+Local preview does not need a remote KV id. **Do not invent an id.** This repository
+does not contain a real namespace id, and this phase does not create one (no dashboard
+changes, no `wrangler kv namespace create`).
+
+One-time operator step, after authenticating:
+
+```bash
+npx wrangler login
+npx wrangler kv namespace create TAAMEN_KV
+```
+
+Paste the returned id into `wrangler.jsonc`:
+
+```jsonc
+"kv_namespaces": [{ "binding": "TAAMEN_KV", "id": "<id from create>" }]
+```
+
+### Historical data migration (not uploaded automatically)
+
+Featured Members (exactly 12) live in `backend/src/featuredMembers.mjs` and are synced
+on Worker boot. They are not copied into the client bundle.
+
+Canonical historical matches live in the gitignored operator snapshot
+`backend/legacy-private-matches.json`. `backend/data.example.json` DEV-001/DEV-002
+records are seed/demo and are not migrated by default. Sessions and `.env` values
+must never be migrated.
+
+```bash
+npm run kv:prepare -- --legacy backend/legacy-private-matches.json
+# writes backend/kv-data.json (gitignored). Review it, then after the KV id exists:
+# npx wrangler kv key put data --binding TAAMEN_KV --path backend/kv-data.json
+```
+
+`TAAMEN_SEED_EXAMPLE` must be unset/false in production so first boot does not seed
+demo fixtures into KV.
+
+### Production variables
+
+Same-origin at `https://taamenn.com` / `https://taamenn.com/api/*`. Set
+`CORS_ORIGIN` to empty (already in Wrangler `vars`) — no wildcard CORS.
+
+Local Worker preview keeps `REQUIRE_HTTPS=false` so `http://localhost` preview works.
+For production, set Worker variable `REQUIRE_HTTPS=true` and `NODE_ENV=production`
+(Workers → taamenn → Settings → Variables and Secrets). That also forces the
+`Secure` cookie attribute.
+
+EmailJS `Origin` for the Worker is `https://taamenn.com` (`EMAILJS_ORIGIN`). Add that
+origin in the EmailJS dashboard (or enable non-browser API). Local Node still uses
+`http://localhost` unless overridden.
+
+Secrets (never commit, never `VITE_*`):
+
+| Secret | Where to enter |
+|---|---|
+| `TAAMEN_SUPPORT_RECIPIENT` | Cloudflare Worker secret; also `backend/.env` for Node |
+| `EMAILJS_PRIVATE_KEY` | Cloudflare Worker secret, **only if** EmailJS “Use Private Key” is on |
+
+Publishing to production and changing the Cloudflare dashboard (except the future
+one-time KV create + secrets) remain a later phase.
 
 ## Operator data
 

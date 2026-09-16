@@ -12,7 +12,8 @@
     "qa:final": "node scripts/qa-final.mjs",
     "test:backend": "npm --prefix backend test",
     "test:frontend": "node --test --experimental-strip-types \"src/**/*.test.ts\"",
-    "test": "node scripts/qa-final.mjs && npm run test:backend && npm run test:frontend"
+    "test": "node scripts/qa-final.mjs && npm run test:backend && npm run test:frontend",
+    "kv:prepare": "node scripts/prepare-kv-data.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

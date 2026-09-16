@@ -13,11 +13,22 @@ const ENV_KEYS = [
   'EMAILJS_AUTOREPLY_TEMPLATE_ID',
   'EMAILJS_PUBLIC_KEY',
   'EMAILJS_PRIVATE_KEY',
+  'EMAILJS_ORIGIN',
   'TAAMEN_DATA_FILE',
   'TAAMEN_EXAMPLE_DATA_FILE',
   'TAAMEN_SESSION_FILE',
   'TAAMEN_LEGACY_FILE',
 ];
+
+function parseOrigins(raw) {
+  if (raw === undefined) {
+    return ['http://localhost:5173', 'http://127.0.0.1:5173'];
+  }
+  return String(raw)
+    .split(',')
+    .map(x => x.trim())
+    .filter(Boolean);
+}
 
 function bool(value, fallback = false) {
   if (value === undefined || value === '') return fallback;
@@ -56,11 +67,11 @@ export function buildConfig(source = {}) {
     sessionTtlMs: Math.max(15 * MINUTE, Number(env('SESSION_TTL_MS') || 8 * 60 * MINUTE)),
     sessionCookieName: 'taamen_session',
 
-    /** Explicit allow-list. Empty means same-origin only. */
-    allowedOrigins: String(env('CORS_ORIGIN') || 'http://localhost:5173,http://127.0.0.1:5173')
-      .split(',')
-      .map(x => x.trim())
-      .filter(Boolean),
+    /**
+     * Explicit allow-list. Unset → localhost Vite origins (Node `npm run dev`).
+     * Empty string → same-origin only (production `https://taamenn.com` and Worker preview).
+     */
+    allowedOrigins: parseOrigins(env('CORS_ORIGIN')),
 
     requireHttps: bool(env('REQUIRE_HTTPS')),
 
@@ -87,6 +98,12 @@ export function buildConfig(source = {}) {
       emailjsAutoReplyTemplateId: env('EMAILJS_AUTOREPLY_TEMPLATE_ID') || '',
       emailjsPublicKey: env('EMAILJS_PUBLIC_KEY') || '',
       emailjsPrivateKey: env('EMAILJS_PRIVATE_KEY') || '',
+      /**
+       * Origin sent to EmailJS for the non-browser API compatibility header.
+       * Production Worker: https://taamenn.com. Local Node default: http://localhost.
+       * Never http://localhost:5173.
+       */
+      emailjsOrigin: env('EMAILJS_ORIGIN') || (env('NODE_ENV') === 'production' ? 'https://taamenn.com' : 'http://localhost'),
       maxMessageLength: 2000,
       maxNameLength: 80,
       maxEmailLength: 254,

@@ -2,6 +2,7 @@
  * KV-backed JSON document with the same load/read/update contract as jsonFile.
  *
  * Writes are queued so concurrent requests cannot interleave a read-modify-write.
+ * In-memory `state` is an isolate cache only; a new isolate reloads from KV.
  */
 export function createKvJsonFile({ kv, key, validate, createFallback }) {
   let state = null;
@@ -15,7 +16,9 @@ export function createKvJsonFile({ kv, key, validate, createFallback }) {
         state = validate(JSON.parse(raw));
         return state;
       } catch (error) {
-        console.error(`[taamen] KV key "${key}" was unreadable (${error.message}); using fallback.`);
+        // Do not overwrite an unreadable production document with fallback seed data.
+        console.error(`[taamen] KV key "${key}" was unreadable (${error.message}); leaving stored value intact.`);
+        throw error;
       }
     }
     state = validate(await createFallback());

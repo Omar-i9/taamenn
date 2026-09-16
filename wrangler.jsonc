@@ -7,11 +7,16 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
+  // Binding required by worker/index.js and backend/src/workerAdapter.mjs.
+  // Local `vite preview` uses Miniflare and does not need a remote id.
+  // A real 32-character namespace id is required before `wrangler deploy`.
+  // This environment cannot create one (no Cloudflare API token; dashboard
+  // changes are out of scope). One-time operator step after `wrangler login`:
+  //   npx wrangler kv namespace create TAAMEN_KV
+  // then set "id" to the returned value. Do not invent an id.
   "kv_namespaces": [
     {
-      "binding": "TAAMEN_KV",
-      "id": "taamen-kv-replace-before-deploy",
-      "preview_id": "taamen-kv-local-preview"
+      "binding": "TAAMEN_KV"
     }
   ],
   "vars": {
@@ -19,7 +24,10 @@
     "EMAILJS_CONTACT_TEMPLATE_ID": "template_jsugxta",
     "EMAILJS_AUTOREPLY_TEMPLATE_ID": "template_4pj4xlm",
     "EMAILJS_PUBLIC_KEY": "7xyuge5ZLIgBevcbL",
+    "EMAILJS_ORIGIN": "https://taamenn.com",
     "REQUIRE_HTTPS": "false",
-    "TRUST_PROXY": "true"
+    "TRUST_PROXY": "true",
+    "CORS_ORIGIN": "",
+    "TAAMEN_SEED_EXAMPLE": "false"
   }
 }
