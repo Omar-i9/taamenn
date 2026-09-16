@@ -96,6 +96,9 @@ does not start Miniflare. Use `npm run preview` after `npm run build` to exercis
 Workers runtime locally.
 
 - Worker entry: `worker/index.js` — `/api/*` only (`assets.run_worker_first`).
+- Wrangler CLI assets directory: `dist/client` (Vite client outDir after `npm run build`).
+  `npx wrangler dev --remote` reads `wrangler.jsonc` and needs this field. `npm run preview`
+  still uses the Vite plugin’s generated `dist/taamenn/wrangler.json`.
 - Shared API logic: `backend/src/routes.mjs` `handleFetch`.
 - Node adapter: `backend/src/server.mjs` (unchanged command: `npm run backend`).
 - Persistence: local Node uses `backend/data.json` / `backend/sessions.json`; the Worker

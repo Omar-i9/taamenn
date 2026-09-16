@@ -179,6 +179,15 @@ if (!fs.existsSync(wranglerPath)) {
   fail('wrangler.jsonc is missing');
 } else {
   const wrangler = fs.readFileSync(wranglerPath, 'utf8');
+  if (!/"directory"\s*:\s*"dist\/client"/.test(wrangler)) {
+    fail('wrangler.jsonc assets.directory must be dist/client (Vite client outDir)');
+  }
+  if (!/"not_found_handling"\s*:\s*"single-page-application"/.test(wrangler)) {
+    fail('wrangler.jsonc must keep SPA not_found_handling');
+  }
+  if (!/"run_worker_first"\s*:\s*\[\s*"\/api\/\*"\s*\]/.test(wrangler)) {
+    fail('wrangler.jsonc must keep run_worker_first ["/api/*"]');
+  }
   if (!/"binding"\s*:\s*"TAAMEN_KV"/.test(wrangler)) {
     fail('wrangler.jsonc must bind TAAMEN_KV');
   }
