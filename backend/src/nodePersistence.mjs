@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.mjs';
 import { createJsonFile } from './jsonFile.mjs';
-import { setStores } from './runtime.mjs';
+import { setStores, resetStores } from './runtime.mjs';
 import { validateData, store } from './store.mjs';
 import { validateSessions } from './sessions.mjs';
 
@@ -40,6 +40,13 @@ export function initNodeRuntime() {
     }),
   });
   initialized = true;
+}
+
+/** Simulate a process restart: drop in-memory stores and reopen the JSON files. */
+export function resetNodeRuntime() {
+  initialized = false;
+  resetStores();
+  initNodeRuntime();
 }
 
 /**

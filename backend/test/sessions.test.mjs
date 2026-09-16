@@ -11,7 +11,7 @@ process.env.SESSION_TTL_MS = '900000';
 const { hashPassword } = await import('../src/passwords.mjs');
 writeDataset(seedDataset(hashPassword));
 
-const { initNodeRuntime } = await import('../src/nodePersistence.mjs');
+const { initNodeRuntime, resetNodeRuntime } = await import('../src/nodePersistence.mjs');
 initNodeRuntime();
 
 const { createSession, destroyMemberSessions, destroySession, readSession, sessionCount } = await import('../src/sessions.mjs');
@@ -85,8 +85,8 @@ test('expired sessions are rejected and swept from the store', async () => {
   stored.records[digest].expiresAt = Date.now() - 1000;
   fs.writeFileSync(process.env.TAAMEN_SESSION_FILE, JSON.stringify(stored), 'utf8');
 
-  const { readSession: freshRead } = await import(`../src/sessions.mjs?expired=${Date.now()}`);
-  assert.equal(await freshRead(token), null, 'an expired session must not authenticate');
+  resetNodeRuntime();
+  assert.equal(await readSession(token), null, 'an expired session must not authenticate');
 
   const afterSweep = JSON.parse(fs.readFileSync(process.env.TAAMEN_SESSION_FILE, 'utf8'));
   assert.equal(afterSweep.records[digest], undefined, 'the expired record is swept');
@@ -100,8 +100,8 @@ test('records with a tampered shape are discarded when the store is loaded', asy
   stored.records['c'.repeat(64)] = { authMethod: 'password', role: 'OWNER', expiresAt: Date.now() + 60_000 };
   fs.writeFileSync(process.env.TAAMEN_SESSION_FILE, JSON.stringify(stored), 'utf8');
 
-  const { readSession: freshRead } = await import(`../src/sessions.mjs?tampered=${Date.now()}`);
-  assert.ok(await freshRead(valid.token), 'the legitimate session still resolves');
+  resetNodeRuntime();
+  assert.ok(await readSession(valid.token), 'the legitimate session still resolves');
 
   const reloaded = JSON.parse(fs.readFileSync(process.env.TAAMEN_SESSION_FILE, 'utf8'));
   for (const key of ['not-a-digest', 'b'.repeat(64), 'c'.repeat(64)]) {
@@ -111,8 +111,8 @@ test('records with a tampered shape are discarded when the store is loaded', asy
 
 test('sessions survive a restart of the session module', async () => {
   const { token } = await createSession({ memberId: 'member-regular', authMethod: 'password', role: 'MEMBER' });
-  const { readSession: freshRead } = await import(`../src/sessions.mjs?restart=${Date.now()}`);
-  const session = await freshRead(token);
+  resetNodeRuntime();
+  const session = await readSession(token);
   assert.ok(session, 'a restart must not silently drop authentication');
   assert.equal(session.authMethod, 'password');
 });

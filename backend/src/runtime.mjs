@@ -12,6 +12,11 @@ export function setStores({ data, sessions }) {
   sessionStore = sessions;
 }
 
+export function resetStores() {
+  dataStore = null;
+  sessionStore = null;
+}
+
 export function getDataStore() {
   if (!dataStore) throw new Error('TAAMEN data store is not initialized.');
   return dataStore;
