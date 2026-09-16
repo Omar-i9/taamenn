@@ -197,6 +197,40 @@ if (!fs.existsSync(wranglerPath)) {
   if (/taamen-kv-replace-before-deploy|taamen-kv-local-preview/.test(wrangler)) {
     fail('wrangler.jsonc still contains a placeholder KV namespace id');
   }
+  if (!/"EMAILJS_SERVICE_ID"\s*:\s*"service_13mkb9h"/.test(wrangler)
+    || !/"EMAILJS_CONTACT_TEMPLATE_ID"\s*:\s*"template_jsugxta"/.test(wrangler)
+    || !/"EMAILJS_AUTOREPLY_TEMPLATE_ID"\s*:\s*"template_4pj4xlm"/.test(wrangler)
+    || !/"EMAILJS_PUBLIC_KEY"\s*:\s*"7xyuge5ZLIgBevcbL"/.test(wrangler)) {
+    fail('wrangler.jsonc must keep the authoritative EmailJS public IDs');
+  }
+  const productionEnv = wrangler.match(/"production"\s*:\s*\{[\s\S]*?\n    \}/);
+  if (!productionEnv) {
+    fail('wrangler.jsonc must define env.production for Cloudflare Vite CLOUDFLARE_ENV=production');
+  } else {
+    const block = productionEnv[0];
+    if (!/"REQUIRE_HTTPS"\s*:\s*"true"/.test(block)) {
+      fail('wrangler.jsonc env.production must set REQUIRE_HTTPS=true');
+    }
+    if (!/"NODE_ENV"\s*:\s*"production"/.test(block)) {
+      fail('wrangler.jsonc env.production must set NODE_ENV=production');
+    }
+    if (!/"id"\s*:\s*"7698f62403814e81b6f2ca13a8eb9cbc"/.test(block)) {
+      fail('wrangler.jsonc env.production must bind the confirmed TAAMEN_KV id');
+    }
+    if (!/"EMAILJS_SERVICE_ID"\s*:\s*"service_13mkb9h"/.test(block)
+      || !/"EMAILJS_CONTACT_TEMPLATE_ID"\s*:\s*"template_jsugxta"/.test(block)
+      || !/"EMAILJS_AUTOREPLY_TEMPLATE_ID"\s*:\s*"template_4pj4xlm"/.test(block)
+      || !/"EMAILJS_PUBLIC_KEY"\s*:\s*"7xyuge5ZLIgBevcbL"/.test(block)) {
+      fail('wrangler.jsonc env.production must keep the authoritative EmailJS public IDs');
+    }
+  }
+  const topLevelVars = wrangler.match(/"vars"\s*:\s*\{[\s\S]*?\n  \}/);
+  if (!topLevelVars || !/"REQUIRE_HTTPS"\s*:\s*"false"/.test(topLevelVars[0])) {
+    fail('wrangler.jsonc top-level vars must keep REQUIRE_HTTPS=false for local Worker preview');
+  }
+  if (/"TAAMEN_SUPPORT_RECIPIENT"/.test(wrangler) || /"EMAILJS_PRIVATE_KEY"/.test(wrangler)) {
+    fail('wrangler.jsonc must not declare secrets as vars');
+  }
 }
 
 // ---------------------------------------------------------------------------

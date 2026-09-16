@@ -149,31 +149,42 @@ demo fixtures into KV.
 Same-origin at `https://taamenn.com` / `https://taamenn.com/api/*`. Set
 `CORS_ORIGIN` to empty (already in Wrangler `vars`) — no wildcard CORS.
 
-Local Worker preview keeps `REQUIRE_HTTPS=false` so `http://localhost` preview works.
-For production, set Worker variable `REQUIRE_HTTPS=true` and `NODE_ENV=production`
-(Workers → taamenn → Settings → Variables and Secrets). That also forces the
-`Secure` cookie attribute.
+Local Worker preview and default `npm run build` keep top-level
+`REQUIRE_HTTPS=false` so `http://localhost` preview works. `NODE_ENV` is unset
+at the top level; `backend/src/config.mjs` defaults it to `development`. Local
+Node (`npm run backend`, `npm run dev`) still uses `backend/.env` /
+`backend/.env.example` and does not read Wrangler env blocks.
+
+Production values live in `wrangler.jsonc` `env.production` (`REQUIRE_HTTPS=true`,
+`NODE_ENV=production`). The Cloudflare Vite plugin selects that environment at
+**build** time. Do not flip the top-level preview defaults. Do not attach
+`taamenn.com` in this step.
+
+```bash
+npm run build:production   # CLOUDFLARE_ENV=production vite build
+npx wrangler deploy        # uses the flattened dist/taamenn/wrangler.json
+```
+
+`vars` and `kv_namespaces` are non-inheritable in Wrangler; `env.production`
+repeats the same KV id and EmailJS public IDs. The production Worker name stays
+`taamenn` (not `taamenn-production`). Session cookies get `Secure` when the
+request is HTTPS; `REQUIRE_HTTPS=true` rejects plain HTTP with 426.
 
 EmailJS `Origin` for the Worker is `https://taamenn.com` (`EMAILJS_ORIGIN`). Add that
 origin in the EmailJS dashboard (or enable non-browser API). Local Node still uses
 `http://localhost` unless overridden.
 
-Secrets (never commit, never `VITE_*`):
+Secrets (never commit, never Wrangler `vars`, never `VITE_*`):
 
-| Secret | Where to enter |
-|---|---|
-| `TAAMEN_SUPPORT_RECIPIENT` | Cloudflare Worker secret; also `backend/.env` for Node |
-| `EMAILJS_PRIVATE_KEY` | Cloudflare Worker secret, **only if** EmailJS “Use Private Key” is on |
+| Secret | Required? | Where to enter |
+|---|---|---|
+| `TAAMEN_SUPPORT_RECIPIENT` | Optional if the EmailJS Contact template To field is already set; otherwise set it | Cloudflare Worker secret on `taamenn`; also `backend/.env` for Node |
+| `EMAILJS_PRIVATE_KEY` | Only if EmailJS Account → Security has “Use Private Key” enabled | Cloudflare Worker secret on `taamenn` |
 
-Publishing to production and changing the Cloudflare dashboard (except the future
-secrets + one-time `data` key upload) remain a later phase.
+Remaining before first production deploy:
 
-Remaining before production deploy:
-
-1. Prepare and upload the reviewed `backend/kv-data.json` to the `TAAMEN_KV` `data` key.
-2. Set production secrets (`TAAMEN_SUPPORT_RECIPIENT`, and `EMAILJS_PRIVATE_KEY` only if required).
-3. Set Worker `REQUIRE_HTTPS=true` and `NODE_ENV=production`.
-4. Attach `taamenn.com`. Do not do these steps in this phase.
+1. Confirm dashboard secrets (`TAAMEN_SUPPORT_RECIPIENT` if the template To field is not set; `EMAILJS_PRIVATE_KEY` only if required).
+2. `npm run build:production` then `npx wrangler deploy` (do not attach `taamenn.com` in this phase).
 
 ## Operator data
 

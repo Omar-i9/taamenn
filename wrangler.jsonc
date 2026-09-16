@@ -25,9 +25,39 @@
     "EMAILJS_AUTOREPLY_TEMPLATE_ID": "template_4pj4xlm",
     "EMAILJS_PUBLIC_KEY": "7xyuge5ZLIgBevcbL",
     "EMAILJS_ORIGIN": "https://taamenn.com",
+    // Top-level is local Worker preview / default `vite build`. NODE_ENV is unset
+    // here so backend/src/config.mjs defaults to "development".
     "REQUIRE_HTTPS": "false",
     "TRUST_PROXY": "true",
     "CORS_ORIGIN": "",
     "TAAMEN_SEED_EXAMPLE": "false"
+  },
+  // Cloudflare Vite plugin: select this environment at *build* time with
+  // CLOUDFLARE_ENV=production (not wrangler --env after a default build).
+  // vars and kv_namespaces are non-inheritable and must be repeated.
+  // name stays "taamenn" so production is not a second Worker (taamenn-production).
+  // Do not add routes here; do not attach taamenn.com in this change.
+  "env": {
+    "production": {
+      "name": "taamenn",
+      "kv_namespaces": [
+        {
+          "binding": "TAAMEN_KV",
+          "id": "7698f62403814e81b6f2ca13a8eb9cbc"
+        }
+      ],
+      "vars": {
+        "EMAILJS_SERVICE_ID": "service_13mkb9h",
+        "EMAILJS_CONTACT_TEMPLATE_ID": "template_jsugxta",
+        "EMAILJS_AUTOREPLY_TEMPLATE_ID": "template_4pj4xlm",
+        "EMAILJS_PUBLIC_KEY": "7xyuge5ZLIgBevcbL",
+        "EMAILJS_ORIGIN": "https://taamenn.com",
+        "REQUIRE_HTTPS": "true",
+        "NODE_ENV": "production",
+        "TRUST_PROXY": "true",
+        "CORS_ORIGIN": "",
+        "TAAMEN_SEED_EXAMPLE": "false"
+      }
+    }
   }
 }
