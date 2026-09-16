@@ -65,7 +65,27 @@ The normal user experience is local-first and uses IndexedDB. Backend member rec
 
 ## Historical archive
 
-The historical source is the established TAAMEN legacy repository/data snapshot. The migration currently contains **24 historical Match Center records**. Historical records carry `source: legacy`; locally created records use `source: local`. Historical data is lazy-loaded behind the Featured route boundary and is not imported by the normal archive repository.
+The canonical historical snapshot is tracked at `backend/legacy-private-matches.json`.
+It is the authoritative Featured / private match source for this repository. Do not
+substitute `backend/data.example.json` or other fixtures.
+
+Prepare the Cloudflare KV `data` document (does not upload, does not include sessions):
+
+```bash
+npm run kv:prepare -- --legacy backend/legacy-private-matches.json
+```
+
+That writes gitignored `backend/kv-data.json`. Review it, then after a real `TAAMEN_KV`
+namespace id exists:
+
+```bash
+npx wrangler kv key put data --binding TAAMEN_KV --path backend/kv-data.json
+```
+
+Historical records are served only to Featured Member recognition sessions via
+`GET /api/private/historical`. They are not imported by the local IndexedDB archive
+and must not appear in the frontend bundle. Migrated records carry `source: legacy`.
+Locally created records use `source: local`.
 
 ## PWA
 

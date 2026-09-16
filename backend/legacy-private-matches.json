@@ -1,0 +1,578 @@
+[
+  {
+    "id": "M-100",
+    "type": "strong",
+    "team1": "عمر",
+    "team2": "خضر",
+    "score1": 22,
+    "score2": 7,
+    "status": "ARCHIVED",
+    "dateLabel": "28/11/2025",
+    "dateKey": 20251128,
+    "story": "بديكتاتورية كروية لا ترحم، أُمطر المرمى بوابل أهدافٍ حوّل النتيجة إلى بيان سيطرة.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-101",
+    "type": "normal",
+    "team1": "كريم",
+    "team2": "عمر",
+    "score1": 6,
+    "score2": 9,
+    "status": "ARCHIVED",
+    "dateLabel": "16/01/2026",
+    "dateKey": 20260116,
+    "story": "بداية مشتعلة… والنهاية كتبت لعمر.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-102",
+    "type": "normal",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 7,
+    "score2": 10,
+    "status": "ARCHIVED",
+    "dateLabel": "23/01/2026",
+    "dateKey": 20260123,
+    "story": "ردٌّ ثقيل… أعاد للكفة صوتها.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-103",
+    "type": "strong",
+    "team1": "كريم التميمي",
+    "team2": "عمر وكريم",
+    "score1": 8,
+    "score2": 7,
+    "status": "ARCHIVED",
+    "dateLabel": "30/01/2026",
+    "dateKey": 20260130,
+    "story": "هدفٌ واحد… وكان كافيًا لكسر الحكاية.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-104",
+    "type": "normal",
+    "team1": "خضر",
+    "team2": "عمر وكريم",
+    "score1": 4,
+    "score2": 5,
+    "status": "ARCHIVED",
+    "dateLabel": "13/02/2026",
+    "dateKey": 20260213,
+    "story": "فوزٌ خُطف من بين الزحام.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-105",
+    "type": "normal",
+    "team1": "كريم",
+    "team2": "عمر",
+    "score1": 3,
+    "score2": 3,
+    "status": "ARCHIVED",
+    "dateLabel": "20/02/2026",
+    "dateKey": 20260220,
+    "story": "تعادلٌ بلا ملك… وملعب بلا حسم.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-106",
+    "type": "normal",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 6,
+    "score2": 8,
+    "status": "ARCHIVED",
+    "dateLabel": "27/02/2026",
+    "dateKey": 20260227,
+    "story": "ضربة حاسمة… والميزان مال لكريم.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-107",
+    "type": "strong",
+    "team1": "خضر",
+    "team2": "كريم",
+    "score1": 13,
+    "score2": 7,
+    "status": "ARCHIVED",
+    "dateLabel": "06/03/2026",
+    "dateKey": 20260306,
+    "story": "خضر أشعل الجبهة… وخرج بثقل الانتصار.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-108",
+    "type": "friendly",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 5,
+    "score2": 7,
+    "status": "ARCHIVED",
+    "dateLabel": "12/03/2026",
+    "dateKey": 20260312,
+    "story": "ودية بالاسم… وحسمٌ واضح بالنتيجة.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-109",
+    "type": "strong",
+    "team1": "عمر وكريم",
+    "team2": "كريم التميمي",
+    "score1": 9,
+    "score2": 7,
+    "status": "ARCHIVED",
+    "dateLabel": "13/03/2026",
+    "dateKey": 20260313,
+    "story": "ثنائيةٌ فرضت الإيقاع… وأنهت المشهد.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-110",
+    "type": "normal",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 6,
+    "score2": 4,
+    "status": "ARCHIVED",
+    "dateLabel": "21/04/2026",
+    "dateKey": 20260421,
+    "story": "عودة هادئة… وانتصار بلا ضجيج.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-111",
+    "type": "friendly",
+    "team1": "عمر",
+    "team2": "محمد علي",
+    "score1": 5,
+    "score2": 5,
+    "status": "ARCHIVED",
+    "dateLabel": "01/05/2026",
+    "dateKey": 20260501,
+    "story": "تعادلٌ ترك الباب مفتوحًا.",
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-201",
+    "type": "strong",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 5,
+    "score2": 6,
+    "status": "ARCHIVED",
+    "dateLabel": "08/05/2026",
+    "dateKey": 20260508,
+    "story": "أملٌ عاد متأخرًا… ثم سقط برصاصة الرحمة.",
+    "details": {
+      "team1": {
+        "possession": 56,
+        "shots": 11,
+        "onTarget": 7,
+        "saves": 5,
+        "assists": 4,
+        "passes": 89,
+        "fouls": 2,
+        "corners": 5
+      },
+      "team2": {
+        "possession": 44,
+        "shots": 8,
+        "onTarget": 4,
+        "saves": 4,
+        "assists": 2,
+        "passes": 76,
+        "fouls": 3,
+        "corners": 3
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-202",
+    "type": "strong",
+    "team1": "عمر",
+    "team2": "أبو تركي",
+    "score1": 9,
+    "score2": 12,
+    "status": "ARCHIVED",
+    "dateLabel": "08/05/2026",
+    "dateKey": 20260508,
+    "story": "معركة مفتوحة… الهجوم حضر، لكن الحسم اختار الجهة الأخرى.",
+    "details": {
+      "team1": {
+        "possession": 60,
+        "shots": 25,
+        "onTarget": 17,
+        "saves": 7,
+        "assists": 11,
+        "passes": 112,
+        "fouls": 3,
+        "corners": 5
+      },
+      "team2": {
+        "possession": 40,
+        "shots": 17,
+        "onTarget": 13,
+        "saves": 4,
+        "assists": 8,
+        "passes": 91,
+        "fouls": 2,
+        "corners": 6
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-203",
+    "type": "strong",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 11,
+    "score2": 8,
+    "status": "ARCHIVED",
+    "dateLabel": "15/05/2026",
+    "dateKey": 20260515,
+    "story": "سيطرة هجومية… وانتصار وُقّع بالقوة.",
+    "details": {
+      "team1": {
+        "possession": 65,
+        "shots": 25,
+        "onTarget": 18,
+        "saves": 7,
+        "assists": 7,
+        "passes": 80,
+        "fouls": 5,
+        "corners": 5
+      },
+      "team2": {
+        "possession": 35,
+        "shots": 15,
+        "onTarget": 11,
+        "saves": 7,
+        "assists": 8,
+        "passes": 122,
+        "fouls": 3,
+        "corners": 7
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-204",
+    "type": "strong",
+    "team1": "عمر",
+    "team2": "ال سكافي",
+    "score1": 7,
+    "score2": 8,
+    "status": "ARCHIVED",
+    "dateLabel": "05/06/2026",
+    "dateKey": 20260605,
+    "story": "تعادلٌ وُلد من المستحيل… ثم مات في آخر النبض.",
+    "details": {
+      "team1": {
+        "possession": 52,
+        "shots": 25,
+        "onTarget": 17,
+        "saves": 7,
+        "assists": 6,
+        "passes": 90,
+        "fouls": 4,
+        "corners": 6
+      },
+      "team2": {
+        "possession": 48,
+        "shots": 19,
+        "onTarget": 12,
+        "saves": 9,
+        "assists": 8,
+        "passes": 100,
+        "fouls": 2,
+        "corners": 4
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-205",
+    "type": "strong",
+    "team1": "عمر",
+    "team2": "كريم التميمي",
+    "score1": 6,
+    "score2": 6,
+    "status": "ARCHIVED",
+    "dateLabel": "12/06/2026",
+    "dateKey": 20260612,
+    "story": "مباراة من أقوى اللقاءات، انتهت بتعادل درامي.",
+    "details": {
+      "team1": {
+        "possession": 60,
+        "shots": 27,
+        "onTarget": 17,
+        "saves": 4,
+        "assists": 5,
+        "passes": 140,
+        "fouls": 5,
+        "corners": 8
+      },
+      "team2": {
+        "possession": 40,
+        "shots": 20,
+        "onTarget": 9,
+        "saves": 9,
+        "assists": 3,
+        "passes": 90,
+        "fouls": 8,
+        "corners": 5
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-206",
+    "type": "normal",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 9,
+    "score2": 4,
+    "status": "ARCHIVED",
+    "dateLabel": "19/06/2026",
+    "dateKey": 20260619,
+    "story": "لم تكن مباراةً عابرة… كانت إثباتَ مقام، وكسرةَ عين، وانتصارًا يُروى.",
+    "details": {
+      "team1": {
+        "possession": 61,
+        "shots": 27,
+        "onTarget": 20,
+        "saves": 6,
+        "assists": 5,
+        "passes": 120,
+        "fouls": 2,
+        "corners": 7
+      },
+      "team2": {
+        "possession": 39,
+        "shots": 18,
+        "onTarget": 10,
+        "saves": 11,
+        "assists": 3,
+        "passes": 90,
+        "fouls": 5,
+        "corners": 5
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-207",
+    "type": "friendly",
+    "team1": "هاني",
+    "team2": "غطاشة",
+    "score1": 7,
+    "score2": 1,
+    "status": "ARCHIVED",
+    "dateLabel": "3/07/2026",
+    "dateKey": 20260703,
+    "story": "مباراة كانت تعاني من نقص عددي.",
+    "details": {
+      "team1": {
+        "possession": 50,
+        "shots": 13,
+        "onTarget": 11,
+        "saves": 1,
+        "assists": 5,
+        "passes": 100,
+        "fouls": 1,
+        "corners": 5
+      },
+      "team2": {
+        "possession": 50,
+        "shots": 5,
+        "onTarget": 3,
+        "saves": 3,
+        "assists": 3,
+        "passes": 92,
+        "fouls": 3,
+        "corners": 4
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-208",
+    "type": "normal",
+    "team1": "عمر & كريم",
+    "team2": "علامة",
+    "score1": 7,
+    "score2": 6,
+    "status": "ARCHIVED",
+    "dateLabel": "10/07/2026",
+    "dateKey": 20260710,
+    "story": "إثبات مقام وانتصار يُروى.",
+    "details": {
+      "team1": {
+        "possession": 55,
+        "shots": 21,
+        "onTarget": 16,
+        "saves": 6,
+        "assists": 5,
+        "passes": 122,
+        "fouls": 4,
+        "corners": 8
+      },
+      "team2": {
+        "possession": 45,
+        "shots": 15,
+        "onTarget": 7,
+        "saves": 11,
+        "assists": 3,
+        "passes": 88,
+        "fouls": 6,
+        "corners": 6
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-209",
+    "type": "normal",
+    "team1": "عمر & كريم",
+    "team2": "كريم تميمي",
+    "score1": 10,
+    "score2": 11,
+    "status": "ARCHIVED",
+    "dateLabel": "17/07/2026",
+    "dateKey": 20260717,
+    "story": "قتال دام حتى آخر لحظات المباراة.",
+    "details": {
+      "team1": {
+        "possession": 51,
+        "shots": 21,
+        "onTarget": 16,
+        "saves": 12,
+        "assists": 7,
+        "passes": 110,
+        "fouls": 4,
+        "corners": 5
+      },
+      "team2": {
+        "possession": 49,
+        "shots": 25,
+        "onTarget": 17,
+        "saves": 13,
+        "assists": 8,
+        "passes": 108,
+        "fouls": 6,
+        "corners": 4
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-210",
+    "type": "normal",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 12,
+    "score2": 11,
+    "status": "ARCHIVED",
+    "dateLabel": "24/07/2026",
+    "dateKey": 20260724,
+    "story": "تسجيل 4 أهداف بعد التأخر بثلاثة والفوز بآخر الأنفاس.",
+    "details": {
+      "team1": {
+        "possession": 54,
+        "shots": 20,
+        "onTarget": 16,
+        "saves": 4,
+        "assists": 9,
+        "passes": 77,
+        "fouls": 4,
+        "corners": 5
+      },
+      "team2": {
+        "possession": 46,
+        "shots": 18,
+        "onTarget": 8,
+        "saves": 10,
+        "assists": 8,
+        "passes": 80,
+        "fouls": 6,
+        "corners": 4
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-211",
+    "type": "normal",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 2,
+    "score2": 2,
+    "status": "ARCHIVED",
+    "dateLabel": "31/7/2026",
+    "dateKey": 20260731,
+    "story": "مباراة بدفاع وهجوم قوي من كلا الطرفين.",
+    "details": {
+      "team1": {
+        "possession": 50,
+        "shots": 17,
+        "onTarget": 8,
+        "saves": 6,
+        "assists": 2,
+        "passes": 85,
+        "fouls": 2,
+        "corners": 5
+      },
+      "team2": {
+        "possession": 50,
+        "shots": 14,
+        "onTarget": 9,
+        "saves": 7,
+        "assists": 2,
+        "passes": 79,
+        "fouls": 4,
+        "corners": 6
+      }
+    },
+    "visibility": "PRIVATE"
+  },
+  {
+    "id": "M-212",
+    "type": "normal",
+    "team1": "عمر",
+    "team2": "كريم",
+    "score1": 7,
+    "score2": 8,
+    "status": "ARCHIVED",
+    "dateLabel": "07/08/2026",
+    "dateKey": 20260807,
+    "story": "كان التعادل قريباً ولكن قريباً وحده لم يكن كافياً.",
+    "details": {
+      "team1": {
+        "possession": 51,
+        "shots": 19,
+        "onTarget": 16,
+        "saves": 7,
+        "assists": 5,
+        "passes": 110,
+        "fouls": 2,
+        "corners": 9
+      },
+      "team2": {
+        "possession": 49,
+        "shots": 22,
+        "onTarget": 18,
+        "saves": 9,
+        "assists": 6,
+        "passes": 104,
+        "fouls": 7,
+        "corners": 10
+      }
+    },
+    "visibility": "PRIVATE"
+  }
+]

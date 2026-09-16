@@ -10,14 +10,13 @@ backend/.env
 backend/.env.*
 !backend/.env.example
 
-# Operator data: real members, password hashes, recognition codes, private matches.
+# Operator runtime data: members, password hashes, recognition codes, local matches.
 # Never commit. Use backend/data.example.json for development.
 backend/data.json
 backend/data.json.tmp
 backend/data.json.corrupt-*
 
-# Real historical match snapshot used to seed the operator dataset.
-backend/legacy-private-matches.json
+# Canonical historical snapshot is tracked: backend/legacy-private-matches.json
 
 # Server-side session store (hashed tokens).
 backend/sessions.json

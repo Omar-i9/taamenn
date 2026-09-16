@@ -6,6 +6,7 @@ import { createJsonFile } from './jsonFile.mjs';
 import { setStores, resetStores } from './runtime.mjs';
 import { validateData, store } from './store.mjs';
 import { validateSessions } from './sessions.mjs';
+import { inspectCanonicalSource, normalizeMatch } from './kvMigration.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -50,18 +51,26 @@ export function resetNodeRuntime() {
 }
 
 /**
- * Historical records live in the operator dataset only. They are seeded once from the
- * controlled legacy snapshot if present, and are never emitted into the frontend.
+ * Merge canonical historical matches into the Node dataset by ID.
+ * Existing records are not overwritten. Missing snapshot is a no-op.
  */
 export async function seedLegacyMatchesIfEmpty() {
   await store.update(async data => {
-    if (data.matches.length) return;
+    let legacy;
     try {
-      const legacy = JSON.parse(await fs.readFile(config.legacyFile, 'utf8'));
-      if (!Array.isArray(legacy)) return;
-      data.matches = legacy.map(match => ({ ...match, visibility: 'PRIVATE' }));
+      legacy = JSON.parse(await fs.readFile(config.legacyFile, 'utf8'));
     } catch {
-      /* the legacy snapshot is optional */
+      return;
+    }
+    const inspected = inspectCanonicalSource(legacy);
+    if (inspected.error === 'not-array' || inspected.error === 'missing') return;
+    const existing = new Set(data.matches.map(match => match.id));
+    for (const match of inspected.matches) {
+      if (existing.has(match.id)) continue;
+      const normalized = normalizeMatch(match);
+      if (!normalized) continue;
+      data.matches.push(normalized);
+      existing.add(normalized.id);
     }
   });
 }

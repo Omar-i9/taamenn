@@ -78,15 +78,19 @@ const clientText = [...sourceFiles, ...publicFiles, ...distFiles]
 
 if (fs.existsSync(legacyPath)) {
   const legacy = JSON.parse(fs.readFileSync(legacyPath, 'utf8'));
-  const leaked = new Set();
-  for (const match of legacy) {
-    if (match.story && clientText.includes(match.story)) leaked.add(`story of ${match.id}`);
-    if (match.id && new RegExp(`["'\`]${match.id}["'\`]`).test(clientText)) leaked.add(`id ${match.id}`);
+  if (!Array.isArray(legacy)) {
+    fail('backend/legacy-private-matches.json must be a JSON array of historical matches');
+  } else {
+    const leaked = new Set();
+    for (const match of legacy) {
+      if (match.story && clientText.includes(match.story)) leaked.add(`story of ${match.id}`);
+      if (match.id && new RegExp(`["'\`]${match.id}["'\`]`).test(clientText)) leaked.add(`id ${match.id}`);
+    }
+    if (leaked.size) fail(`Private historical content reached the client: ${[...leaked].join(', ')}`);
+    else notes.push(`Cross-checked ${legacy.length} private historical records against the client: none present.`);
   }
-  if (leaked.size) fail(`Private historical content reached the client: ${[...leaked].join(', ')}`);
-  else notes.push(`Cross-checked ${legacy.length} private historical records against the client: none present.`);
 } else {
-  notes.push('backend/legacy-private-matches.json is absent (expected on a clean checkout).');
+  fail('backend/legacy-private-matches.json is missing; the canonical historical snapshot must be tracked.');
 }
 
 const dataPath = path.join(root, 'backend/data.json');
@@ -161,10 +165,13 @@ if (!fs.existsSync(swPath)) {
 const gitignore = fs.existsSync(path.join(root, '.gitignore'))
   ? fs.readFileSync(path.join(root, '.gitignore'), 'utf8')
   : '';
-for (const entry of ['backend/data.json', 'backend/sessions.json', 'backend/legacy-private-matches.json']) {
+for (const entry of ['backend/data.json', 'backend/sessions.json']) {
   if (!gitignore.split(/\r?\n/).some(line => line.trim() === entry)) {
     fail(`${entry} is not listed in .gitignore`);
   }
+}
+if (gitignore.split(/\r?\n/).some(line => line.trim() === 'backend/legacy-private-matches.json')) {
+  fail('backend/legacy-private-matches.json is gitignored; the canonical historical snapshot must be tracked');
 }
 
 const wranglerPath = path.join(root, 'wrangler.jsonc');

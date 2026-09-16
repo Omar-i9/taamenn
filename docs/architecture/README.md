@@ -22,6 +22,11 @@ Archive is a projection of canonical matches. Historical Record is independent f
 
 Public storage is IndexedDB first (`taamen-2`). Sharing is explicit local payload exchange, not cloud sync.
 
+The canonical Featured historical snapshot is `backend/legacy-private-matches.json` (tracked).
+`npm run kv:prepare` builds the Worker KV `data` document from that file. Sessions persist
+under a separate KV key (`sessions`) on the `TAAMEN_KV` binding. The snapshot is not part
+of the frontend bundle.
+
 ## Data isolation
 
 Public pages must never fetch legacy private history, recognition codes, or operator member credentials. Share payloads must not include email, phone, avatar, or unrelated workspace data.

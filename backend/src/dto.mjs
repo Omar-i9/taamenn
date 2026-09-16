@@ -16,6 +16,7 @@ export function sessionMemberDto(member) {
 const MATCH_FIELDS = [
   'id', 'type', 'team1', 'team2', 'score1', 'score2', 'status',
   'dateLabel', 'dateKey', 'dateISO', 'time', 'stadium', 'city', 'story',
+  'details', 'playerContributions',
 ];
 
 function baseMatch(match) {

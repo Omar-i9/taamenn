@@ -75,6 +75,8 @@ test('the migration is idempotent and never invents match fields', () => {
   const second = prepareKvDocument({ legacyMatches: historical, source: first.data });
   assert.equal(second.data.matches.length, 2);
   assert.equal(second.report.fromLegacy.skippedDuplicate.length, 2);
+  assert.equal(second.report.recordsLost, false);
+  assert.equal(second.report.kvKey, 'data');
   assert.equal(second.data.matches.find(m => m.id === 'T-100').stadium, undefined);
   assert.equal(second.data.matches.find(m => m.id === 'T-100').city, undefined);
 });

@@ -129,16 +129,23 @@ Paste the returned id into `wrangler.jsonc`:
 Featured Members (exactly 12) live in `backend/src/featuredMembers.mjs` and are synced
 on Worker boot. They are not copied into the client bundle.
 
-Canonical historical matches live in the gitignored operator snapshot
-`backend/legacy-private-matches.json`. `backend/data.example.json` DEV-001/DEV-002
-records are seed/demo and are not migrated by default. Sessions and `.env` values
-must never be migrated.
+The canonical historical snapshot is **tracked** at `backend/legacy-private-matches.json`.
+It is the authoritative source. `backend/data.example.json` DEV-001/DEV-002 records
+are seed/demo and are not migrated by default. Sessions and `.env` values must never
+be migrated.
 
 ```bash
 npm run kv:prepare -- --legacy backend/legacy-private-matches.json
 # writes backend/kv-data.json (gitignored). Review it, then after the KV id exists:
 # npx wrangler kv key put data --binding TAAMEN_KV --path backend/kv-data.json
 ```
+
+`npm run kv:prepare` validates the snapshot (array, unique IDs, required fields),
+preserves record IDs / dates / scores / status / stories / optional `details`,
+adds `source: legacy` and `visibility: PRIVATE` when missing, strips secret-shaped
+keys, and refuses to write a document if records would be dropped or duplicated.
+The output is the Worker KV `data` key. The `sessions` key stays empty until live
+Featured sessions are created at runtime.
 
 `TAAMEN_SEED_EXAMPLE` must be unset/false in production so first boot does not seed
 demo fixtures into KV.
@@ -165,16 +172,25 @@ Secrets (never commit, never `VITE_*`):
 | `EMAILJS_PRIVATE_KEY` | Cloudflare Worker secret, **only if** EmailJS “Use Private Key” is on |
 
 Publishing to production and changing the Cloudflare dashboard (except the future
-one-time KV create + secrets) remain a later phase.
+one-time KV create + secrets + one-time `data` key upload) remain a later phase.
+
+Remaining before production deploy:
+
+1. Create a real Cloudflare KV namespace and put its id in `wrangler.jsonc` (do not invent an id).
+2. Upload the reviewed `backend/kv-data.json` to the `TAAMEN_KV` `data` key.
+3. Set production secrets (`TAAMEN_SUPPORT_RECIPIENT`, and `EMAILJS_PRIVATE_KEY` only if required).
+4. Set Worker `REQUIRE_HTTPS=true` and `NODE_ENV=production`.
+5. Attach `taamenn.com`. Do not do these steps in this phase.
 
 ## Operator data
 
-These files hold real member and match data. They are gitignored and must never be served
-as static assets or placed inside `dist/` or `public/`:
+These files hold real member and match data. They must never be served as static
+assets or placed inside `dist/client/` or `public/`:
 
-- `backend/data.json` — members, password hashes, recognition codes, private matches
-- `backend/sessions.json` — hashed session tokens
-- `backend/legacy-private-matches.json` — historical snapshot used to seed `data.json`
+- `backend/data.json` — gitignored local Node operator dataset
+- `backend/sessions.json` — gitignored hashed session tokens
+- `backend/legacy-private-matches.json` — **tracked** canonical historical snapshot
+- `backend/kv-data.json` — gitignored prepared KV `data` document (`npm run kv:prepare`)
 
 On first start, if `data.json` is absent the backend seeds from `backend/data.example.json`,
 then `start()` replaces the member collection with the canonical 12 Featured Members
