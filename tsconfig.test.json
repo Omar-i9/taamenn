@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "types": ["node"],
+    // Tests run through `node --experimental-strip-types`, which resolves real paths.
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.test.ts", "src/vite-env.d.ts"],
+  "exclude": []
+}

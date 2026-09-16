@@ -1,5 +1,7 @@
 # TAAMEN 2.0 — Final Product Pass Report
 
+> **HISTORICAL / ARCHIVE DOCUMENT.** Notes from an earlier product pass. Not the current architecture. See `docs/architecture/README.md`.
+
 ## A. What changed
 
 - Separated the product into two route-aware application contexts: `normal` and `featured`.
@@ -150,7 +152,7 @@ The Featured entry UI does not reveal these identifiers and uses only `user#****
 Existing EmailJS integration was preserved:
 
 - Service: `service_13mkb9h`
-- Contact template: `template_cvuls0n`
+- Contact template: `template_jsugxta`
 - Auto-reply template: `template_4pj4xlm`
 
 Email verification remains intentionally frozen as Coming Soon because no real verification template ID is configured. No template ID was invented and no fake verification email is simulated.

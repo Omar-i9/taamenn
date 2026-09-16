@@ -1,10 +1,11 @@
-import { getAll, putItem, deleteItem, getItem } from './localDb';
-import { listMatches } from './matchRepository';
+import type { Match } from '../data/footballData';
+import { getAll, putItem, deleteItem, getItem } from './localDb.ts';
 
 export type AppNotification = {
   id: string;
   type: 'match'|'system'|'tactical'|'archive';
   kind: 'match'|'system'|'tactical';
+  event: MatchNotificationEvent | 'welcome';
   title: string;
   titleAr?: string;
   body: string;
@@ -17,8 +18,21 @@ export type AppNotification = {
   relatedEntityId?: string;
 };
 
+export type MatchNotificationEvent =
+  | 'created'
+  | 'edited'
+  | 'approaching'
+  | 'started'
+  | 'result-pending'
+  | 'result-recorded'
+  | 'archived'
+  | 'shared'
+  | 'shared-imported';
+
+type EventLedger = { id:'notificationEvents'; ids:string[] };
+
 const seed:AppNotification[]=[
- {id:'welcome',type:'system',kind:'system',title:'TAAMEN 2.0',titleAr:'TAAMEN 2.0',body:'Your local notification center is ready.',bodyAr:'تم تجهيز مركز الإشعارات محليًا.',createdAt:Date.now()-86400000,read:false,timestamp:Date.now()-86400000},
+ {id:'welcome',type:'system',kind:'system',event:'welcome',title:'TAAMEN 2.0',titleAr:'TAAMEN 2.0',body:'Your local notification center is ready.',bodyAr:'تم تجهيز مركز الإشعارات محليًا.',createdAt:Date.now()-86400000,read:false,timestamp:Date.now()-86400000},
 ];
 
 export async function listNotifications(){
@@ -33,34 +47,74 @@ export async function listNotifications(){
 export async function unreadCount(){return (await listNotifications()).filter(n=>!n.read).length}
 export async function markNotificationRead(id:string){const item=(await listNotifications()).find(n=>n.id===id);if(item)await putItem('notifications',{...item,read:true,timestamp:item.timestamp||item.createdAt})}
 export async function markAllNotificationsRead(){for(const item of await listNotifications())if(!item.read)await putItem('notifications',{...item,read:true,timestamp:item.timestamp||item.createdAt})}
-export async function deleteNotification(id:string){await deleteItem('notifications',id)}
-export async function clearNotifications(){for(const item of await listNotifications())await deleteItem('notifications',item.id)}
+async function rememberEvent(id:string){
+  const ledger=(await getItem<EventLedger>('appState','notificationEvents'))||{id:'notificationEvents',ids:[]};
+  if(ledger.ids.includes(id))return;
+  await putItem('appState',{...ledger,ids:[...ledger.ids.slice(-499),id]});
+}
 
-async function ensureEvent(id:string, payload:Omit<AppNotification,'id'>){
-  const existing=await getAll<AppNotification>('notifications');
-  if(existing.some(n=>n.id===id))return false;
+export async function deleteNotification(id:string){
+  await rememberEvent(id);
+  await deleteItem('notifications',id);
+}
+export async function clearNotifications(){
+  for(const item of await listNotifications()){
+    await rememberEvent(item.id);
+    await deleteItem('notifications',item.id);
+  }
+}
+
+async function notificationsEnabled(){
+  const preferences=await getItem<{notifications?:boolean}>('settings','privacy');
+  return preferences?.notifications!==false;
+}
+
+export type LedgerDecision = 'skip-known' | 'skip-disabled' | 'emit';
+
+/** Disabled prefs must not consume the ledger, or the event is lost forever. */
+export function notificationLedgerDecision(enabled: boolean, alreadyKnown: boolean): LedgerDecision {
+  if (alreadyKnown) return 'skip-known';
+  if (!enabled) return 'skip-disabled';
+  return 'emit';
+}
+
+async function emitOnce(id:string,payload:Omit<AppNotification,'id'>){
+  const ledger=(await getItem<EventLedger>('appState','notificationEvents'))||{id:'notificationEvents',ids:[]};
+  const decision=notificationLedgerDecision(await notificationsEnabled(), ledger.ids.includes(id));
+  if(decision!=='emit')return false;
+  await putItem('appState',{...ledger,ids:[...ledger.ids.slice(-499),id]});
   await putItem('notifications',{id,...payload});
   return true;
 }
 
-export async function reconcileMatchNotifications(now=Date.now()){
-  const matches=await listMatches();
-  let changed=false;
-  for(const match of matches){
-    const teams=`${match.team1} × ${match.team2}`;
-    if(match.status==='FINISHED'||match.status==='ARCHIVED'||match.status==='انتهت'){
-      changed ||= await ensureEvent(`match:${match.id}:completed`,{type:'match',kind:'match',title:'Match completed',titleAr:'اكتملت المباراة',body:`${teams} — ${match.score1}:${match.score2}`,bodyAr:`${teams} — ${match.score1}:${match.score2}`,message:`${teams} — ${match.score1}:${match.score2}`,messageAr:`${teams} — ${match.score1}:${match.score2}`,createdAt:now,read:false,relatedEntityId:match.id,timestamp:now});
-      if(match.status==='ARCHIVED')changed ||= await ensureEvent(`archive:${match.id}:completed`,{type:'archive',kind:'system',title:'Archive created',titleAr:'تم إنشاء سجل المباراة',body:`${teams} is now archived.`,bodyAr:`تمت أرشفة ${teams}.`,message:`${teams} is now archived.`,messageAr:`تمت أرشفة ${teams}.`,createdAt:now,read:false,relatedEntityId:match.id,timestamp:now});
-      continue;
-    }
-    if(!match.time)continue;
-    const date=`${String(match.dateKey).slice(0,4)}-${String(match.dateKey).slice(4,6)}-${String(match.dateKey).slice(6,8)}`;
-    const target=new Date(`${date}T${match.time}:00`).getTime();
-    if(!Number.isFinite(target))continue;
-    const diff=target-now;
-    if(diff>0&&diff<=24*60*60*1000)changed ||= await ensureEvent(`match:${match.id}:approaching`,{type:'match',kind:'match',title:'Match approaching',titleAr:'المباراة تقترب',body:`${teams} starts within 24 hours.`,bodyAr:`تبدأ ${teams} خلال 24 ساعة.`,message:`${teams} starts within 24 hours.`,messageAr:`تبدأ ${teams} خلال 24 ساعة.`,createdAt:now,read:false,relatedEntityId:match.id,timestamp:now});
-    if(diff>0&&diff<=5*60*1000)changed ||= await ensureEvent(`match:${match.id}:starting`,{type:'match',kind:'match',title:'Match starting soon',titleAr:'المباراة ستبدأ قريبًا',body:`${teams} starts in a few minutes.`,bodyAr:`تبدأ ${teams} خلال دقائق قليلة.`,message:`${teams} starts in a few minutes.`,messageAr:`تبدأ ${teams} خلال دقائق قليلة.`,createdAt:now,read:false,relatedEntityId:match.id,timestamp:now});
-    if(diff<=0)changed ||= await ensureEvent(`match:${match.id}:started`,{type:'match',kind:'match',title:'Match started',titleAr:'بدأت المباراة',body:`${teams} has reached its scheduled start time.`,bodyAr:`حان موعد بدء ${teams}.`,message:`${teams} has reached its scheduled start time.`,messageAr:`حان موعد بدء ${teams}.`,createdAt:now,read:false,relatedEntityId:match.id,timestamp:now});
-  }
-  return changed;
+function notificationCopy(match:Match,event:MatchNotificationEvent){
+  const teams=`${match.team1} × ${match.team2}`;
+  const score=`${match.score1}:${match.score2}`;
+  const rows:Record<MatchNotificationEvent,{title:string;titleAr:string;body:string;bodyAr:string;type:AppNotification['type'];kind:AppNotification['kind']}>={
+    created:{title:'Match created',titleAr:'تم إنشاء المباراة',body:`${teams} was added to Match Center.`,bodyAr:`تمت إضافة ${teams} إلى مركز المباريات.`,type:'match',kind:'match'},
+    edited:{title:'Match updated',titleAr:'تم تحديث المباراة',body:`${teams} was updated.`,bodyAr:`تم تحديث ${teams}.`,type:'match',kind:'match'},
+    approaching:{title:'Match approaching',titleAr:'المباراة تقترب',body:`${teams} starts within 24 hours.`,bodyAr:`تبدأ ${teams} خلال 24 ساعة.`,type:'match',kind:'match'},
+    started:{title:'Match started',titleAr:'بدأت المباراة',body:`${teams} is now active.`,bodyAr:`بدأت الآن ${teams}.`,type:'match',kind:'match'},
+    'result-pending':{title:'Match finished',titleAr:'انتهت المباراة',body:`${teams} ended. Enter the final result.`,bodyAr:`انتهت ${teams}. أدخل النتيجة النهائية.`,type:'match',kind:'match'},
+    'result-recorded':{title:'Result recorded',titleAr:'تم تسجيل النتيجة',body:`${teams} — ${score}`,bodyAr:`${teams} — ${score}`,type:'match',kind:'match'},
+    archived:{title:'Match archived',titleAr:'تمت أرشفة المباراة',body:`${teams} is in the Archive.`,bodyAr:`تمت إضافة ${teams} إلى السجل.`,type:'archive',kind:'system'},
+    shared:{title:'Share link created',titleAr:'تم إنشاء رابط المشاركة',body:`A local share link was created for ${teams}.`,bodyAr:`تم إنشاء رابط مشاركة محلي لـ ${teams}.`,type:'match',kind:'match'},
+    'shared-imported':{title:'Shared match saved',titleAr:'تم حفظ المباراة المشتركة',body:`${teams} was saved locally.`,bodyAr:`تم حفظ ${teams} محليًا.`,type:'match',kind:'match'},
+  };
+  return rows[event];
+}
+
+export async function emitMatchNotification(match:Match,event:MatchNotificationEvent,now=Date.now()){
+  const copy=notificationCopy(match,event);
+  const id=`match:${match.id}:${event}`;
+  return emitOnce(id,{
+    ...copy,
+    event,
+    message:copy.body,
+    messageAr:copy.bodyAr,
+    createdAt:now,
+    timestamp:now,
+    read:false,
+    relatedEntityId:match.id,
+  });
 }

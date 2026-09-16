@@ -1,8 +1,9 @@
 # TAAMEN 2.0 BETA — MASTER DEVELOPMENT / REBUILD / POLISH SPECIFICATION
 
-> **STATUS: MASTER SOURCE OF TRUTH FOR THE CURRENT BETA PASS**
+> **HISTORICAL / ARCHIVE DOCUMENT.** This specification describes an earlier Beta that included Private Circle. It is **not** the current product architecture. See `docs/architecture/README.md` for the current local-first model.
 >
-> This document strengthens the existing TAAMEN 2.0 BETA specification. It does **not** authorize a blind rewrite. The current repository, its working behavior, the legacy TAAMEN repository, the supplied data, and the supplied brand image must be inspected first. Then implement only the changes required by this specification.
+> This document must not be treated as authorization to reintroduce Private Circle.
+
 
 ---
 
@@ -332,7 +333,7 @@ Keep the existing configuration identifiers exactly where already defined:
 service_13mkb9h
 
 Contact:
-template_cvuls0n
+template_jsugxta
 
 Auto-reply:
 template_4pj4xlm
@@ -2632,7 +2633,7 @@ Service:
 service_13mkb9h
 
 Contact template:
-template_cvuls0n
+template_jsugxta
 
 Auto Reply:
 template_4pj4xlm
@@ -2654,7 +2655,7 @@ show email field.
 Send:
 service_13mkb9h
 +
-template_cvuls0n
+template_jsugxta
 
 Then use:
 template_4pj4xlm
@@ -3980,7 +3981,7 @@ public:
 email:
   provider: EmailJS-compatible
   contact_service: service_13mkb9h
-  contact_template: template_cvuls0n
+  contact_template: template_jsugxta
   auto_reply_template: template_4pj4xlm
   verification_template: configurable_only
   verification_truth: OTP validated, not send-success

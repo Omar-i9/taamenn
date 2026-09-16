@@ -1,15 +1,19 @@
-import { useState } from 'react';
-import { X, Shield, FileText, Lock, Database, Mail, Bell, Users, Settings, Clock, AlertTriangle } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { X, Shield, FileText, Lock, Database, Mail, Bell, Users, Clock, AlertTriangle } from 'lucide-react';
+import { POLICY_VERSION } from '../config/consent';
+import { uiCopy } from '../i18n/translations';
+import { useOverlayPresence } from '../motion/useOverlayPresence';
 
 type Language = 'ar' | 'en';
 type DocumentType = 'privacy' | 'terms';
 
-const POLICY_VERSION = '1.0';
+const POLICY_PUBLISHED = '2026-09-15';
 
 interface PrivacyPolicyModalProps {
   language: Language;
   onClose: () => void;
   initialDocument?: DocumentType;
+  requireAccept?: boolean;
 }
 
 export function getPolicyVersion(): string {
@@ -31,107 +35,141 @@ export function clearConsent(): void {
 
 const privacySections = {
   ar: [
-    { id: 'intro', title: 'مقدمة', icon: Shield, content: 'TAAMEN هو تطبيق لإدارة مباريات كرة القدم، تنظيم الفرق، وتتبع النتائج محليًا. يوفر تجربة كرة قدم هادئة وواضحة مع التركيز على الخصوصية والبيانات المحلية.' },
-    { id: 'collection', title: 'البيانات التي نجمعها', icon: Database, content: 'تتضمن بيانات الملف الشخصي: الاسم الأول، اسم العائلة (اختياري)، الصورة الشخصية، البريد الإلكتروني (اختياري)، رقم الهاتف (اختياري). جميع البيانات محفوظة محليًا على جهازك ما لم يتم مشاركتها عمدًا.' },
-    { id: 'storage', title: 'التخزين المحلي', icon: Lock, content: 'يتم تخزين معلومات الملف العام بشكل أساسي محليًا على جهازك باستخدام IndexedDB و localStorage. عند مسح بيانات المتصفح، سيتم حذف بيانات TAAMEN المحلية. يمكنك تصدير نسخة احتياطية واستيرادها.' },
-    { id: 'email', title: 'التواصل عبر البريد', icon: Mail, content: 'يتم استخدام البريد الإلكتروني بشكل اختياري للرسائل الدعم والردود التلقائية. لا يتم إرسال بريد إلكتروني تلقائيًا دون إجراء المستخدم. يجب توفير بريد إلكتروني تملك الحق في استخدامه.' },
-    { id: 'notifications', title: 'الإشعارات', icon: Bell, content: 'تتضمن الإشعارات: دورة حياة المباراة، أرشفة المباريات، والسلوك المحلي للإشعارات. يتم التعامل مع أذونات الإشعارات من خلال المتصفح.' },
-    { id: 'sharing', title: 'المشاركة والخصوصية', icon: Users, content: 'المشاركة تتم بناءً على طلب المستخدم. يجب معاينة المحتوى المشترك قبل الاستيراد. يجب على المستلم تأكيد الاستيراد صراحة. البيانات المشتركة لا تكتبي البيانات المحلية الموجودة تلقائيًا.' },
-    { id: 'security', title: 'الأمان', icon: Shield, content: 'يتم توفير حماية معقولة من جانب العميل، لكن لا يوجد ضمان بالأمان المطلق. أمان المتصفح والجهاز مهم. لا يتم تخزين كلمات المرور للملف المحلي العادي.' },
-    { id: 'deletion', title: 'حذف البيانات', icon: Database, content: 'يمكن للمستخدم: تعديل الملف، تصدير/نسخ احتياطي، حذف/إعادة تعيين البيانات المحلية. إعادة التعيين تحذف جميع بيانات TAAMEN المحلية.' },
-    { id: 'changes', title: 'التغييرات', icon: Clock, content: 'قد تتغير السياسات بمرور الوقت. يتم استخدام إصدار السياسة للمطالبة بمراجعة الموافقة عند التحديثات المهمة.' },
+    { id: 'intro', title: 'مقدمة', icon: Shield, content: 'TAAMEN تطبيق محلي-أولًا لإدارة مباريات كرة القدم على جهازك. الاستخدام العادي لا يتطلب حسابًا ولا كلمة مرور. تعرّف العضو المميز اختياري ويقتصر على سجل تاريخي للقراءة فقط.' },
+    { id: 'collection', title: 'البيانات التي تبقى على جهازك', icon: Database, content: 'يحفظ TAAMEN محليًا: الاسم، الصورة والغلاف إن اخترتهما، البريد والهاتف إن أدخلتهما، المباريات والسجل، الخطط التكتيكية، الإشعارات، ولقطات الملعب. هذه البيانات تعيش في متصفحك (IndexedDB وlocalStorage) ولا تُرفع إلى حساب مستخدم عام.' },
+    { id: 'storage', title: 'التخزين المحلي والنسخ الاحتياطي', icon: Lock, content: 'مسح بيانات المتصفح يحذف بيانات TAAMEN المحلية. يمكنك تصدير نسخة احتياطية واستيرادها على هذا الجهاز أو جهاز آخر. الملفات غير الصالحة تُرفض قبل أي كتابة حتى لا تُفسَد بياناتك الحالية.' },
+    { id: 'email', title: 'رسائل الدعم', icon: Mail, content: 'عند إرسال رسالة من صفحة الدعم تُمرَّر عبر خادم TAAMEN إلى قناة التواصل الرسمية. المستلم يحدده الخادم، وليس النموذج. لا يُرسل بريد تلقائي دون إجراء منك. البريد في الملف اختياري ولا يُضمَّن في روابط المشاركة.' },
+    { id: 'notifications', title: 'الإشعارات', icon: Bell, content: 'إشعارات دورة حياة المباراة محلية داخل التطبيق. إن أوقفت الإشعارات من الإعدادات فلن تُسجَّل أحداث جديدة ولن تُستهلك حتى لا تضيع عند إعادة التفعيل. أذونات نظام التشغيل إن وُجدت تُدار عبر المتصفح.' },
+    { id: 'sharing', title: 'المشاركة', icon: Users, content: 'مشاركة المباراة اختيارية ومن إنشاء المستخدم. الرابط يحمل هوية المباراة وبصمة المحتوى، لا البريد ولا الهاتف ولا صورة الملف. السماح بالحفظ إذن داخل التطبيق وليس قفلًا تشفيريًا. الاستيراد لا يستبدل مباراة موجودة صامتًا: إن كانت نفس المباراة محدّثة تُعرض خيارات الإبقاء أو الاستبدال، وإن تصادف المعرّف مع أصل مختلف تُحفظ كنسخة جديدة فقط بعد تأكيدك.' },
+    { id: 'featured', title: 'العضو المميز والسجل التاريخي', icon: Users, content: 'رمز العضو المميز معرّف للتعرّف وليس كلمة مرور. الجلسة تبقى على الخادم في ملف تعريف ارتباط HttpOnly وتفتح سجلًا تاريخيًا للقراءة فقط. لا توجد مساحة أعضاء محمية بكلمة مرور.' },
+    { id: 'security', title: 'الأمان', icon: Shield, content: 'الحماية من جانب العميل معقولة وليست ضمانًا مطلقًا. أمان الجهاز والمتصفح مهم. لا تُخزَّن كلمات مرور للملف المحلي العادي. لا تضع أسرارًا في روابط المشاركة.' },
+    { id: 'deletion', title: 'الحذف', icon: Database, content: 'يمكنك تعديل الملف، تصدير البيانات، أو إعادة ضبط TAAMEN لحذف كل بياناته المحلية من هذا المتصفح. إعادة الضبط لا تمسح مواقع أخرى ولا سجل المتصفح.' },
+    { id: 'changes', title: 'التغييرات', icon: Clock, content: 'عند تغيير هذه النصوص جوهريًا يُرفع رقم الإصدار ويُطلب قبول جديد قبل المتابعة.' },
   ],
   en: [
-    { id: 'intro', title: 'Introduction', icon: Shield, content: 'TAAMEN is a football match management, team organization, and result tracking application with a local-first approach. It provides a calm, clear football experience focused on privacy and local data.' },
-    { id: 'collection', title: 'Information We Collect', icon: Database, content: 'Profile data includes: first name, family name (optional), profile photo, email (optional), phone (optional). All data is stored locally on your device unless explicitly shared.' },
-    { id: 'storage', title: 'Local Storage', icon: Lock, content: 'Normal public profile information is primarily stored locally on your device using IndexedDB and localStorage. When browser data is cleared, TAAMEN local data will be deleted. You can export a backup and import it.' },
-    { id: 'email', title: 'Email Communication', icon: Mail, content: 'Email is used optionally for support messages and automatic replies. No email is sent automatically without user action. You should only provide an email you are permitted to use.' },
-    { id: 'notifications', title: 'Notifications', icon: Bell, content: 'Notifications include: match lifecycle notifications, archive notifications, and local notification behavior. Permission handling is managed through the browser.' },
-    { id: 'sharing', title: 'Sharing & Privacy', icon: Users, content: 'Sharing is user-initiated. Shared content should be previewed before importing. Recipients must explicitly confirm import. Shared data does NOT silently overwrite existing local data.' },
-    { id: 'security', title: 'Security', icon: Shield, content: 'Reasonable client-side protection is provided, but there is no guarantee of absolute security. Browser/device security matters. No passwords are stored for the normal local profile.' },
-    { id: 'deletion', title: 'Data Deletion', icon: Database, content: 'Users can: edit profile, export/backup, delete/reset local data. Reset deletes all TAAMEN local data.' },
-    { id: 'changes', title: 'Policy Changes', icon: Clock, content: 'Policies may change over time. Policy versioning is used to require consent review on significant updates.' },
+    { id: 'intro', title: 'Introduction', icon: Shield, content: 'TAAMEN is a local-first football match workspace on your device. Ordinary use needs no account and no password. Featured Member recognition is optional and opens a read-only historical record.' },
+    { id: 'collection', title: 'What stays on your device', icon: Database, content: 'TAAMEN stores locally: your name, photo and cover if you add them, optional email and phone, matches and archive, tactical plans, notifications, and pitch captures. This lives in your browser (IndexedDB and localStorage) and is not uploaded to a general-user account.' },
+    { id: 'storage', title: 'Local storage and backups', icon: Lock, content: 'Clearing browser data deletes local TAAMEN data. You can export a backup and import it on this device or another. Malformed backup files are rejected before any write so your current data is not damaged.' },
+    { id: 'email', title: 'Support messages', icon: Mail, content: 'Messages from the Support page are posted to the TAAMEN backend, which owns the official EmailJS destination. This form cannot choose the recipient. No email is sent without your action. Profile email is optional and is never included in share links.' },
+    { id: 'notifications', title: 'Notifications', icon: Bell, content: 'Match lifecycle notices are in-app and local. If you turn notifications off in Settings, new events are not recorded and are not consumed, so they can still appear after you turn notices back on. Operating-system permission, if any, is handled by the browser.' },
+    { id: 'sharing', title: 'Sharing', icon: Users, content: 'Match sharing is user-initiated. The link carries match identity and a content fingerprint — not email, phone, or profile photos. Allow-save is an application permission, not a cryptographic lock. Import never silently overwrites: the same match with newer content offers Keep or Replace; an ID collision with a different origin can only be saved as a new local copy after you confirm.' },
+    { id: 'featured', title: 'Featured Member and historical records', icon: Users, content: 'The Featured Member identifier is recognition, not a password. The session lives in an HttpOnly cookie on the server and opens a read-only historical archive. There is no password-protected member workspace.' },
+    { id: 'security', title: 'Security', icon: Shield, content: 'Client-side protection is reasonable, not absolute. Device and browser security matter. No passwords are stored for the ordinary local profile. Do not put secrets in share links.' },
+    { id: 'deletion', title: 'Deletion', icon: Database, content: 'You can edit your profile, export data, or reset TAAMEN to delete all of its local data from this browser. Reset does not erase other sites or browser history.' },
+    { id: 'changes', title: 'Policy changes', icon: Clock, content: 'When this text changes in a material way, the policy version is raised and a new acceptance is required before you continue.' },
   ]
 };
 
 const termsSections = {
   ar: [
-    { id: 'intro', title: 'مقدمة', icon: FileText, content: 'شروط وأحكام استخدام TAAMEN تنظم استخدامك للتطبيق وتوضح المسؤوليات والمحدوديات.' },
-    { id: 'acceptable-use', title: 'الاستخدام المقبول', icon: Users, content: 'تطبيق لإدارة مباريات كرة القدم محليًا. مسؤوليتك عن البيانات التي تختار تقديمها. عدم استخدام التطبيق لأغراض غير مقصودة.' },
-    { id: 'user-responsibility', title: 'مسؤولية المستخدم', icon: Shield, content: 'أنت مسؤول عن الحفاظ على سرية معلوماتك. عدم مشاركة معلومات حساسة دون موافقة صريحة.' },
-    { id: 'limitations', title: 'المحدوديات', icon: AlertTriangle, content: 'التطبيق مقدم "كما هو" دون ضمانات. لا يوجد ضمان بالأمان المطلق. يجب التعامل مع الروابط المشتركة بحذر.' },
-    { id: 'data', title: 'البيانات', icon: Database, content: 'يمكنك تعديل ملفك وحذف بياناتك المحلية. إعادة التعيين تحذف جميع بيانات TAAMEN المحلية.' },
-    { id: 'updates', title: 'التحديثات', icon: Clock, content: 'قد يتم تحديث الشروط والأحكام بمرور الوقت. الاستخدام المستمر يعني الموافقة على التحديثات.' },
+    { id: 'intro', title: 'مقدمة', icon: FileText, content: 'باستخدام TAAMEN توافق على استخدامه كأداة محلية لإدارة مباريات كرة القدم، وعلى أن البيانات العادية تبقى على جهازك ما لم تشاركها أو ترسل رسالة دعم.' },
+    { id: 'acceptable-use', title: 'الاستخدام المقبول', icon: Users, content: 'استخدم التطبيق لإدارة مبارياتك وخططك. لا تستخدمه لانتحال الهوية أو إرسال محتوى مسيء عبر الدعم أو مشاركة بيانات لا يحق لك نشرها.' },
+    { id: 'user-responsibility', title: 'مسؤوليتك', icon: Shield, content: 'أنت مسؤول عن ما تُدخله وتشاركه. روابط المشاركة يمكن لأي حامل لها عرض المحتوى؛ تعامل معها كروابط عامة. السماح بالحفظ لا يمنع لقطة شاشة.' },
+    { id: 'limitations', title: 'المحدوديات', icon: AlertTriangle, content: 'يُقدَّم التطبيق كما هو. لا ضمان لاستمرارية الجهاز أو المتصفح أو النسخ الاحتياطي. السجل التاريخي للعضو المميز للقراءة فقط ويعتمد على توفر الخادم.' },
+    { id: 'data', title: 'البيانات', icon: Database, content: 'يمكنك تصدير بياناتك أو حذفها بإعادة الضبط. الاستيراد يرفض الملفات التالفة قبل الكتابة. مشاركة المباراة لا تنشئ حسابًا على الخادم.' },
+    { id: 'updates', title: 'التحديثات', icon: Clock, content: 'قد تتحدث الشروط مع إصدارات التطبيق. الاستمرار بعد رفع رقم الموافقة يعني القبول.' },
   ],
   en: [
-    { id: 'intro', title: 'Introduction', icon: FileText, content: 'TAAMEN Terms & Conditions govern your use of the application and clarify responsibilities and limitations.' },
-    { id: 'acceptable-use', title: 'Acceptable Use', icon: Users, content: 'Football match management application for local use. You are responsible for data you choose to provide. Do not use the application for unintended purposes.' },
-    { id: 'user-responsibility', title: 'User Responsibility', icon: Shield, content: 'You are responsible for maintaining the confidentiality of your information. Do not share sensitive information without explicit consent.' },
-    { id: 'limitations', title: 'Limitations', icon: AlertTriangle, content: 'The application is provided "as is" without warranties. No guarantee of absolute security. Treat shared links carefully.' },
-    { id: 'data', title: 'Data', icon: Database, content: 'You can edit your profile and delete your local data. Reset deletes all TAAMEN local data.' },
-    { id: 'updates', title: 'Updates', icon: Clock, content: 'Terms & Conditions may be updated over time. Continued use indicates acceptance of updates.' },
+    { id: 'intro', title: 'Introduction', icon: FileText, content: 'By using TAAMEN you agree to use it as a local football workspace, and that ordinary data stays on your device unless you share a match or send a support message.' },
+    { id: 'acceptable-use', title: 'Acceptable use', icon: Users, content: 'Use the app to manage your matches and plans. Do not impersonate others, abuse Support, or share information you are not allowed to publish.' },
+    { id: 'user-responsibility', title: 'Your responsibility', icon: Shield, content: 'You are responsible for what you enter and share. Anyone with a share link can view that content; treat links as public. Allow-save does not prevent screenshots.' },
+    { id: 'limitations', title: 'Limitations', icon: AlertTriangle, content: 'The application is provided as is. There is no warranty that your device, browser, or backups will persist. Featured historical records are read-only and depend on the server being available.' },
+    { id: 'data', title: 'Data', icon: Database, content: 'You can export your data or delete it with Reset. Import rejects malformed files before writing. Sharing a match does not create a server account.' },
+    { id: 'updates', title: 'Updates', icon: Clock, content: 'These terms may change with application releases. Continuing after a consent-version bump means you accept the update.' },
   ]
 };
 
-export default function PrivacyPolicyModal({ language, onClose, initialDocument = 'privacy' }: PrivacyPolicyModalProps) {
-  const ar = language === 'ar';
+export default function PrivacyPolicyModal({ language, onClose, initialDocument = 'privacy', requireAccept = false }: PrivacyPolicyModalProps) {
+  const copy = uiCopy[language];
   const [documentType, setDocumentType] = useState<DocumentType>(initialDocument);
   const [activeSection, setActiveSection] = useState<string>('intro');
+  const dialogRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const { backdropRef, panelRef, requestClose } = useOverlayPresence<HTMLButtonElement, HTMLElement>(
+    'modal',
+    onClose,
+    true,
+    { closeOnEscape: !requireAccept },
+  );
+
+  const accept = () => {
+    recordConsent();
+    requestClose();
+  };
 
   const sections = documentType === 'privacy' ? privacySections[language] : termsSections[language];
-  const title = documentType === 'privacy' 
-    ? (ar ? 'سياسة الخصوصية' : 'Privacy Policy')
-    : (ar ? 'الشروط والأحكام' : 'Terms & Conditions');
+  const title = documentType === 'privacy' ? copy.privacyPolicyTitle : copy.termsTitle;
+  const published = new Date(`${POLICY_PUBLISHED}T00:00:00`).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-GB', { dateStyle: 'medium' });
+
+  useEffect(() => {
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    dialogRef.current?.focus();
+    return () => {
+      document.body.style.overflow = overflow;
+      previous?.focus();
+    };
+  }, [initialDocument]);
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
-    const element = document.getElementById(`section-${sectionId}`);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const element = contentRef.current?.querySelector(`#section-${sectionId}`);
+    if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
-    <div className="overlay legal-overlay" role="dialog" aria-modal="true" aria-label={title}>
-      <button className="overlay-backdrop" aria-label="close" onClick={onClose} />
-      <aside className="legal-modal">
+    <div className="overlay legal-overlay" role="presentation">
+      <button ref={backdropRef} className="overlay-backdrop" aria-label={copy.closeViewer} onClick={requireAccept ? undefined : requestClose} />
+      <aside
+        ref={node => { dialogRef.current = node; panelRef.current = node; }}
+        className="legal-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="legal-modal-title"
+        tabIndex={-1}
+      >
         <header>
           <div className="legal-header-top">
             <div className="document-switcher">
-              <button 
+              <button
+                type="button"
                 className={`doc-tab ${documentType === 'privacy' ? 'is-active' : ''}`}
                 onClick={() => { setDocumentType('privacy'); setActiveSection('intro'); }}
               >
                 <Shield size={16} />
-                {ar ? 'الخصوصية' : 'Privacy'}
+                {copy.privacyTab}
               </button>
-              <button 
+              <button
+                type="button"
                 className={`doc-tab ${documentType === 'terms' ? 'is-active' : ''}`}
                 onClick={() => { setDocumentType('terms'); setActiveSection('intro'); }}
               >
                 <FileText size={16} />
-                {ar ? 'الشروط' : 'Terms'}
+                {copy.termsTab}
               </button>
             </div>
-            <button className="icon-button" onClick={onClose}>
-              <X size={18} />
-            </button>
+            {!requireAccept && (
+              <button type="button" className="icon-button" onClick={requestClose} aria-label={copy.closeViewer}>
+                <X size={18} />
+              </button>
+            )}
           </div>
           <div>
-            <h1>{title}</h1>
+            <h1 id="legal-modal-title">{title}</h1>
             <p className="document-subtitle">
-              {ar ? 'آخر تحديث: ' : 'Last updated: '}
-              {new Date().toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US')}
+              {copy.lastUpdated} {published}
             </p>
           </div>
         </header>
 
         <div className="legal-body">
-          <nav className="legal-toc">
+          <nav className="legal-toc" aria-label={title}>
             {sections.map(section => {
               const Icon = section.icon;
               return (
                 <button
+                  type="button"
                   key={section.id}
                   className={`toc-item ${activeSection === section.id ? 'is-active' : ''}`}
                   onClick={() => scrollToSection(section.id)}
@@ -143,7 +181,7 @@ export default function PrivacyPolicyModal({ language, onClose, initialDocument 
             })}
           </nav>
 
-          <div className="legal-content">
+          <div className="legal-content" ref={contentRef}>
             {sections.map(section => {
               const Icon = section.icon;
               return (
@@ -164,8 +202,8 @@ export default function PrivacyPolicyModal({ language, onClose, initialDocument 
             <Shield size={14} />
             <span>Version {POLICY_VERSION}</span>
           </div>
-          <button className="primary-action" onClick={onClose}>
-            {ar ? 'إغلاق' : 'Close'}
+          <button type="button" className="primary-action" onClick={requireAccept ? accept : requestClose}>
+            {requireAccept ? copy.consentAcceptContinue : copy.closeViewer}
           </button>
         </footer>
       </aside>

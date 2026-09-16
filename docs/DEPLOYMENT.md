@@ -73,8 +73,12 @@ meaning of each value.
 | `CORS_ORIGIN` | Comma-separated allow-list. Empty for same-origin. |
 | `REQUIRE_HTTPS` | Reject plain HTTP with 426. |
 | `TRUST_PROXY` | Honour `X-Forwarded-For` / `X-Forwarded-Proto`. |
-| `TAAMEN_SUPPORT_RECIPIENT` | Contact destination. Server-owned. |
-| `EMAILJS_*` | Provider credentials for outbound contact email. |
+| `TAAMEN_SUPPORT_RECIPIENT` | Contact destination. Server-owned. Never commit the real address. |
+| `EMAILJS_SERVICE_ID` | `service_13mkb9h` |
+| `EMAILJS_CONTACT_TEMPLATE_ID` | `template_jsugxta` |
+| `EMAILJS_AUTOREPLY_TEMPLATE_ID` | `template_4pj4xlm` |
+| `EMAILJS_PUBLIC_KEY` | `7xyuge5ZLIgBevcbL` |
+| `EMAILJS_PRIVATE_KEY` | Server-only. Required if EmailJS “Use Private Key” is enabled. Never `VITE_*`. |
 
 `TRUST_PROXY` must be `false` unless a proxy genuinely overwrites those headers. With it
 enabled behind nothing, any client can spoof its address and reset its rate-limit budget.
@@ -89,11 +93,9 @@ as static assets or placed inside `dist/` or `public/`:
 - `backend/legacy-private-matches.json` — historical snapshot used to seed `data.json`
 
 On first start, if `data.json` is absent the backend seeds from `backend/data.example.json`,
-which contains fictional fixtures only. A production deployment must provide a real
-`data.json`; running on example data would accept the example recognition codes.
-
-Provision Private Circle passwords with `npm run provision:members`. Passwords are printed
-once and only their hashes are stored.
+then `start()` replaces the member collection with the canonical 12 Featured Members
+(identifiers only; no passwords). A production host still must keep `data.json` off the
+client bundle and out of git.
 
 Back up `backend/data.json` with ordinary file backups. Restoring is a file copy; the
 backend validates and repairs the dataset on load and quarantines an unreadable file as

@@ -17,6 +17,8 @@ function status(fn) {
 
 test('requiredString trims, enforces presence, and caps length', () => {
   assert.equal(requiredString({ name: '  Ada  ' }, 'name'), 'Ada');
+  assert.equal(requiredString({ name: 'عمر ابوزينة' }, 'name'), 'عمر ابوزينة');
+  assert.equal(requiredString({ message: 'أرغب في المساعدة' }, 'message'), 'أرغب في المساعدة');
   assert.equal(status(() => requiredString({ name: '   ' }, 'name')), 400);
   assert.equal(status(() => requiredString({}, 'name')), 400);
   assert.equal(status(() => requiredString({ name: 42 }, 'name')), 400);
@@ -54,14 +56,14 @@ test('a tactical plan is accepted only with in-range coordinates', () => {
     plan: {
       formationId: 'diamond',
       landscape: true,
-      players: [{ id: 'H1', name: 'Player 1', team: 'home', x: 0, y: 100, role: 'GK', captain: true }],
+      players: [{ id: 'H1', name: 'Player 1', team: 'home', x: 0, y: 100, captain: true }],
     },
   });
   assert.equal(plan.formationId, 'diamond');
   assert.equal(plan.landscape, true);
   assert.equal(plan.players[0].x, 0);
   assert.equal(plan.players[0].y, 100);
-  assert.equal(plan.players[0].positionMode, 'auto');
+  assert.equal(plan.players[0].captain, true);
 });
 
 test('out-of-range or non-numeric coordinates are refused', () => {
@@ -94,11 +96,11 @@ test('unknown plan fields are dropped and long strings are bounded', () => {
         id: 'y'.repeat(100),
         name: 'z'.repeat(100),
         team: 'sideline',
-        role: 'r'.repeat(100),
         x: 10,
         y: 20,
         injected: 'should not persist',
-        positionMode: 'nonsense',
+        role: 'GK',
+        positionMode: 'manual',
       }],
       injected: 'should not persist',
     },
@@ -106,9 +108,10 @@ test('unknown plan fields are dropped and long strings are bounded', () => {
   assert.equal(plan.formationId.length, 40);
   assert.equal(plan.players[0].id.length, 60);
   assert.equal(plan.players[0].name.length, 60);
-  assert.equal(plan.players[0].role.length, 20);
   assert.equal(plan.players[0].team, 'home', 'an unknown team falls back to home');
-  assert.equal(plan.players[0].positionMode, 'auto', 'an unknown position mode falls back to auto');
   assert.equal(plan.injected, undefined);
   assert.equal(plan.players[0].injected, undefined);
+  // The position label is derived from the coordinates, so a client-sent one is not stored.
+  assert.equal(plan.players[0].role, undefined);
+  assert.equal(plan.players[0].positionMode, undefined, 'there is no second source of position truth');
 });

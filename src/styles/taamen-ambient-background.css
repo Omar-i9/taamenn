@@ -1,0 +1,203 @@
+/* =========================================================
+   TAAMEN AMBIENT ATMOSPHERE
+   Decorative light only. Used behind Home and profile setup.
+   Palette: #193940 base · #BAC8D9 cool light · #7ABF5A support · #9BF272 accent
+   ========================================================= */
+.ta-atmos{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+  contain:layout paint;
+  opacity:1;
+  transition:opacity 560ms cubic-bezier(.22,.61,.36,1);
+
+  --ta-atmos-cool:186,200,217;
+  --ta-atmos-support:122,191,90;
+  --ta-atmos-accent:155,242,114;
+
+  --ta-atmos-primary:.56;
+  --ta-atmos-secondary:.36;
+  --ta-atmos-illumination:.66;
+  --ta-atmos-accent-strength:.085;
+  --ta-atmos-primary-blur:80px;
+  --ta-atmos-secondary-blur:98px;
+}
+.ta-atmos[data-active='false']{opacity:0}
+
+/* Auth carries less information than Home, so it can breathe a little brighter. */
+.ta-atmos[data-variant='auth']{
+  --ta-atmos-primary:.63;
+  --ta-atmos-secondary:.44;
+  --ta-atmos-illumination:.85;
+  --ta-atmos-accent-strength:.125;
+}
+
+/* Cinematic micro-zoom wraps the base field only, never page content. */
+.ta-atmos-zoom{
+  position:absolute;
+  inset:-3%;
+  transform-origin:50% 30%;
+  will-change:transform;
+  animation:ta-atmos-zoom 27s cubic-bezier(.45,0,.55,1) infinite;
+}
+.ta-atmos-base{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(128% 122% at 50% 4%,#08171b 38%,#102a30 68%,#193940 100%);
+}
+
+/* Parallax wrappers are the only layers GSAP touches. */
+.ta-atmos-shift{
+  position:absolute;
+  inset:0;
+  will-change:transform;
+}
+.ta-atmos-glow{
+  position:absolute;
+  will-change:transform;
+  transition:opacity 560ms cubic-bezier(.22,.61,.36,1);
+}
+.ta-atmos-glow::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  transform:translateZ(0);
+  will-change:transform,opacity;
+}
+
+.ta-atmos-glow.is-primary{
+  top:-42%;
+  inset-inline-start:-15%;
+  width:131%;
+  height:113%;
+  opacity:var(--ta-atmos-primary);
+  animation:ta-atmos-primary-drift 24s cubic-bezier(.45,0,.55,1) infinite;
+}
+.ta-atmos-glow.is-primary::before{
+  background:radial-gradient(ellipse at 52% 47%,
+    rgba(var(--ta-atmos-cool),.34) 0%,
+    rgba(var(--ta-atmos-cool),.18) 34%,
+    rgba(var(--ta-atmos-accent),var(--ta-atmos-accent-strength)) 52%,
+    rgba(var(--ta-atmos-support),.05) 64%,
+    transparent 76%);
+  filter:blur(var(--ta-atmos-primary-blur));
+  animation:ta-atmos-breathe 19s cubic-bezier(.45,0,.55,1) infinite;
+}
+
+.ta-atmos-glow.is-secondary{
+  inset-inline-start:-32%;
+  bottom:-54%;
+  width:144%;
+  height:118%;
+  opacity:var(--ta-atmos-secondary);
+  animation:ta-atmos-secondary-drift 33s cubic-bezier(.45,0,.55,1) -8s infinite;
+}
+.ta-atmos-glow.is-secondary::before{
+  background:radial-gradient(ellipse at 47% 50%,
+    rgba(var(--ta-atmos-support),.3) 0%,
+    rgba(var(--ta-atmos-support),.15) 42%,
+    rgba(var(--ta-atmos-accent),calc(var(--ta-atmos-accent-strength) * .55)) 58%,
+    transparent 74%);
+  filter:blur(var(--ta-atmos-secondary-blur));
+  animation:ta-atmos-breathe 22s cubic-bezier(.45,0,.55,1) -6s infinite;
+}
+
+.ta-atmos-illumination{
+  position:absolute;
+  inset:0;
+  opacity:var(--ta-atmos-illumination);
+  mix-blend-mode:screen;
+  transition:opacity 560ms cubic-bezier(.22,.61,.36,1);
+}
+.ta-atmos-illumination::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(84% 56% at 50% 12%,rgba(var(--ta-atmos-cool),.1),transparent 72%),
+    radial-gradient(70% 52% at 50% 100%,rgba(var(--ta-atmos-support),.08),transparent 80%);
+  will-change:opacity;
+  animation:ta-atmos-illuminate 21s ease-in-out -4s infinite;
+}
+
+/* Keeps the centre of the screen dark so content keeps its hierarchy. */
+.ta-atmos-vignette{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to bottom,rgba(3,12,15,.24),transparent 26%,rgba(3,12,15,.14)),
+    radial-gradient(ellipse at center,transparent 40%,rgba(3,12,15,.34) 100%);
+}
+
+@keyframes ta-atmos-primary-drift{
+  0%,100%{transform:translate3d(0,-1%,0)}
+  24%{transform:translate3d(3%,-2.4%,0)}
+  51%{transform:translate3d(.5%,1.6%,0)}
+  76%{transform:translate3d(-3%,.6%,0)}
+}
+@keyframes ta-atmos-secondary-drift{
+  0%,100%{transform:translate3d(-2%,1%,0)}
+  26%{transform:translate3d(2%,2.4%,0)}
+  53%{transform:translate3d(5%,-.6%,0)}
+  78%{transform:translate3d(-4%,-1.8%,0)}
+}
+@keyframes ta-atmos-breathe{
+  0%,100%{opacity:.88;transform:scale(1)}
+  27%{opacity:.94;transform:scale(1.012)}
+  52%{opacity:1;transform:scale(1.02)}
+  76%{opacity:.93;transform:scale(1.012)}
+}
+@keyframes ta-atmos-illuminate{
+  0%,100%{opacity:.74}
+  48%{opacity:1}
+}
+@keyframes ta-atmos-zoom{
+  0%,100%{transform:scale(1)}
+  26%{transform:scale(1.012)}
+  51%{transform:scale(1.022)}
+  76%{transform:scale(1.013)}
+}
+
+/* Phones get a calmer, cleaner composition rather than a scaled-down desktop one. */
+@media (max-width:900px),(hover:none),(pointer:coarse){
+  .ta-atmos{
+    --ta-atmos-primary:.42;
+    --ta-atmos-secondary:.26;
+    --ta-atmos-illumination:.5;
+    --ta-atmos-accent-strength:.07;
+    --ta-atmos-primary-blur:62px;
+    --ta-atmos-secondary-blur:76px;
+  }
+  .ta-atmos[data-variant='auth']{
+    --ta-atmos-primary:.53;
+    --ta-atmos-secondary:.34;
+    --ta-atmos-illumination:.7;
+    --ta-atmos-accent-strength:.1;
+  }
+  .ta-atmos-glow.is-primary{top:-34%;inset-inline-start:-32%;width:164%}
+  .ta-atmos-glow.is-secondary{inset-inline-start:-38%;bottom:-46%;width:172%}
+  .ta-atmos-shift{transform:none !important}
+}
+
+/* Reduced motion keeps the composition, drops the movement. */
+@media (prefers-reduced-motion:reduce){
+  .ta-atmos-zoom,
+  .ta-atmos-glow,
+  .ta-atmos-glow::before,
+  .ta-atmos-illumination::before{animation:none !important}
+  .ta-atmos-zoom,
+  .ta-atmos-shift,
+  .ta-atmos-glow,
+  .ta-atmos-glow::before{transform:none !important}
+}
+html[data-taamen-motion='reduce'] .ta-atmos-zoom,
+html[data-taamen-motion='reduce'] .ta-atmos-glow,
+html[data-taamen-motion='reduce'] .ta-atmos-glow::before,
+html[data-taamen-motion='reduce'] .ta-atmos-illumination::before{animation:none !important}
+html[data-taamen-motion='reduce'] .ta-atmos-zoom,
+html[data-taamen-motion='reduce'] .ta-atmos-shift,
+html[data-taamen-motion='reduce'] .ta-atmos-glow,
+html[data-taamen-motion='reduce'] .ta-atmos-glow::before{transform:none !important}

@@ -129,6 +129,14 @@ for (const file of sourceFiles) {
   }
 }
 
+const EMAILJS_CLIENT_LEAK = /7xyuge5ZLIgBevcbL|service_13mkb9h|api\.emailjs\.com|VITE_EMAILJS_/;
+for (const file of [...sourceFiles, ...publicFiles, ...distFiles]) {
+  const text = fs.readFileSync(file, 'utf8');
+  if (EMAILJS_CLIENT_LEAK.test(text)) {
+    fail(`Client EmailJS configuration reached ${relative(file)}; Support must use the backend contact route`);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // 6. The service worker must never cache the API.
 // ---------------------------------------------------------------------------
@@ -159,6 +167,8 @@ for (const entry of ['backend/data.json', 'backend/sessions.json', 'backend/lega
 
 // ---------------------------------------------------------------------------
 // 8. Official branding asset integrity.
+//     SHA-256 of the supplied TAAMEN brand mark committed with the product.
+//     Update this digest only when the product owner replaces that official asset.
 // ---------------------------------------------------------------------------
 const logoPath = path.join(root, 'public/assets/taamen-brand-mark.png');
 const EXPECTED_LOGO_SHA256 = '09de60d9cef10d5de5bdbab0b2b9a67a698cece7551bc160c9298ca8c621c2be';

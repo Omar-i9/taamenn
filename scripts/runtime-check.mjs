@@ -1,22 +1,14 @@
 /**
- * Live runtime verification against a running dev server.
- *
- * Static analysis cannot prove that authorization holds over real HTTP, so this
- * script exercises the security-critical paths through the same origin the browser
- * uses (the Vite `/api` proxy).
+ * Live runtime verification against a running TAAMEN API.
  *
  *   node scripts/runtime-check.mjs [origin]
  *
- * It must be pointed at a backend seeded with fictional development data.
- *
- * Scope: this script covers the paths reachable without Private Circle credentials.
- * The password-session checks (a MEMBER cannot reach OWNER routes, an OWNER can perform
- * OWNER actions, credential changes revoke sessions) are verified over real HTTP by
- * `backend/test/auth.test.mjs` and `backend/test/owner.test.mjs`, which start the same
- * server with isolated fictional credentials. Running this script does not require, and
- * must not create, password material.
+ * Default origin is the backend itself. Point it at the Vite origin to exercise
+ * the `/api` proxy instead.
  */
-const ORIGIN = process.argv[2] || 'http://localhost:5199';
+import { FEATURED_MEMBERS } from '../backend/src/featuredMembers.mjs';
+
+const ORIGIN = process.argv[2] || 'http://localhost:8787';
 const CSRF = { 'X-TAAMEN-Requested': '1' };
 
 const results = [];
@@ -52,16 +44,31 @@ async function call(method, route, { body, cookie, headers = {} } = {}) {
   };
 }
 
-const CODE = 'user#DEV02';
-const OWNER_CODE = 'user#DEV01';
+const CODE = FEATURED_MEMBERS[0].memberCode;
+const OTHER_CODE = FEATURED_MEMBERS[1].memberCode;
+
+const root = await call('GET', '/');
+record('0. root diagnostic',
+  root.status === 200 && root.body.name === 'TAAMEN API' && root.body.status === 'ok',
+  `status ${root.status}`);
+
+const health = await call('GET', '/api/health');
+record('0b. health contract',
+  health.status === 200 && health.body.ok === true && health.body.service === 'taamen-api' && typeof health.body.emailConfigured === 'boolean',
+  `status ${health.status} emailConfigured=${health.body.emailConfigured}`);
+
+const anonymousSession = await call('GET', '/api/auth/session');
+record('0c. anonymous session is unauthenticated',
+  anonymousSession.status === 200 && anonymousSession.body.authenticated === false,
+  `status ${anonymousSession.status}`);
 
 // 1. Anonymous access
 record('1. anonymous cannot read historical data',
   (await call('GET', '/api/private/historical')).status === 401);
-record('1b. anonymous cannot read Circle matches',
-  (await call('GET', '/api/private/circle/matches')).status === 401);
+record('1b. anonymous cannot read removed Circle matches',
+  (await call('GET', '/api/private/circle/matches')).status === 404);
 record('1c. anonymous cannot read the owner overview',
-  (await call('GET', '/api/owner/overview')).status === 401);
+  (await call('GET', '/api/owner/overview')).status === 404);
 
 // 2. Recognition creates a restricted session
 const recognition = await call('POST', '/api/featured/member', { body: { memberCode: CODE } });
@@ -91,11 +98,11 @@ const circleRoutes = [
 const circleDenied = [];
 for (const route of circleRoutes) {
   const response = await call('GET', route, { cookie: codeCookie });
-  if (response.status !== 403) circleDenied.push(`${route} -> ${response.status}`);
+  if (response.status !== 404) circleDenied.push(`${route} -> ${response.status}`);
 }
-record('3. the recognition session cannot reach Circle APIs', circleDenied.length === 0, circleDenied.join(', '));
-record('3b. the recognition session cannot reach owner APIs',
-  (await call('GET', '/api/owner/overview', { cookie: codeCookie })).status === 403);
+record('3. Circle APIs are removed', circleDenied.length === 0, circleDenied.join(', '));
+record('3b. owner APIs are removed',
+  (await call('GET', '/api/owner/overview', { cookie: codeCookie })).status === 404);
 
 // 6. Client tampering
 const tampered = await call('POST', '/api/featured/member', {
@@ -106,31 +113,35 @@ record('6. client role tampering does not escalate',
   tampered.body.authMethod === 'code' && tampered.body.member.role !== 'OWNER',
   `authMethod ${tampered.body.authMethod}, role ${tampered.body.member?.role}`);
 record('6b. the tampered session still cannot reach owner APIs',
-  (await call('GET', '/api/owner/overview', { cookie: tampered.cookie })).status === 403);
+  (await call('GET', '/api/owner/overview', { cookie: tampered.cookie })).status === 404);
 
 // 7. Logout
 const logoutTarget = await call('POST', '/api/featured/member', { body: { memberCode: CODE } });
 const logout = await call('POST', '/api/auth/logout', { cookie: logoutTarget.cookie });
 record('7. logout invalidates the session',
-  logout.status === 200 && (await call('GET', '/api/auth/session', { cookie: logoutTarget.cookie })).status === 401);
+  logout.status === 200 && (await call('GET', '/api/auth/session', { cookie: logoutTarget.cookie })).body.authenticated === false);
 record('7b. the logout cookie is cleared with matching flags',
   /Max-Age=0/.test(logout.rawCookie) && /HttpOnly/.test(logout.rawCookie),
   logout.rawCookie);
 
 // 8. Unknown and forged tokens
-record('8. a forged session token is rejected',
-  (await call('GET', '/api/auth/session', { cookie: `taamen_session=${'a'.repeat(64)}` })).status === 401);
+const forgedSession = await call('GET', '/api/auth/session', { cookie: `taamen_session=${'a'.repeat(64)}` });
+record('8. a forged session token is unauthenticated',
+  forgedSession.status === 200 && forgedSession.body.authenticated === false);
+record('8b. a forged token cannot read historical data',
+  (await call('GET', '/api/private/historical', { cookie: `taamen_session=${'a'.repeat(64)}` })).status === 401);
 
 // 9. Session isolation between identities
 const userA = await call('POST', '/api/featured/member', { body: { memberCode: CODE } });
-const userB = await call('POST', '/api/featured/member', { body: { memberCode: OWNER_CODE } });
+const userB = await call('POST', '/api/featured/member', { body: { memberCode: OTHER_CODE } });
 const sessionA = await call('GET', '/api/auth/session', { cookie: userA.cookie });
 const sessionB = await call('GET', '/api/auth/session', { cookie: userB.cookie });
 record('9. two identities receive distinct sessions',
   userA.cookie !== userB.cookie && sessionA.body.member.id !== sessionB.body.member.id,
   `${sessionA.body.member?.id} vs ${sessionB.body.member?.id}`);
-record('9b. an inactive member cannot be recognized',
-  (await call('POST', '/api/featured/member', { body: { memberCode: 'user#DEV03' } })).status === 401);
+const unknownId = await call('POST', '/api/featured/member', { body: { memberCode: 'user#NOPE' } });
+record('9b. an unknown Featured ID is rejected without leakage',
+  unknownId.status === 401 && unknownId.body.error === 'Invalid member ID.' && !JSON.stringify(unknownId.body).includes(CODE));
 
 // 10. API responses must not be cacheable by the service worker or anything else
 record('10. private responses are marked no-store',
@@ -153,9 +164,7 @@ record('12. a mutating request without the CSRF header is refused', noCsrf.statu
 const wrongMethod = await call('GET', '/api/auth/logout');
 record('13. wrong HTTP methods are refused', wrongMethod.status === 405, `status ${wrongMethod.status}`);
 
-// Security headers over the proxy
-const health = await call('GET', '/api/health');
-record('14. security headers survive the proxy',
+record('14. security headers survive the origin',
   health.headers.get('x-content-type-options') === 'nosniff' && health.headers.get('referrer-policy') === 'no-referrer');
 
 console.log(`\nRuntime verification against ${ORIGIN}\n`);

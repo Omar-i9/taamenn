@@ -1,5 +1,7 @@
 # TAAMEN 2.0 BETA — Implementation Report
 
+> **HISTORICAL / ARCHIVE DOCUMENT.** Report from an earlier implementation pass. Not the current product architecture. See `docs/architecture/README.md`.
+
 This build applies the attached master specification as the implementation baseline and preserves the existing TAAMEN identity and working private backend model.
 
 ## Implemented in this pass

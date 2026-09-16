@@ -1,370 +1,117 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Archive as ArchiveIcon, CalendarClock, Edit3, Plus, Share2, Trash2, Trophy, Plus as PlusIcon, Minus } from 'lucide-react';
-import type { Match, MatchType, PlayerContribution } from '../data/footballData';
-import { createLocalUpcomingMatch, deleteMatch, listMatches, updateMatch } from '../services/matchRepository';
-import { shareMatch } from '../services/shareService';
-import { reconcileMatchNotifications } from '../services/notificationService';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { CalendarClock, Edit3, Plus, Share2, Trash2, X } from 'lucide-react';
+import type { Match, MatchType } from '../data/footballData';
+import {
+  createLocalUpcomingMatch,
+  deleteMatch,
+  listMatches,
+  reconcileMatchLifecycle,
+  updateMatch,
+} from '../services/matchRepository';
+import { canonicalStatus, isMatchCenterStatus, matchEndTime, matchStartTime, projectedStatus } from '../services/matchLifecycle';
+import { archiveCopy, matchUiCopy } from '../i18n/translations';
+import { dateISOToKey, formatMatchDate, PALESTINE_TIMEZONE, todayInTimeZone, zonedDateTimeToEpoch } from '../shared/formatting/dateTime';
+import TaamenDatePicker from '../components/TaamenDatePicker';
+import MatchShareModal from '../components/MatchShareModal';
+import { useOverlayPresence } from '../motion/useOverlayPresence';
 
-const typeLabels:{value:MatchType;ar:string;en:string}[]=[
-  {value:'friendly',ar:'ودية',en:'Friendly'},
-  {value:'normal',ar:'عادية',en:'Normal'},
-  {value:'competitive',ar:'تنافسية',en:'Competitive'},
-  {value:'tournament',ar:'بطولة',en:'Tournament'},
-  {value:'strong',ar:'قوية',en:'Strong'}
-];
+type Draft={title:string;team1:string;team2:string;stadium:string;city:string;date:string;time:string;duration:string;note:string;type:MatchType;visibility:'LOCAL'|'PUBLIC'};
+const blank=():Draft=>({title:'',team1:'TAAMEN',team2:'',stadium:'',city:'',date:todayInTimeZone(),time:'20:00',duration:'60',note:'',type:'normal',visibility:'LOCAL'});
 
-function dateParts(m:Match,ar:boolean){
-  const d=new Date(`${String(m.dateKey).slice(0,4)}-${String(m.dateKey).slice(4,6)}-${String(m.dateKey).slice(6,8)}T12:00:00`);
-  return{
-    weekday:d.toLocaleDateString(ar?'ar-PS':'en-US',{weekday:'long'}),
-    date:d.toLocaleDateString(ar?'ar-PS':'en-US',{day:'numeric',month:'long',year:'numeric'})
+function MatchEditor({language,initial,onClose,onSaved}:{language:'ar'|'en';initial:Match|null;onClose:()=>void;onSaved:()=>void}){
+  const copy=matchUiCopy[language];
+  const types=archiveCopy[language];
+  const[draft,setDraft]=useState<Draft>(()=>initial?{
+    title:initial.title||'',team1:initial.team1,team2:initial.team2,stadium:initial.stadium||'',city:initial.city||'',
+    date:initial.dateISO?.slice(0,10)||'',time:initial.time||'',duration:String(initial.durationMinutes||60),note:initial.story||'',type:initial.type,
+    visibility:initial.visibility==='PUBLIC'?'PUBLIC':'LOCAL',
+  }:blank());
+  const[error,setError]=useState('');
+  const[busy,setBusy]=useState(false);
+  const{backdropRef,panelRef,requestClose}=useOverlayPresence<HTMLButtonElement,HTMLElement>('modal',onClose);
+  const set=<K extends keyof Draft>(key:K,value:Draft[K])=>setDraft(current=>({...current,[key]:value}));
+  const save=async(event:React.FormEvent)=>{
+    event.preventDefault();
+    if(!draft.team1.trim()||!draft.team2.trim()||!draft.stadium.trim()||!draft.city.trim()||!draft.date||!draft.time){setError(copy.required);return}
+    if(!Number.isFinite(zonedDateTimeToEpoch(draft.date,draft.time,PALESTINE_TIMEZONE))){setError(copy.invalidDate);return}
+    setBusy(true);setError('');
+    try{
+      if(initial){
+        const dateKey=dateISOToKey(draft.date);
+        await updateMatch({...initial,title:draft.title.trim()||`${draft.team1} × ${draft.team2}`,team1:draft.team1.trim(),team2:draft.team2.trim(),stadium:draft.stadium.trim(),city:draft.city.trim(),dateISO:draft.date,dateKey,dateLabel:formatMatchDate(draft.date,dateKey,'en').date,time:draft.time,durationMinutes:Math.max(1,Number(draft.duration)||60),story:draft.note.trim(),type:draft.type,visibility:draft.visibility});
+      }else await createLocalUpcomingMatch({title:draft.title.trim(),team1:draft.team1.trim(),team2:draft.team2.trim(),stadium:draft.stadium.trim(),city:draft.city.trim(),date:draft.date,time:draft.time,durationMinutes:Math.max(1,Number(draft.duration)||60),note:draft.note.trim(),type:draft.type,visibility:draft.visibility});
+      onSaved();onClose();
+    }catch{setError(copy.invalidDate)}finally{setBusy(false)}
   };
+  return <div className="overlay" role="dialog" aria-modal="true" aria-labelledby="match-editor-title">
+    <button ref={backdropRef} className="overlay-backdrop" onClick={requestClose} aria-label={copy.cancel}/>
+    <aside ref={panelRef} className="modal-card match-editor-modal">
+      <header className="panel-heading"><div><p className="eyebrow">TAAMEN / MATCH</p><h2 id="match-editor-title">{initial?copy.editTitle:copy.createTitle}</h2></div><button className="icon-button" onClick={requestClose} aria-label={copy.cancel}><X/></button></header>
+      <form className="match-form" onSubmit={save}>
+        <div className="form-grid"><label>{copy.team1} *<input value={draft.team1} onChange={event=>set('team1',event.target.value)} required/></label><label>{copy.team2} *<input value={draft.team2} onChange={event=>set('team2',event.target.value)} required/></label></div>
+        <label>{copy.matchTitle}<input value={draft.title} onChange={event=>set('title',event.target.value)}/></label>
+        <div className="form-grid"><label>{copy.stadium} *<input value={draft.stadium} onChange={event=>set('stadium',event.target.value)} required/></label><label>{copy.city} *<input value={draft.city} onChange={event=>set('city',event.target.value)} required/></label></div>
+        <div className="form-grid"><label>{copy.date} *<TaamenDatePicker value={draft.date} onChange={value=>set('date',value)} language={language} required/></label><label>{copy.time} *<input type="time" value={draft.time} onChange={event=>set('time',event.target.value)} required/></label></div>
+        <div className="form-grid"><label>{copy.duration}<input type="number" min="1" max="300" value={draft.duration} onChange={event=>set('duration',event.target.value)}/></label><label>{copy.type}<select value={draft.type} onChange={event=>set('type',event.target.value as MatchType)}>{(['normal','friendly','competitive','tournament','strong'] as MatchType[]).map(value=><option key={value} value={value}>{({normal:types.normal,friendly:types.friendly,competitive:types.competitive,tournament:types.tournament,strong:types.strong})[value]}</option>)}</select></label></div>
+        <label>{copy.visibility}<select value={draft.visibility} onChange={event=>set('visibility',event.target.value as Draft['visibility'])}><option value="LOCAL">{copy.local}</option><option value="PUBLIC">{copy.public}</option></select></label>
+        <label className="form-span-2">{copy.note}<textarea rows={3} value={draft.note} onChange={event=>set('note',event.target.value)}/></label>
+        {error&&<div className="error-banner" role="alert">{error}</div>}
+        <div className="modal-actions"><button type="button" className="dark-action" onClick={requestClose}>{copy.cancel}</button><button className="primary-action" disabled={busy}>{busy?copy.saving:copy.save}</button></div>
+      </form>
+    </aside>
+  </div>;
 }
 
-function countdown(m:Match,now:number){
-  if(!m.time)return 0;
-  const y=String(m.dateKey).slice(0,4),mo=String(m.dateKey).slice(4,6),d=String(m.dateKey).slice(6,8);
-  return Math.max(0,new Date(`${y}-${mo}-${d}T${m.time}:00`).getTime()-now);
-}
-
-type Draft={
-  id?:string;
-  team1:string;
-  team2:string;
-  stadium:string;
-  city:string;
-  date:string;
-  time:string;
-  duration:string;
-  type:MatchType;
-  visibility:'LOCAL'|'PUBLIC';
-  story:string;
-  score1:string;
-  score2:string;
-  status:Match['status'];
-  contributions1:PlayerContribution[];
-  contributions2:PlayerContribution[];
-};
-
-const blank:Draft={
-  team1:'',
-  team2:'',
-  stadium:'',
-  city:'',
-  date:'',
-  time:'19:00',
-  duration:'60',
-  type:'normal',
-  visibility:'LOCAL',
-  story:'',
-  score1:'0',
-  score2:'0',
-  status:'UPCOMING',
-  contributions1:[],
-  contributions2:[]
-};
-
-function emptyContribution():PlayerContribution{
-  return{playerName:'',goals:0,assists:0};
+function Countdown({match,language,now}:{match:Match;language:'ar'|'en';now:number}){
+  const copy=matchUiCopy[language];
+  const target=canonicalStatus(match.status)==='ACTIVE'?matchEndTime(match):matchStartTime(match);
+  const seconds=Math.max(0,Math.floor((target-now)/1000));
+  const days=Math.floor(seconds/86400),hours=Math.floor(seconds%86400/3600),minutes=Math.floor(seconds%3600/60),secs=seconds%60;
+  return <div className="match-countdown" aria-live="off"><span><b>{days}</b><small>{copy.day}</small></span><span><b>{hours}</b><small>{copy.hours}</small></span><span><b>{minutes}</b><small>{copy.minutes}</small></span><span><b>{secs}</b><small>{copy.seconds}</small></span></div>;
 }
 
 export default function Matches({language}:{language:'ar'|'en'}){
-  const ar=language==='ar';
+  const copy=matchUiCopy[language];
   const[matches,setMatches]=useState<Match[]>([]);
+  const[editor,setEditor]=useState<{open:boolean;match:Match|null}>({open:false,match:null});
+  const[share,setShare]=useState<Match|null>(null);
   const[now,setNow]=useState(Date.now());
-  const[open,setOpen]=useState(false);
-  const[draft,setDraft]=useState<Draft>(blank);
   const[msg,setMsg]=useState('');
-
-  const load=async()=>{
-    setMatches(await listMatches());
-    await reconcileMatchNotifications();
-  };
-
+  const matchesRef=useRef(matches);
+  matchesRef.current=matches;
+  const load=useCallback(async()=>{await reconcileMatchLifecycle();setMatches((await listMatches()).filter(match=>isMatchCenterStatus(match.status)))},[]);
   useEffect(()=>{
-    load();
-    const id=window.setInterval(()=>setNow(Date.now()),1000);
-    return()=>clearInterval(id);
-  },[]);
-
-  const visible=useMemo(()=>matches.filter(m=>m.visibility!=='PRIVATE'),[matches]);
-  const upcoming=visible.filter(m=>m.status==='UPCOMING').sort((a,b)=>a.dateKey-b.dateKey||String(a.time||'').localeCompare(String(b.time||'')))[0];
-  const remaining=upcoming?countdown(upcoming,now):0;
-  const days=Math.floor(remaining/86400000),hh=Math.floor((remaining%86400000)/3600000),mm=Math.floor((remaining%3600000)/60000),ss=Math.floor((remaining%60000)/1000);
-
-  const openNew=()=>{
-    setDraft({...blank,date:new Date().toISOString().slice(0,10)});
-    setMsg('');
-    setOpen(true);
+    void load();
+    const tick=window.setInterval(()=>{
+      const t=Date.now();
+      setNow(t);
+      if(matchesRef.current.some(match=>projectedStatus(match,t)!==canonicalStatus(match.status))) void load();
+    },1000);
+    const refresh=()=>void load();
+    window.addEventListener('taamen-matches-changed',refresh);
+    return()=>{clearInterval(tick);window.removeEventListener('taamen-matches-changed',refresh)};
+  },[load]);
+  const active=matches.filter(match=>canonicalStatus(match.status)==='ACTIVE');
+  const upcoming=matches.filter(match=>canonicalStatus(match.status)==='UPCOMING').sort((a,b)=>matchStartTime(a)-matchStartTime(b));
+  const next=upcoming[0]||active[0];
+  const remove=async(match:Match)=>{if(!window.confirm(copy.deleteConfirm))return;await deleteMatch(match.id);setMsg('');await load()};
+  const card=(match:Match,hero=false)=>{
+    const date=formatMatchDate(match.dateISO,match.dateKey,language);
+    return <article className={`current-match-card${hero?' is-next':''}${canonicalStatus(match.status)==='ACTIVE'?' is-active':''}`} key={match.id}>
+      <div className="current-match-top"><span className={`status-pill ${canonicalStatus(match.status).toLowerCase()}`}>{canonicalStatus(match.status)==='ACTIVE'?copy.active:copy.upcoming}</span><span>{date.weekday} · {date.date} · {match.time}</span></div>
+      <div className="current-match-teams"><strong>{match.team1}</strong><b>VS</b><strong>{match.team2}</strong></div>
+      <p>{match.stadium} · {match.city}</p><Countdown match={match} language={language} now={now}/>
+      <div className="current-match-actions"><button className="dark-action compact" onClick={()=>setEditor({open:true,match})}><Edit3 size={14}/>{copy.edit}</button><button className="dark-action compact" onClick={()=>setShare(match)}><Share2 size={14}/>{copy.share}</button><button className="icon-button danger" onClick={()=>void remove(match)} aria-label={copy.delete}><Trash2 size={15}/></button></div>
+    </article>;
   };
-
-  const openEdit=(m:Match)=>{
-    setDraft({
-      id:m.id,
-      team1:m.team1,
-      team2:m.team2,
-      stadium:m.stadium||'',
-      city:m.city||'',
-      date:`${String(m.dateKey).slice(0,4)}-${String(m.dateKey).slice(4,6)}-${String(m.dateKey).slice(6,8)}`,
-      time:m.time||'19:00',
-      duration:String(m.durationMinutes||60),
-      type:m.type as MatchType,
-      visibility:m.visibility==='PUBLIC'?'PUBLIC':'LOCAL',
-      story:m.story||'',
-      score1:String(m.score1),
-      score2:String(m.score2),
-      status:m.status,
-      contributions1:m.playerContributions?.team1||[],
-      contributions2:m.playerContributions?.team2||[]
-    });
-    setMsg('');
-    setOpen(true);
-  };
-
-  const addContribution=(team:'team1'|'team2')=>{
-    if(team==='team1'){
-      if(draft.contributions1.length>=5)return;
-      setDraft({...draft,contributions1:[...draft.contributions1,emptyContribution()]});
-    }else{
-      if(draft.contributions2.length>=5)return;
-      setDraft({...draft,contributions2:[...draft.contributions2,emptyContribution()]});
-    }
-  };
-
-  const removeContribution=(team:'team1'|'team2',index:number)=>{
-    if(team==='team1'){
-      setDraft({...draft,contributions1:draft.contributions1.filter((_,i)=>i!==index)});
-    }else{
-      setDraft({...draft,contributions2:draft.contributions2.filter((_,i)=>i!==index)});
-    }
-  };
-
-  const updateContribution=(team:'team1'|'team2',index:number,field: keyof PlayerContribution,value:string|number)=>{
-    if(team==='team1'){
-      const updated=[...draft.contributions1];
-      updated[index]={...updated[index],[field]:value};
-      setDraft({...draft,contributions1:updated});
-    }else{
-      const updated=[...draft.contributions2];
-      updated[index]={...updated[index],[field]:value};
-      setDraft({...draft,contributions2:updated});
-    }
-  };
-
-  const save=async()=>{
-    if(!draft.team1.trim()||!draft.team2.trim()||!draft.stadium.trim()||!draft.city.trim()||!draft.date||!draft.time){
-      setMsg(ar?'أكمل الفريقين والملعب والمدينة والتاريخ والوقت.':'Complete teams, stadium, city, date and time.');
-      return;
-    }
-    const d=new Date(`${draft.date}T${draft.time}:00`);
-    if(Number.isNaN(d.getTime())){
-      setMsg(ar?'التاريخ أو الوقت غير صالح.':'Invalid date or time.');
-      return;
-    }
-    
-    const validContributions1=draft.contributions1.filter(c=>c.playerName.trim()).map(c=>({
-      playerName:c.playerName.trim(),
-      goals:Math.max(0,Number(c.goals)||0),
-      assists:Math.max(0,Number(c.assists)||0)
-    }));
-    
-    const validContributions2=draft.contributions2.filter(c=>c.playerName.trim()).map(c=>({
-      playerName:c.playerName.trim(),
-      goals:Math.max(0,Number(c.goals)||0),
-      assists:Math.max(0,Number(c.assists)||0)
-    }));
-
-    const playerContributions=(validContributions1.length>0||validContributions2.length>0)?{
-      team1:validContributions1,
-      team2:validContributions2
-    }:undefined;
-
-    if(draft.id){
-      const old=matches.find(x=>x.id===draft.id);
-      await updateMatch({
-        ...old!,
-        team1:draft.team1.trim(),
-        team2:draft.team2.trim(),
-        stadium:draft.stadium.trim(),
-        city:draft.city.trim(),
-        dateKey:Number(draft.date.replaceAll('-','')),
-        dateLabel:d.toLocaleDateString('ar-PS',{day:'numeric',month:'long',year:'numeric'}),
-        time:draft.time,
-        durationMinutes:Number(draft.duration)||60,
-        type:draft.type,
-        visibility:draft.visibility,
-        story:draft.story.trim(),
-        score1:Number(draft.score1)||0,
-        score2:Number(draft.score2)||0,
-        status:draft.status,
-        playerContributions
-      });
-    }else{
-      await createLocalUpcomingMatch({
-        team1:draft.team1.trim(),
-        team2:draft.team2.trim(),
-        stadium:draft.stadium.trim(),
-        city:draft.city.trim(),
-        date:draft.date,
-        time:draft.time,
-        durationMinutes:Number(draft.duration)||60,
-        type:draft.type,
-        visibility:draft.visibility,
-        title:`${draft.team1.trim()} × ${draft.team2.trim()}`,
-        note:draft.story.trim()
-      });
-    }
-    setOpen(false);
-    setMsg(ar?'تم حفظ المباراة محليًا.':'Match saved locally.');
-    await load();
-  };
-
-  const remove=async(m:Match)=>{
-    if(!confirm(ar?'حذف هذه المباراة؟':'Delete this match?'))return;
-    await deleteMatch(m.id);
-    await load();
-  };
-
-  const finish=(m:Match)=>openEdit({...m,status:'FINISHED'});
-
-  const archive=async(m:Match)=>{
-    await updateMatch({...m,status:'ARCHIVED'});
-    await load();
-    setMsg(ar?'تمت أرشفة المباراة.':'Match archived.');
-  };
-
-  return <section className="page-content match-center-page">
-    <div className="page-heading">
-      <div>
-        <p className="eyebrow">TAAMEN 2.0 / MATCH CENTER</p>
-        <h1>{ar?'مركز المباريات':'Match Center'}</h1>
-        <p className="subtitle">{ar?'أنشئ مبارياتك الحالية وأدر نتائجها وأرشِفها محليًا.':'Create and manage current matches, enter results, and archive them locally.'}</p>
-      </div>
-      <button className="primary-action" onClick={openNew}><Plus size={16}/>{ar?'إنشاء مباراة':'Create match'}</button>
-    </div>
+  const remaining=matches.filter(match=>match.id!==next?.id);
+  return <section className="page-content matches-page">
+    <div className="page-heading"><div><span className="eyebrow">TAAMEN / MATCH CENTER</span><h1>{copy.matchCenter}</h1><p>{copy.matchCenterDesc}</p></div><button className="primary-action" onClick={()=>setEditor({open:true,match:null})}><Plus size={16}/>{copy.create}</button></div>
     {msg&&<div className="success-banner">{msg}</div>}
-    {upcoming&&<section className="next-match-card premium">
-      <div>
-        <span className="eyebrow">{ar?'المواجهة القادمة':'NEXT MATCH'}</span>
-        <h2>{upcoming.title||`${upcoming.team1} × ${upcoming.team2}`}</h2>
-        <p>{upcoming.stadium} · {upcoming.city}</p>
-        <div className="countdown">
-          <span><b>{days}</b><small>{ar?'يوم':'days'}</small></span>
-          <i>:</i>
-          <span><b>{String(hh).padStart(2,'0')}</b><small>{ar?'ساعة':'hrs'}</small></span>
-          <i>:</i>
-          <span><b>{String(mm).padStart(2,'0')}</b><small>{ar?'دقيقة':'min'}</small></span>
-          <i>:</i>
-          <span><b>{String(ss).padStart(2,'0')}</b><small>{ar?'ثانية':'sec'}</small></span>
-        </div>
-      </div>
-      <div className="next-score">
-        <strong>{upcoming.team1}</strong>
-        <b>VS</b>
-        <strong>{upcoming.team2}</strong>
-        <small>{dateParts(upcoming,ar).weekday}<br/>{dateParts(upcoming,ar).date} · {upcoming.time}</small>
-      </div>
-    </section>}
-    <div className="section-label">{ar?'مبارياتك':'Your matches'} · {visible.length}</div>
-    <div className="archive-grid compact-results">
-      {visible.map(m=>{
-        const parts=dateParts(m,ar);
-        const ended=m.status==='FINISHED'||m.status==='ARCHIVED'||m.status==='انتهت';
-        return <article className={`match-card ${ended&&m.score1!==m.score2?(m.score1>m.score2?'is-winner-team1':'is-winner-team2'):'is-draw'}`} key={m.id}>
-          <div className="match-card-top">
-            <span className={`match-type ${m.type}`}>{typeLabels.find(x=>x.value===m.type)?.[ar?'ar':'en']||m.type}</span>
-            <span className="status-chip muted">{m.status==='ARCHIVED'?(ar?'مؤرشفة':'Archived'):ended?(ar?'منتهية':'Finished'):(ar?'قادمة':'Upcoming')}</span>
-          </div>
-          <div className="match-date-block">
-            <strong>{parts.weekday}</strong>
-            <span>{parts.date}</span>
-            <b>{m.time||'—'}</b>
-          </div>
-          <div className="scoreline">
-            <strong>{m.team1}{ended&&m.score1>m.score2&&<em className="winner-badge"><Trophy size={12}/></em>}</strong>
-            <b>{ended?`${m.score1}:${m.score2}`:'VS'}</b>
-            <strong>{m.team2}{ended&&m.score2>m.score1&&<em className="winner-badge"><Trophy size={12}/></em>}</strong>
-          </div>
-          <small className="settings-note">{m.stadium||'—'} · {m.city||'—'} · {m.visibility||'LOCAL'}</small>
-          {m.story&&<p>{m.story}</p>}
-          <div className="card-actions">
-            {m.status!=='ARCHIVED'&&<button className="text-button" onClick={()=>openEdit(m)}><Edit3 size={14}/>{ar?'تعديل':'Edit'}</button>}
-            {!ended&&<button className="text-button" onClick={()=>finish(m)}><Trophy size={14}/>{ar?'إدخال النتيجة':'Enter result'}</button>}
-            {m.status==='FINISHED'&&<button className="text-button" onClick={()=>archive(m)}><ArchiveIcon size={14}/>{ar?'أرشفة':'Archive'}</button>}
-            <button className="text-button" onClick={()=>shareMatch(m,{includeContributions:true}).catch(()=>{})}><Share2 size={14}/>{ar?'مشاركة':'Share'}</button>
-            <button className="text-button danger" onClick={()=>remove(m)}><Trash2 size={14}/>{ar?'حذف':'Delete'}</button>
-          </div>
-        </article>;
-      })}
-      {visible.length===0&&<div className="empty-state panel">
-        <CalendarClock/>
-        <strong>{ar?'لا توجد مباريات بعد':'No matches yet'}</strong>
-        <span>{ar?'أنشئ أول مباراة لتبدأ.':'Create your first match to start.'}</span>
-        <button className="dark-action" onClick={openNew}><Plus size={14}/>{ar?'إنشاء أول مباراة':'Create first match'}</button>
-      </div>}
-    </div>
-    {open&&<div className="modal-backdrop">
-      <div className="modal-card">
-        <div className="panel-heading">
-          <div>
-            <p className="eyebrow">TAAMEN / MATCH</p>
-            <h2>{draft.id?(ar?'تعديل المباراة':'Edit match'):(ar?'إنشاء مباراة':'Create match')}</h2>
-          </div>
-          <button className="icon-button" aria-label={ar?'إغلاق':'Close'} onClick={()=>setOpen(false)}>×</button>
-        </div>
-        <div className="form-grid">
-          <label>{ar?'الفريق الأول':'Team 1'} *<input value={draft.team1} onChange={e=>setDraft({...draft,team1:e.target.value})}/></label>
-          <label>{ar?'الفريق الثاني':'Team 2'} *<input value={draft.team2} onChange={e=>setDraft({...draft,team2:e.target.value})}/></label>
-          <label>{ar?'الملعب':'Stadium'} *<input value={draft.stadium} onChange={e=>setDraft({...draft,stadium:e.target.value})}/></label>
-          <label>{ar?'المدينة':'City'} *<input value={draft.city} onChange={e=>setDraft({...draft,city:e.target.value})}/></label>
-          <label>{ar?'التاريخ':'Date'} *<input type="date" value={draft.date} onChange={e=>setDraft({...draft,date:e.target.value})}/></label>
-          <label>{ar?'الوقت':'Time'} *<input type="time" value={draft.time} onChange={e=>setDraft({...draft,time:e.target.value})}/></label>
-          <label>{ar?'المدة بالدقائق':'Duration'}<input type="number" min="1" value={draft.duration} onChange={e=>setDraft({...draft,duration:e.target.value})}/></label>
-          <label>{ar?'نوع المباراة':'Match type'}<select value={draft.type} onChange={e=>setDraft({...draft,type:e.target.value as MatchType})}>{typeLabels.map(x=><option key={x.value} value={x.value}>{ar?x.ar:x.en}</option>)}</select></label>
-          <label>{ar?'الرؤية':'Visibility'}<select value={draft.visibility} onChange={e=>setDraft({...draft,visibility:e.target.value as 'LOCAL'|'PUBLIC'})}><option value="LOCAL">{ar?'محلي على هذا الجهاز':'Local on this device'}</option><option value="PUBLIC">PUBLIC</option></select></label>
-          <label className="form-span-2">{ar?'ملاحظة':'Note'}<textarea rows={3} value={draft.story} onChange={e=>setDraft({...draft,story:e.target.value})}/></label>
-          {draft.id&&<>
-            <label>{ar?'نتيجة الفريق الأول':'Team 1 score'}<input type="number" min="0" value={draft.score1} onChange={e=>setDraft({...draft,score1:e.target.value})}/></label>
-            <label>{ar?'نتيجة الفريق الثاني':'Team 2 score'}<input type="number" min="0" value={draft.score2} onChange={e=>setDraft({...draft,score2:e.target.value})}/></label>
-          </>}
-          {(draft.status==='FINISHED'||draft.status==='ARCHIVED'||draft.status==='انتهت')&&<>
-            <div className="form-span-2 contributions-section">
-              <div className="contributions-header">
-                <span>{ar?'مساهمات اللاعبين':'Player Contributions'}</span>
-                <small>{ar?'(اختياري، حتى 5 لاعبين لكل فريق)':'(optional, up to 5 players per team)'}</small>
-              </div>
-              <div className="contributions-team">
-                <div className="contributions-team-header">
-                  <strong>{draft.team1}</strong>
-                  {draft.contributions1.length<5&&<button type="button" className="icon-button small" onClick={()=>addContribution('team1')}><PlusIcon size={14}/></button>}
-                </div>
-                {draft.contributions1.map((c,i)=><div key={i} className="contribution-row">
-                  <input type="text" placeholder={ar?'اللاعب':'Player'} value={c.playerName} onChange={e=>updateContribution('team1',i,'playerName',e.target.value)}/>
-                  <input type="number" min="0" placeholder={ar?'أهداف':'Goals'} value={c.goals||''} onChange={e=>updateContribution('team1',i,'goals',e.target.value)}/>
-                  <input type="number" min="0" placeholder={ar?'تسديدات':'Assists'} value={c.assists||''} onChange={e=>updateContribution('team1',i,'assists',e.target.value)}/>
-                  <button type="button" className="icon-button small danger" onClick={()=>removeContribution('team1',i)}><Minus size={14}/></button>
-                </div>)}
-              </div>
-              <div className="contributions-team">
-                <div className="contributions-team-header">
-                  <strong>{draft.team2}</strong>
-                  {draft.contributions2.length<5&&<button type="button" className="icon-button small" onClick={()=>addContribution('team2')}><PlusIcon size={14}/></button>}
-                </div>
-                {draft.contributions2.map((c,i)=><div key={i} className="contribution-row">
-                  <input type="text" placeholder={ar?'اللاعب':'Player'} value={c.playerName} onChange={e=>updateContribution('team2',i,'playerName',e.target.value)}/>
-                  <input type="number" min="0" placeholder={ar?'أهداف':'Goals'} value={c.goals||''} onChange={e=>updateContribution('team2',i,'goals',e.target.value)}/>
-                  <input type="number" min="0" placeholder={ar?'تسديدات':'Assists'} value={c.assists||''} onChange={e=>updateContribution('team2',i,'assists',e.target.value)}/>
-                  <button type="button" className="icon-button small danger" onClick={()=>removeContribution('team2',i)}><Minus size={14}/></button>
-                </div>)}
-              </div>
-            </div>
-          </>}
-        </div>
-        <div className="modal-actions">
-          <button className="dark-action" onClick={()=>setOpen(false)}>{ar?'إلغاء':'Cancel'}</button>
-          <button className="primary-action" onClick={save}>{ar?'حفظ':'Save'}</button>
-        </div>
-      </div>
-    </div>}
+    {next&&<section className="next-match-section"><header><CalendarClock size={18}/><h2>{copy.nextMatch}</h2></header>{card(next,true)}</section>}
+    {(active.length>0||remaining.length>0)&&<section className="matches-list-section"><h2>{copy.yourMatches}</h2><div className="current-match-grid">{remaining.map(match=>card(match))}</div></section>}
+    {!matches.length&&<div className="empty-state"><CalendarClock size={25}/><strong>{copy.noMatches}</strong><span>{copy.noMatchesBody}</span><button className="primary-action" onClick={()=>setEditor({open:true,match:null})}>{copy.createFirst}</button></div>}
+    {editor.open&&<MatchEditor language={language} initial={editor.match} onClose={()=>setEditor({open:false,match:null})} onSaved={()=>{setMsg(copy.saved);void load()}}/>}
+    {share&&<MatchShareModal match={share} language={language} onClose={()=>setShare(null)}/>}
   </section>;
 }

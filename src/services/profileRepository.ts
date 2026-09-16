@@ -1,17 +1,13 @@
 import { getItem, putItem, deleteItem } from './localDb';
+import type { LocalProfile } from './profileDraft';
 
-export type LocalProfile = {
-  id: 'current';
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  avatarData?: string;
-  bannerData?: string;
-  emailVerified: boolean;
-  verifiedAt?: number;
-  updatedAt: number;
-};
+export type { LocalProfile } from './profileDraft';
+export {
+  PROFILE_EDITABLE_KEYS,
+  allowProfileRouteChange,
+  isProfileDraftDirty,
+  profileDraftDiffKeys,
+} from './profileDraft';
 
 export async function getProfile() { return getItem<LocalProfile>('profile', 'current'); }
 export async function saveProfile(profile: Omit<LocalProfile, 'id' | 'updatedAt'> | LocalProfile) {

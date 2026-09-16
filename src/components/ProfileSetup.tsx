@@ -4,6 +4,11 @@ import type { LocalProfile } from '../services/profileRepository';
 import { imageFileToDataUrl } from '../services/imageProcessing';
 import { TAAMEN_LOGO_ALT, TAAMEN_LOGO_SRC } from '../config/branding';
 import PrivacyPolicyModal, { recordConsent } from './PrivacyPolicyModal';
+import { gsap, useGSAP } from '../motion/gsapRuntime';
+import { EASE, MOTION, TRAVEL, compact } from '../motion/tokens';
+import { isCompactViewport, prefersReducedMotion } from '../motion/prefersReduced';
+import { armCinematicHomeReveal } from '../motion/revealState';
+import { ImageActionSheet, ImageViewer } from './ImageActionOverlay';
 
 type Draft = Omit<LocalProfile, 'id' | 'updatedAt' | 'bannerData'>;
 const empty: Draft = { firstName: '', lastName: '', email: '', phone: '', avatarData: '', emailVerified: false };
@@ -16,7 +21,43 @@ export function ProfileSetup({ language, onSave, onLanguage }: { language: 'ar' 
   const [legalDoc, setLegalDoc] = useState<'privacy' | 'terms'>('privacy');
   const [consentError, setConsentError] = useState(false);
   const avatarRef = useRef<HTMLInputElement>(null);
-  
+  const [imageSheet, setImageSheet] = useState(false);
+  const [imageViewer, setImageViewer] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const leaving = useRef(false);
+
+  // Entrance: the card settles, then branding, avatar, fields, consent and the
+  // submit button follow. Nothing overshoots, nothing blocks typing.
+  useGSAP(() => {
+    const content = contentRef.current;
+    if (!content) return;
+    if (prefersReducedMotion()) {
+      gsap.fromTo(content, { opacity: 0 }, { opacity: 1, duration: 0.16, ease: 'none', clearProps: 'opacity' });
+      return;
+    }
+    const rows = content.querySelectorAll<HTMLElement>('.mobile-branding, .avatar-section, .form-label, .consent-row, .mobile-submit');
+    const travel = isCompactViewport() ? compact(TRAVEL.auth) : TRAVEL.auth;
+    const tl = gsap.timeline();
+    tl.from(content, {
+      opacity: 0,
+      y: travel,
+      scale: 0.98,
+      duration: MOTION.entrance,
+      ease: EASE.entrance,
+      clearProps: 'opacity,transform',
+    }, 0);
+    if (rows.length) {
+      tl.from(rows, {
+        opacity: 0,
+        y: Math.round(travel * 0.7),
+        duration: MOTION.panel,
+        ease: EASE.entrance,
+        stagger: 0.05,
+        clearProps: 'opacity,transform',
+      }, 0.12);
+    }
+  }, { scope: contentRef });
+
   const update = (k: keyof Draft, v: string | boolean) => setP(x => ({ ...x, [k]: v }));
   
   const image = async (file?: File) => {
@@ -36,8 +77,20 @@ export function ProfileSetup({ language, onSave, onLanguage }: { language: 'ar' 
       setConsentError(true);
       return;
     }
+    if (leaving.current) return;
     recordConsent();
-    onSave({ ...p, firstName: p.firstName.trim(), lastName: p.lastName.trim(), email: p.email.trim(), phone: p.phone.trim() });
+    const draft = { ...p, firstName: p.firstName.trim(), lastName: p.lastName.trim(), email: p.email.trim(), phone: p.phone.trim() };
+    // Home plays its full reveal once, straight after setup.
+    const handOver = () => { armCinematicHomeReveal(); onSave(draft); };
+
+    const content = contentRef.current;
+    if (!content || prefersReducedMotion()) {
+      handOver();
+      return;
+    }
+    leaving.current = true;
+    // Deliberately outside the GSAP context: the hand-over must not be cancellable.
+    gsap.to(content, { opacity: 0, y: -12, scale: 0.99, duration: 0.3, ease: EASE.exit, onComplete: handOver });
   };
   
   const handleConsentChange = (checked: boolean) => {
@@ -48,12 +101,24 @@ export function ProfileSetup({ language, onSave, onLanguage }: { language: 'ar' 
   return (
     <main className="profile-entry">
       {showPolicy && <PrivacyPolicyModal language={language} initialDocument={legalDoc} onClose={() => setShowPolicy(false)} />}
+      {imageSheet && (
+        <ImageActionSheet
+          language={language}
+          canView={Boolean(p.avatarData)}
+          onView={() => { setImageSheet(false); setImageViewer(true); }}
+          onEdit={() => avatarRef.current?.click()}
+          onClose={() => setImageSheet(false)}
+        />
+      )}
+      {imageViewer && p.avatarData && (
+        <ImageViewer src={p.avatarData} alt={ar ? 'الصورة الشخصية' : 'Profile photo'} language={language} onClose={() => setImageViewer(false)} />
+      )}
       <div className="entry-container">
         <button className="language-button mobile-language" onClick={onLanguage}>
           <Globe2 size={14} />
           {ar ? 'EN' : 'AR'}
         </button>
-        <div className="entry-content">
+        <div className="entry-content" ref={contentRef}>
           <div className="mobile-branding">
             <div className="mobile-logo">
               <img src={TAAMEN_LOGO_SRC} alt={TAAMEN_LOGO_ALT} />
@@ -65,14 +130,14 @@ export function ProfileSetup({ language, onSave, onLanguage }: { language: 'ar' 
           </div>
           <form className="profile-form" onSubmit={handleSubmit}>
             <div className="avatar-section">
-              <button type="button" className="avatar-circle" onClick={() => avatarRef.current?.click()}>
+              <button type="button" className="avatar-circle" onClick={() => p.avatarData ? setImageSheet(true) : avatarRef.current?.click()}>
                 {p.avatarData ? <img src={p.avatarData} alt="" /> : initials}
               </button>
               <div className="avatar-desktop-controls">
                 <strong>{ar ? 'الصورة الشخصية' : 'Profile photo'}</strong>
                 <small>{ar ? 'اختيارية ومحفوظة محليًا' : 'Optional and stored locally'}</small>
                 <div className="photo-actions">
-                  <button type="button" className="mini-action" onClick={() => avatarRef.current?.click()}>
+                  <button type="button" className="mini-action" onClick={() => p.avatarData ? setImageSheet(true) : avatarRef.current?.click()}>
                     <ImagePlus size={14} />
                     {ar ? 'تغيير' : 'Change'}
                   </button>
@@ -84,7 +149,7 @@ export function ProfileSetup({ language, onSave, onLanguage }: { language: 'ar' 
                   )}
                 </div>
               </div>
-              <button type="button" className="avatar-change mobile-only" onClick={() => avatarRef.current?.click()}>
+              <button type="button" className="avatar-change mobile-only" onClick={() => p.avatarData ? setImageSheet(true) : avatarRef.current?.click()}>
                 <ImagePlus size={16} />
               </button>
               {p.avatarData && (

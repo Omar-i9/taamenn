@@ -16,6 +16,8 @@ export function originHeaders(req) {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Credentials': 'true',
     Vary: 'Origin',
+    // Credentialed CORS from the Vite origin must not be blocked by CORP.
+    'Cross-Origin-Resource-Policy': 'cross-origin',
   };
 }
 

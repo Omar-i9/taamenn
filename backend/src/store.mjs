@@ -5,7 +5,7 @@ import { createJsonFile } from './jsonFile.mjs';
 const SCHEMA_VERSION = 1;
 const COLLECTIONS = ['members', 'players', 'matches', 'notifications', 'performance', 'invitations', 'audit'];
 
-const ROLES = new Set(['OWNER', 'MEMBER']);
+const ROLES = new Set(['OWNER', 'MEMBER', 'FEATURED_MEMBER']);
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];

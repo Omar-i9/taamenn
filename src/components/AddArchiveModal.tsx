@@ -1,7 +1,11 @@
 import { useState } from 'react';
-import { X, Calendar, Clock, AlertCircle } from 'lucide-react';
-import type { Match, MatchType } from '../data/footballData';
-import { addMatchToArchive } from '../services/archiveRepository';
+import { X, Clock, AlertCircle } from 'lucide-react';
+import type { MatchType } from '../data/footballData';
+import { createArchivedMatch } from '../services/matchRepository';
+import { archiveCopy, matchUiCopy } from '../i18n/translations';
+import { todayInTimeZone, zonedDateTimeToEpoch } from '../shared/formatting/dateTime';
+import TaamenDatePicker from './TaamenDatePicker';
+import { useOverlayPresence } from '../motion/useOverlayPresence';
 
 type Language = 'ar' | 'en';
 
@@ -12,6 +16,8 @@ interface AddArchiveModalProps {
 
 export default function AddArchiveModal({ language, onClose }: AddArchiveModalProps) {
   const ar = language === 'ar';
+  const copy=matchUiCopy[language];
+  const { backdropRef, panelRef, requestClose } = useOverlayPresence<HTMLButtonElement, HTMLElement>('modal', onClose);
   
   const [team1, setTeam1] = useState('');
   const [team2, setTeam2] = useState('');
@@ -25,38 +31,24 @@ export default function AddArchiveModal({ language, onClose }: AddArchiveModalPr
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const types=archiveCopy[language];
   const typeLabel = (v: string) => ({
-    friendly: ar ? 'ودية' : 'Friendly',
-    normal: ar ? 'عادية' : 'Normal',
-    competitive: ar ? 'تنافسية' : 'Competitive',
-    tournament: ar ? 'بطولة' : 'Tournament',
-    strong: ar ? 'قوية' : 'Strong'
+    friendly: types.friendly,
+    normal: types.normal,
+    competitive: types.competitive,
+    tournament: types.tournament,
+    strong: types.strong
   } as Record<string, string>)[v] || v;
 
   const validateTimestamp = (): boolean => {
     if (!date || !time) {
-      setError(ar ? 'يرجى اختيار التاريخ والوقت' : 'Please select date and time');
+      setError(copy.addArchiveRequired);
       return false;
     }
 
-    const matchDateTime = new Date(`${date}T${time}`);
-    const now = new Date();
-
-    if (matchDateTime > now) {
-      const hoursUntil = Math.floor((matchDateTime.getTime() - now.getTime()) / (1000 * 60 * 60));
-      const minutesUntil = Math.floor(((matchDateTime.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60));
-      
-      if (hoursUntil > 0) {
-        setError(ar 
-          ? `المباراة ستحدث بعد ${hoursUntil} ساعة و ${minutesUntil} دقيقة. لا يمكن أرشفة مباريات مستقبلية.` 
-          : `This match is ${hoursUntil} hours and ${minutesUntil} minutes in the future. Future matches cannot be archived.`
-        );
-      } else {
-        setError(ar 
-          ? `المباراة ستحدث بعد ${minutesUntil} دقيقة. لا يمكن أرشفة مباريات مستقبلية.` 
-          : `This match is ${minutesUntil} minutes in the future. Future matches cannot be archived.`
-        );
-      }
+    const matchDateTime = zonedDateTimeToEpoch(date,time);
+    if (!Number.isFinite(matchDateTime)||matchDateTime > Date.now()) {
+      setError(copy.futureArchive);
       return false;
     }
 
@@ -68,7 +60,7 @@ export default function AddArchiveModal({ language, onClose }: AddArchiveModalPr
     setError('');
 
     if (!team1.trim() || !team2.trim()) {
-      setError(ar ? 'يرجى إدخال اسم الفريقين' : 'Please enter both team names');
+      setError(copy.addArchiveRequired);
       return;
     }
 
@@ -79,32 +71,20 @@ export default function AddArchiveModal({ language, onClose }: AddArchiveModalPr
     setIsSubmitting(true);
 
     try {
-      const matchDateTime = new Date(`${date}T${time}`);
-      const dateKey = matchDateTime.getTime();
-      
-      const newMatch: Match = {
-        id: `archive-${Date.now()}`,
+      await createArchivedMatch({
         team1: team1.trim(),
         team2: team2.trim(),
         score1: parseInt(score1) || 0,
         score2: parseInt(score2) || 0,
-        dateISO: matchDateTime.toISOString(),
-        dateKey,
-        dateLabel: matchDateTime.toLocaleDateString(ar ? 'ar-SA' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        date,
+        time,
         stadium: stadium.trim() || undefined,
         city: city.trim() || undefined,
         type,
-        status: 'ARCHIVED',
-        visibility: 'LOCAL',
-        story: '',
-        source: 'local',
-        createdAt: Date.now()
-      };
-
-      await addMatchToArchive(newMatch);
+      });
       onClose();
     } catch (err) {
-      setError(ar ? 'فشل حفظ المباراة' : 'Failed to save match');
+      setError(copy.archiveFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -112,14 +92,14 @@ export default function AddArchiveModal({ language, onClose }: AddArchiveModalPr
 
   return (
     <div className="overlay" role="dialog" aria-modal="true">
-      <button className="overlay-backdrop" onClick={onClose} />
-      <aside className="modal-card archive-modal">
+      <button ref={backdropRef} className="overlay-backdrop" onClick={requestClose} />
+      <aside ref={panelRef} className="modal-card archive-modal">
         <header>
           <div>
             <span className="eyebrow">TAAMEN / ARCHIVE</span>
             <h2>{ar ? 'إضافة مباراة مؤرشفة' : 'Add Archived Match'}</h2>
           </div>
-          <button className="icon-button" onClick={onClose}>
+          <button className="icon-button" onClick={requestClose}>
             <X />
           </button>
         </header>
@@ -169,16 +149,7 @@ export default function AddArchiveModal({ language, onClose }: AddArchiveModalPr
           <div className="form-grid">
             <label>
               {ar ? 'التاريخ' : 'Date'} <span className="required">*</span>
-              <div className="date-time-input">
-                <Calendar size={16} />
-                <input
-                  required
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  max={new Date().toISOString().split('T')[0]}
-                />
-              </div>
+              <TaamenDatePicker value={date} onChange={setDate} language={language} max={todayInTimeZone()} required/>
             </label>
             <label>
               {ar ? 'الوقت' : 'Time'} <span className="required">*</span>
@@ -232,7 +203,7 @@ export default function AddArchiveModal({ language, onClose }: AddArchiveModalPr
           )}
 
           <div className="modal-actions">
-            <button type="button" className="dark-action" onClick={onClose}>
+            <button type="button" className="dark-action" onClick={requestClose}>
               {ar ? 'إلغاء' : 'Cancel'}
             </button>
             <button type="submit" className="primary-action" disabled={isSubmitting}>

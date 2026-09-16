@@ -1,7 +1,9 @@
-import { useState } from 'react';
 import { X, Share2, Trophy, Calendar, MapPin, Shield } from 'lucide-react';
 import type { Match, PlayerContribution } from '../data/footballData';
-import { shareMatch } from '../services/shareService';
+import { matchUiCopy } from '../i18n/translations';
+import { hasRecordedResult } from '../services/matchLifecycle';
+import { formatMatchDate } from '../shared/formatting/dateTime';
+import { useOverlayPresence } from '../motion/useOverlayPresence';
 
 type Language = 'ar' | 'en';
 
@@ -18,61 +20,55 @@ function calculateTotal(contribution: PlayerContribution): number {
 }
 
 export default function ArchiveDetailModal({ match, language, featured = false, onClose, onShare }: ArchiveDetailModalProps) {
-  const ar = language === 'ar';
-  const [includeContributions, setIncludeContributions] = useState(true);
-  
-  const winner = match.score1 > match.score2 ? 'team1' : match.score2 > match.score1 ? 'team2' : null;
-  const isDraw = match.score1 === match.score2;
-  
-  const hasContributions = match.playerContributions && 
+  const copy = matchUiCopy[language];
+  const recorded = hasRecordedResult(match);
+  const winner = recorded && match.score1 > match.score2 ? 'team1' : recorded && match.score2 > match.score1 ? 'team2' : null;
+  const isDraw = recorded && match.score1 === match.score2;
+  const hasContributions = match.playerContributions &&
     (match.playerContributions.team1.length > 0 || match.playerContributions.team2.length > 0);
-
-  // Private records are refused by shareService; don't offer an action that must fail.
-  const shareable = match.visibility !== 'PRIVATE';
-  
-  const handleShare = async () => {
-    try {
-      await shareMatch(match, { includeContributions: hasContributions ? includeContributions : false });
-      if (onShare) onShare();
-    } catch (error) {
-      console.error('Share failed:', error);
-    }
-  };
+  const shareable = !featured && match.visibility !== 'PRIVATE' && Boolean(onShare);
+  const date = formatMatchDate(match.dateISO, match.dateKey, language);
+  const { backdropRef, panelRef, requestClose } = useOverlayPresence<HTMLButtonElement, HTMLElement>('modal', onClose);
 
   return (
-    <div className="overlay" role="dialog" aria-modal="true" aria-label={ar ? 'تفاصيل المباراة' : 'Match details'}>
-      <button className="overlay-backdrop" aria-label="close" onClick={onClose} />
-      <aside className="archive-detail-modal">
+    <div className="overlay" role="dialog" aria-modal="true" aria-label={copy.detailsTitle}>
+      <button ref={backdropRef} className="overlay-backdrop" aria-label={copy.closeDetails} onClick={requestClose} />
+      <aside ref={panelRef} className="archive-detail-modal">
         <header>
           <div>
             <span className="eyebrow">ARCHIVE / DETAIL</span>
-            <h2>{ar ? 'تفاصيل المباراة' : 'Match Details'}</h2>
+            <h2>{copy.detailsTitle}</h2>
           </div>
-          <button className="icon-button" onClick={onClose}>
+          <button className="icon-button" onClick={requestClose} aria-label={copy.closeDetails}>
             <X />
           </button>
         </header>
-        
+
         <div className="archive-detail-content">
           <div className="match-header">
             <div className="match-scoreboard">
               <div className={`team-score ${winner === 'team1' ? 'winner' : ''}`}>
                 <span className="team-name">{match.team1}</span>
-                <span className="score">{match.score1}</span>
+                <span className="score">{recorded ? match.score1 : '—'}</span>
               </div>
               <div className="match-divider">
                 {isDraw ? <Shield size={20} /> : <Trophy size={20} />}
               </div>
               <div className={`team-score ${winner === 'team2' ? 'winner' : ''}`}>
                 <span className="team-name">{match.team2}</span>
-                <span className="score">{match.score2}</span>
+                <span className="score">{recorded ? match.score2 : '—'}</span>
               </div>
             </div>
-            
+
+            {!recorded && (
+              <div className="winner-banner">
+                <span>{copy.resultPending}</span>
+              </div>
+            )}
             {winner && (
               <div className="winner-banner">
                 <Trophy size={16} />
-                <span>{ar ? `الفائز: ${winner === 'team1' ? match.team1 : match.team2}` : `Winner: ${winner === 'team1' ? match.team1 : match.team2}`}</span>
+                <span>{copy.winnerLabel}: {winner === 'team1' ? match.team1 : match.team2}</span>
               </div>
             )}
           </div>
@@ -80,7 +76,7 @@ export default function ArchiveDetailModal({ match, language, featured = false, 
           <div className="match-meta">
             <div className="meta-item">
               <Calendar size={16} />
-              <span>{match.dateLabel}</span>
+              <span>{date.date}{match.time ? ` · ${match.time}` : ''}</span>
             </div>
             {match.stadium && (
               <div className="meta-item">
@@ -106,18 +102,18 @@ export default function ArchiveDetailModal({ match, language, featured = false, 
 
           {hasContributions && (
             <div className="contributions-section">
-              <h3>{ar ? 'مساهمات اللاعبين' : 'Player Contributions'}</h3>
-              
+              <h3>{copy.contributions}</h3>
+
               {match.playerContributions!.team1.length > 0 && (
                 <div className="team-contributions">
                   <h4>{match.team1}</h4>
                   <table className="contributions-table">
                     <thead>
                       <tr>
-                        <th>{ar ? 'اللاعب' : 'Player'}</th>
-                        <th>{ar ? 'الأهداف' : 'Goals'}</th>
-                        <th>{ar ? 'التسديدات' : 'Assists'}</th>
-                        <th>{ar ? 'المجموع' : 'Total'}</th>
+                        <th>{copy.player}</th>
+                        <th>{copy.goals}</th>
+                        <th>{copy.assists}</th>
+                        <th>{copy.total}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -140,10 +136,10 @@ export default function ArchiveDetailModal({ match, language, featured = false, 
                   <table className="contributions-table">
                     <thead>
                       <tr>
-                        <th>{ar ? 'اللاعب' : 'Player'}</th>
-                        <th>{ar ? 'الأهداف' : 'Goals'}</th>
-                        <th>{ar ? 'التسديدات' : 'Assists'}</th>
-                        <th>{ar ? 'المجموع' : 'Total'}</th>
+                        <th>{copy.player}</th>
+                        <th>{copy.goals}</th>
+                        <th>{copy.assists}</th>
+                        <th>{copy.total}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -163,34 +159,20 @@ export default function ArchiveDetailModal({ match, language, featured = false, 
           )}
 
           <div className="modal-actions">
-            <button className="dark-action" onClick={onClose}>
-              {ar ? 'إغلاق' : 'Close'}
+            <button className="dark-action" onClick={requestClose}>
+              {copy.closeDetails}
             </button>
             {shareable && (
-              <button className="primary-action" onClick={handleShare}>
+              <button className="primary-action" onClick={onShare}>
                 <Share2 size={16} />
-                {ar ? 'مشاركة' : 'Share'}
+                {copy.share}
               </button>
             )}
           </div>
 
-          {!shareable && (
-            <p className="settings-note">
-              {ar ? 'السجلات الخاصة غير قابلة للمشاركة العامة.' : 'Private records cannot be shared publicly.'}
-            </p>
-          )}
-
-          {shareable && hasContributions && (
-            <div className="share-toggle">
-              <label className="toggle-label">
-                <input 
-                  type="checkbox" 
-                  checked={includeContributions}
-                  onChange={(e) => setIncludeContributions(e.target.checked)}
-                />
-                <span>{ar ? 'تضمين مساهمات اللاعبين في المشاركة' : 'Include player contributions in share'}</span>
-              </label>
-            </div>
+          {featured && <p className="settings-note">{copy.historicalReadOnlyNote}</p>}
+          {!featured && match.visibility === 'PRIVATE' && (
+            <p className="settings-note">{copy.privateShareNote}</p>
           )}
         </div>
       </aside>

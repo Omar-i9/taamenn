@@ -1,5 +1,7 @@
 # TAAMEN 2.0 Beta — Product Logic Refinement
 
+> **HISTORICAL / ARCHIVE DOCUMENT.** Describes an earlier Public/Circle/Owner split. It is **not** the current product. See `docs/architecture/README.md`.
+
 ## Scopes
 - PUBLIC / LOCAL: IndexedDB-backed local workspace; no cloud account required.
 - PRIVATE CIRCLE: backend-authoritative shared data; Beta uses one shared Circle Password and an authorized member name.
@@ -24,7 +26,7 @@ Private matches are rejected by the public share encoder. Public/local matches c
 
 ## EmailJS
 Service: `service_13mkb9h`
-Contact: `template_cvuls0n`
+Contact: `template_jsugxta`
 Auto-reply: `template_4pj4xlm`
 Verification: configurable only; no template ID is invented.
 

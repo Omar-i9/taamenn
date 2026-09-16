@@ -30,7 +30,7 @@ export const config = {
   sessionCookieName: 'taamen_session',
 
   /** Explicit allow-list. Empty means same-origin only. */
-  allowedOrigins: String(process.env.CORS_ORIGIN || 'http://localhost:5173')
+  allowedOrigins: String(process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173')
     .split(',')
     .map(x => x.trim())
     .filter(Boolean),

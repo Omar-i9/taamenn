@@ -46,7 +46,6 @@ export interface ResetResult {
  * Does NOT delete:
  * - Unrelated browser data
  * - Other websites' data
- * - Private Circle server-side data
  * - Browser history
  * - User files
  */

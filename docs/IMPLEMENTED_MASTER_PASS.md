@@ -1,5 +1,7 @@
 # Implemented Master Pass — Beta
 
+> **HISTORICAL / ARCHIVE DOCUMENT.** Implementation notes from an earlier pass that still included Private Circle. Not the current product. See `docs/architecture/README.md`.
+
 This build applies the master UI/UX and architecture direction while preserving the existing TAAMEN 2.0 Beta structure.
 
 Implemented highlights:

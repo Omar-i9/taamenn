@@ -1,32 +1,39 @@
 import type { Match } from '../data/footballData';
-import { getAll, putItem, deleteItem } from './localDb';
+import { createArchivedMatch, deleteMatch, listMatches } from './matchRepository';
+import { canonicalStatus, isArchiveStatus } from './matchLifecycle';
+import { dateKeyToISO } from '../shared/formatting/dateTime';
 
-/** Current/general-user archive only. Historical TAAMEN records live in a feature boundary. */
+/** Archive is a projection of the canonical local Match collection. */
 export async function listCurrentArchive(): Promise<Match[]> {
-  const dedicated = await getAll<Match>('archive');
-  const local = (await getAll<Match>('matches'))
+  return (await listMatches())
     .filter(m => m.source !== 'legacy')
     .filter(m => m.visibility !== 'PRIVATE')
-    .filter(m => m.status === 'FINISHED' || m.status === 'ARCHIVED');
-  const map = new Map<string, Match>();
-  [...dedicated, ...local].forEach(m => {
-    if (m.source !== 'legacy') map.set(m.id, m);
-  });
-  return [...map.values()].sort((a, b) => b.dateKey - a.dateKey);
+    .filter(m => isArchiveStatus(m.status))
+    .sort((a,b)=>b.dateKey-a.dateKey);
 }
 
+/** Compatibility facade for older callers; writes the canonical matches store only. */
 export async function addMatchToArchive(match: Match): Promise<Match> {
   if (match.visibility === 'PRIVATE' || match.source === 'legacy') throw new Error('invalid-current-record');
-  await putItem('archive', match);
-  return match;
+  return createArchivedMatch({
+    team1:match.team1,
+    team2:match.team2,
+    score1:match.score1,
+    score2:match.score2,
+    date:match.dateISO?.slice(0,10)||dateKeyToISO(match.dateKey),
+    time:match.time||'00:00',
+    stadium:match.stadium,
+    city:match.city,
+    type:match.type,
+  });
 }
 
 export async function savePublicArchive(m: Match) {
   if (m.visibility === 'PRIVATE' || m.source === 'legacy') throw new Error('invalid-current-record');
-  await putItem('archive', m);
-  return m;
+  if(canonicalStatus(m.status)!=='ARCHIVED')throw new Error('invalid-current-record');
+  return addMatchToArchive(m);
 }
 
 export async function removePublicArchive(id: string) {
-  await deleteItem('archive', id);
+  await deleteMatch(id);
 }

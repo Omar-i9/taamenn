@@ -1,5 +1,7 @@
 # Changelog
 
+> Historical reconstruction notes. This file records past security/rebuild work; it does not describe the current user-facing product. See `docs/architecture/README.md`.
+
 ## Baseline (recorded before the reconstruction)
 
 Measured on Node v24.16.0 / npm 11.15.0, Windows.

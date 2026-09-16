@@ -36,7 +36,8 @@ const COORDINATE_KEYS = ['x', 'y'];
 
 /**
  * Tactical plans are stored, so they are shape-checked rather than accepted wholesale.
- * Unknown fields are dropped instead of persisted.
+ * Unknown fields are dropped instead of persisted. The position label is derived from
+ * the coordinates, so it is deliberately not stored.
  */
 export function tacticalPlan(body) {
   const plan = body.plan;
@@ -54,11 +55,9 @@ export function tacticalPlan(body) {
       id: typeof player.id === 'string' && player.id ? player.id.slice(0, 60) : `p${index}`,
       name: typeof player.name === 'string' ? player.name.slice(0, 60) : '',
       team: player.team === 'away' ? 'away' : 'home',
-      role: typeof player.role === 'string' ? player.role.slice(0, 20) : '',
       teamRole: typeof player.teamRole === 'string' ? player.teamRole.slice(0, 40) : '',
       instruction: typeof player.instruction === 'string' ? player.instruction.slice(0, 60) : '',
       captain: player.captain === true,
-      positionMode: player.positionMode === 'manual' ? 'manual' : 'auto',
     };
     for (const key of COORDINATE_KEYS) {
       // Strictly numeric: a coordinate arriving as a string is a client bug, not

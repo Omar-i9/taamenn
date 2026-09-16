@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Search, MapPin, Phone, ChevronDown, ChevronUp, X, MessageCircle } from 'lucide-react';
-import { stadiums, searchStadiums, type Stadium } from '../data/stadiums';
+import { searchStadiums } from '../data/stadiums';
+import { WHATSAPP_URL } from '../config/support';
+import { uiCopy } from '../i18n/translations';
 
 type Language = 'ar' | 'en';
 
@@ -133,6 +135,13 @@ export default function Stadiums({ language }: { language: Language }) {
           )}
         </div>
       )}
+
+      <aside className="venue-admin-helper stadiums-support-note">
+        <p>{uiCopy[language].missingStadiumPage}</p>
+        {WHATSAPP_URL
+          ? <a className="venue-admin-link" href={WHATSAPP_URL} target="_blank" rel="noreferrer noopener"><MessageCircle size={14} aria-hidden="true"/>{uiCopy[language].contactAdminWhatsApp}</a>
+          : null}
+      </aside>
     </section>
   );
 }

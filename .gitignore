@@ -7,6 +7,8 @@ dist/
 .env.*
 !.env.example
 backend/.env
+backend/.env.*
+!backend/.env.example
 
 # Operator data: real members, password hashes, recognition codes, private matches.
 # Never commit. Use backend/data.example.json for development.
@@ -21,3 +23,10 @@ backend/legacy-private-matches.json
 backend/sessions.json
 backend/sessions.json.tmp
 backend/sessions.json.corrupt-*
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

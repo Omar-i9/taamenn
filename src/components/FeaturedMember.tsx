@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { ArrowLeft, ArrowRight, BadgeCheck, LogIn } from 'lucide-react';
-import { api, type Session } from '../services/apiClient';
+import { ApiError, api, type Session } from '../services/apiClient';
+import { useFormEntrance } from '../motion/useFormEntrance';
+import { uiCopy } from '../i18n/translations';
 
 /**
  * Featured Member recognition.
@@ -18,6 +20,8 @@ export default function FeaturedMember({
   onRecognized: (session: Session) => void;
 }) {
   const ar = language === 'ar';
+  const copy = uiCopy[language];
+  const pageRef = useFormEntrance<HTMLElement>();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -25,7 +29,7 @@ export default function FeaturedMember({
   const submit = async () => {
     const value = code.trim();
     if (!value) {
-      setError(ar ? 'أدخل معرّف العضو.' : 'Enter the member identifier.');
+      setError(copy.featuredEnterId);
       return;
     }
     setBusy(true);
@@ -34,21 +38,23 @@ export default function FeaturedMember({
       const session = await api.recognizeMember(value);
       onRecognized(session);
     } catch (caught) {
-      setError(caught instanceof Error
-        ? caught.message
-        : (ar ? 'تعذر التحقق الآن.' : 'Verification is unavailable right now.'));
+      const status = caught instanceof ApiError ? caught.status : -1;
+      if (status === 0) setError(copy.featuredOffline);
+      else if (status === 401) setError(copy.featuredInvalidId);
+      else if (status === 429) setError(copy.featuredRateLimited);
+      else setError(copy.featuredUnavailable);
     } finally {
       setBusy(false);
     }
   };
 
-  return <section className="page-content featured-page">
+  return <section className="page-content featured-page" ref={pageRef}>
     <div className="featured-entry panel">
       <p className="eyebrow">TAAMEN / FEATURED MEMBER</p>
       <div className="panel-heading featured-login-heading">
         <div>
           <h1>{ar ? 'دخول أعضاء TAAMEN' : 'TAAMEN member access'}</h1>
-          <p className="subtitle">{ar ? 'أدخل معرّف العضو.' : 'Enter your member identifier.'}</p>
+          <p className="subtitle">{copy.featuredEnterId}</p>
         </div>
         <BadgeCheck size={18} />
       </div>
@@ -57,7 +63,6 @@ export default function FeaturedMember({
           value={code}
           onChange={e => setCode(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && !busy && submit()}
-          placeholder="user#****"
           autoComplete="off"
           spellCheck={false}
           aria-invalid={Boolean(error)}

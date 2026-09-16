@@ -1,5 +1,7 @@
 # TAAMEN 2.0 BETA implementation audit
 
+> **HISTORICAL / ARCHIVE DOCUMENT.** Audit of an earlier three-scope Beta (local / Circle / owner). Not the current product. See `docs/architecture/README.md`.
+
 ## Applied
 
 - One TAAMEN shell with three data scopes: public/local, private circle, owner.

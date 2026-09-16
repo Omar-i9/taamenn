@@ -9,21 +9,25 @@
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "backend": "npm --prefix backend run dev",
-    "provision:members": "npm --prefix backend run provision:members",
     "qa:final": "node scripts/qa-final.mjs",
     "test:backend": "npm --prefix backend test",
-    "test:frontend": "node --test --experimental-strip-types src/**/*.test.ts",
+    "test:frontend": "node --test --experimental-strip-types \"src/**/*.test.ts\"",
     "test": "node scripts/qa-final.mjs && npm run test:backend && npm run test:frontend"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@vitejs/plugin-react": "6.1.1",
-    "vite": "8.2.2",
-    "typescript": "7.0.2",
+    "gsap": "^3.15.0",
+    "html2canvas": "^1.4.1",
+    "lucide-react": "1.42.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "lucide-react": "1.42.0"
+    "typescript": "7.0.2",
+    "vite": "8.2.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.5.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4"
   }

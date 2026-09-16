@@ -7,6 +7,13 @@
  */
 
 export type MatchType = 'strong' | 'normal' | 'friendly' | 'competitive' | 'tournament';
+export type MatchStatus =
+  | 'UPCOMING'
+  | 'ACTIVE'
+  | 'COMPLETED_PENDING_RESULT'
+  | 'COMPLETED_WITH_RESULT'
+  | 'ARCHIVED';
+export type LegacyMatchStatus = 'STARTING_SOON' | 'LIVE' | 'FINISHED' | 'انتهت';
 
 export type MatchStats = {
   possession: number;
@@ -33,7 +40,7 @@ export type Match = {
   team2: string;
   score1: number;
   score2: number;
-  status: 'UPCOMING'|'STARTING_SOON'|'LIVE'|'FINISHED'|'ARCHIVED'|string;
+  status: MatchStatus | LegacyMatchStatus;
   dateLabel: string;
   dateKey: number;
   dateISO?: string;
@@ -47,6 +54,12 @@ export type Match = {
   visibility?: 'LOCAL'|'PUBLIC'|'PRIVATE';
   createdAt?: number;
   updatedAt?: number;
+  completedAt?: number;
+  resultRecordedAt?: number;
+  archivedAt?: number;
+  /** Stable identity across shares. Equals `id` when the match is created locally. */
+  originId?: string;
+  sharedFingerprint?: string;
   source?: 'legacy'|'local';
   details?: { team1: MatchStats; team2: MatchStats };
   playerContributions?: {
@@ -55,15 +68,18 @@ export type Match = {
   };
 };
 
+/**
+ * `x` and `y` are percentages of the pitch bounds and are the only record of where a
+ * player stands. The position label (GK, CB, ST ...) is derived from them by
+ * `services/tacticalBoard`, so it is not part of the stored shape.
+ */
 export type TacticalPlayer = {
   id: string;
   team: 'home' | 'away';
   name: string;
   x: number;
   y: number;
-  role: string;
   teamRole: string;
   instruction: string;
   captain: boolean;
-  positionMode?: 'auto' | 'manual';
 };

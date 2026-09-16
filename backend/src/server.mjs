@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { config } from './config.mjs';
 import { HttpError, drainRequest, json } from './http.mjs';
 import { handleRequest } from './routes.mjs';
+import { contactConfigured } from './contact.mjs';
+import { syncFeaturedMembers } from './featuredMembers.mjs';
 import { seedLegacyMatchesIfEmpty, store } from './store.mjs';
 
 export function createServer() {
@@ -28,10 +30,12 @@ export function createServer() {
 
 export async function start() {
   await store.load();
+  await store.update(data => { syncFeaturedMembers(data); });
   await seedLegacyMatchesIfEmpty();
   const server = createServer();
   await new Promise(resolve => server.listen(config.port, resolve));
   console.log(`TAAMEN backend listening on http://localhost:${config.port} (${config.nodeEnv})`);
+  console.log(`[taamen] contact email ${contactConfigured() ? 'configured' : 'not configured'}`);
   return server;
 }
 

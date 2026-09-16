@@ -1,43 +1,39 @@
 # TAAMEN 2.0 Beta Architecture
 
-TAAMEN is one football product with two primary user experiences and one administrative layer:
+> Current product architecture. Older Circle/password-workspace documents in this repo are historical archives, not this model.
 
-- PUBLIC / LOCAL — for everyone. No password and no mandatory email. Profiles, matches, archives and tactical plans can live entirely on the device.
-- PRIVATE CIRCLE — for authorized former players. Private history, real player identities, rankings, statistics, readiness and private tactical plans are server-authoritative after authentication.
-- OWNER — management capabilities behind the same private authentication boundary.
+TAAMEN is a **local-first** football workspace:
+
+- The ordinary user has a local profile, local matches, local archive, local tactical plans, local notifications, and local export/import. No account is required.
+- Featured Member recognition is optional. A server `code` session opens a **read-only Historical Record**. It is not a password workspace and not a second Match database.
+- Support contact posts to `POST /api/public/contact`. EmailJS credentials stay on the backend.
+
+There is no Private Circle product surface (no Circle UI, login, owner console, or Circle match APIs).
 
 ## Match domain
 
-Match Center and Archive use the same `Match` model and repository. The normal lifecycle is:
+Match Center and Archive use the same canonical `Match` model and repository.
 
-`Create → Upcoming → Live/Finished → Archive`
+`UPCOMING → ACTIVE → COMPLETED_PENDING_RESULT → COMPLETED_WITH_RESULT → ARCHIVED`
 
-Public users create local/public records themselves. Archive is a historical view of finished/archived match records rather than an unrelated database.
+Archive is a projection of canonical matches. Historical Record is independent featured/legacy data.
 
 ## Storage strategy
 
-Public storage is IndexedDB first. Keep the repository interface independent from the persistence mechanism so a cloud adapter can later be introduced without rewriting the UI.
-
-Conceptually:
-
-`UI → domain/service → repository → local adapter | cloud adapter`
-
-Private storage is backend-authoritative in Beta. The Beta backend currently uses a JSON data file and in-memory sessions; this is an explicit boundary, not the target long-term database design.
+Public storage is IndexedDB first (`taamen-2`). Sharing is explicit local payload exchange, not cloud sync.
 
 ## Data isolation
 
-Public pages must never fetch legacy private history, private player identities, private rankings, private statistics or owner controls. Private routes only request those resources after the server has authenticated the member.
-
-The same rule applies to share payloads, generated images, screenshots and metadata: private information must never be included in a public share artifact.
+Public pages must never fetch legacy private history, recognition codes, or operator member credentials. Share payloads must not include email, phone, avatar, or unrelated workspace data.
 
 ## Navigation
 
-`src/config/routes.ts` is the source of truth for route metadata. Desktop and mobile navigation derive from the registry so a page does not become inaccessible just because it was not chosen for the primary mobile bar.
+`src/config/routes.ts` is the source of truth for route metadata. Desktop and mobile navigation derive from the registry.
 
 ## Images
 
-The supplied TAAMEN brand mark is stored in `public/assets/taamen-brand-mark.png` and referenced through `src/config/branding.ts`. Profile images are resized/compressed before local storage.
+The official TAAMEN brand mark is `public/assets/taamen-brand-mark.png`, referenced through `src/config/branding.ts`. Its SHA-256 is asserted by `scripts/qa-final.mjs`. Profile images are resized/compressed before local storage.
 
 ## Future cloud sync
 
-When cloud storage is introduced, keep local writes immediate and treat remote synchronization as a separate state machine (`local-only`, `pending`, `synced`, `conflict`, `deleted`). Do not make cloud availability a prerequisite for using the public workspace.
+When cloud storage is introduced, keep local writes immediate and treat remote synchronization as a separate state machine. Do not make cloud availability a prerequisite for using the local workspace.

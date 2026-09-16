@@ -16,10 +16,10 @@ const { startTestServer } = await import('./helpers.mjs');
 const api = await startTestServer(createServer);
 test.after(() => api.close());
 
-test('repeated failed logins are eventually blocked', async () => {
+test('repeated failed recognition attempts are eventually blocked', async () => {
   let sawLimit = false;
   for (let attempt = 0; attempt < 20; attempt += 1) {
-    const response = await api.post('/api/auth/login', { body: { name: 'test-member', password: `wrong-${attempt}` } });
+    const response = await api.post('/api/featured/member', { body: { memberCode: `user#WRONG${attempt}` } });
     if (response.status === 429) {
       sawLimit = true;
       assert.match(response.body.error, /too many/i);
@@ -79,9 +79,9 @@ test('forwarded client-IP headers are ignored unless the proxy is trusted', asyn
   // hand an attacker a fresh budget.
   let blocked = false;
   for (let attempt = 0; attempt < 40; attempt += 1) {
-    const response = await api.post('/api/auth/login', {
+    const response = await api.post('/api/featured/member', {
       headers: { 'X-Forwarded-For': `10.0.0.${attempt}` },
-      body: { name: 'test-owner', password: `wrong-${attempt}` },
+      body: { memberCode: `user#SPOOF${attempt}` },
     });
     if (response.status === 429) { blocked = true; break; }
   }

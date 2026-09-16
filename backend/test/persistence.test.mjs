@@ -48,6 +48,7 @@ test('validation repairs a malformed dataset instead of trusting it', () => {
   const repaired = validateData({
     members: [
       { id: 'ok', username: 'ok', displayName: 'Ok', role: 'MEMBER' },
+      { id: 'featured', username: 'omar', displayName: 'Omar', role: 'FEATURED_MEMBER' },
       { id: 'ok', username: 'duplicate', displayName: 'Duplicate', role: 'MEMBER' },
       { id: 'bad-role', username: 'bad', displayName: 'Bad', role: 'SUPERUSER' },
       { username: 'no-id', displayName: 'No id', role: 'MEMBER' },
@@ -57,8 +58,9 @@ test('validation repairs a malformed dataset instead of trusting it', () => {
     tacticalPlan: 'not-an-object',
   });
 
-  assert.equal(repaired.members.length, 1, 'duplicate ids and invalid roles are dropped');
+  assert.equal(repaired.members.length, 2, 'duplicate ids and invalid roles are dropped');
   assert.equal(repaired.members[0].id, 'ok');
+  assert.equal(repaired.members[1].role, 'FEATURED_MEMBER');
   assert.deepEqual(repaired.matches, []);
   assert.equal(repaired.tacticalPlan, null);
   assert.equal(repaired.schemaVersion, 1);

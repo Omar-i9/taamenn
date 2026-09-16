@@ -25,15 +25,24 @@ The Featured Member ID is an identifier, **not a password and not strong authent
 | Historical Match Records | NO | YES |
 | Edit/Delete historical records | NO | NO |
 
-## EmailJS
+## Support contact
 
-Supplied contact configuration remains available. Email verification is deliberately **frozen / Coming Soon** until a real verification flow and template are configured. No verification template ID is invented.
+Support messages are posted to `POST /api/public/contact`. EmailJS is backend-owned (`backend/.env`). The browser bundle must not contain EmailJS keys.
+
+```text
+Service ID:     service_13mkb9h
+Public Key:     7xyuge5ZLIgBevcbL
+Contact:        template_jsugxta
+Auto Reply:     template_4pj4xlm
+```
+
+Copy `backend/.env.example` to `backend/.env`. Set `TAAMEN_SUPPORT_RECIPIENT` only in that secret file. Email verification remains **frozen / Coming Soon**.
 
 ```env
-VITE_EMAILJS_PUBLIC_KEY=YOUR_PUBLIC_KEY
-VITE_EMAILJS_VERIFICATION_TEMPLATE_ID=
-VITE_API_BASE_URL=http://localhost:8787/api
+VITE_API_BASE_URL=/api
 ```
+
+Vite proxies `/api` to `http://localhost:8787`. Set `VITE_API_BASE_URL=http://localhost:8787/api` only when the SPA and API are on different origins.
 
 ## Local development
 
