@@ -105,24 +105,15 @@ Workers runtime locally.
   `VITE_*`. Public EmailJS identifiers may live in Wrangler `vars`; private values do not.
 - Do not put operator `data.json` in `dist/client/` or `public/`.
 
-### KV namespace (required before deploy)
+### KV namespace
 
-Local preview does not need a remote KV id. **Do not invent an id.** This repository
-does not contain a real namespace id, and this phase does not create one (no dashboard
-changes, no `wrangler kv namespace create`).
-
-One-time operator step, after authenticating:
-
-```bash
-npx wrangler login
-npx wrangler kv namespace create TAAMEN_KV
-```
-
-Paste the returned id into `wrangler.jsonc`:
+`wrangler.jsonc` binds the existing Cloudflare namespace. Do not create another one.
 
 ```jsonc
-"kv_namespaces": [{ "binding": "TAAMEN_KV", "id": "<id from create>" }]
+"kv_namespaces": [{ "binding": "TAAMEN_KV", "id": "7698f62403814e81b6f2ca13a8eb9cbc" }]
 ```
+
+Local `vite preview` still uses Miniflare. Worker logical keys remain `data` and `sessions`.
 
 ### Historical data migration (not uploaded automatically)
 
@@ -172,15 +163,14 @@ Secrets (never commit, never `VITE_*`):
 | `EMAILJS_PRIVATE_KEY` | Cloudflare Worker secret, **only if** EmailJS “Use Private Key” is on |
 
 Publishing to production and changing the Cloudflare dashboard (except the future
-one-time KV create + secrets + one-time `data` key upload) remain a later phase.
+secrets + one-time `data` key upload) remain a later phase.
 
 Remaining before production deploy:
 
-1. Create a real Cloudflare KV namespace and put its id in `wrangler.jsonc` (do not invent an id).
-2. Upload the reviewed `backend/kv-data.json` to the `TAAMEN_KV` `data` key.
-3. Set production secrets (`TAAMEN_SUPPORT_RECIPIENT`, and `EMAILJS_PRIVATE_KEY` only if required).
-4. Set Worker `REQUIRE_HTTPS=true` and `NODE_ENV=production`.
-5. Attach `taamenn.com`. Do not do these steps in this phase.
+1. Prepare and upload the reviewed `backend/kv-data.json` to the `TAAMEN_KV` `data` key.
+2. Set production secrets (`TAAMEN_SUPPORT_RECIPIENT`, and `EMAILJS_PRIVATE_KEY` only if required).
+3. Set Worker `REQUIRE_HTTPS=true` and `NODE_ENV=production`.
+4. Attach `taamenn.com`. Do not do these steps in this phase.
 
 ## Operator data
 

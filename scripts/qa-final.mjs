@@ -182,6 +182,9 @@ if (!fs.existsSync(wranglerPath)) {
   if (!/"binding"\s*:\s*"TAAMEN_KV"/.test(wrangler)) {
     fail('wrangler.jsonc must bind TAAMEN_KV');
   }
+  if (!/"id"\s*:\s*"7698f62403814e81b6f2ca13a8eb9cbc"/.test(wrangler)) {
+    fail('wrangler.jsonc must use the confirmed TAAMEN_KV namespace id 7698f62403814e81b6f2ca13a8eb9cbc');
+  }
   if (/taamen-kv-replace-before-deploy|taamen-kv-local-preview/.test(wrangler)) {
     fail('wrangler.jsonc still contains a placeholder KV namespace id');
   }

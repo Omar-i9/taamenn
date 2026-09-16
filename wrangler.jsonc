@@ -7,16 +7,12 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
-  // Binding required by worker/index.js and backend/src/workerAdapter.mjs.
-  // Local `vite preview` uses Miniflare and does not need a remote id.
-  // A real 32-character namespace id is required before `wrangler deploy`.
-  // This environment cannot create one (no Cloudflare API token; dashboard
-  // changes are out of scope). One-time operator step after `wrangler login`:
-  //   npx wrangler kv namespace create TAAMEN_KV
-  // then set "id" to the returned value. Do not invent an id.
+  // Confirmed existing Cloudflare KV namespace. Do not create another one.
+  // Worker keys remain `data` (historical/operator document) and `sessions`.
   "kv_namespaces": [
     {
-      "binding": "TAAMEN_KV"
+      "binding": "TAAMEN_KV",
+      "id": "7698f62403814e81b6f2ca13a8eb9cbc"
     }
   ],
   "vars": {
