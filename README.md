@@ -44,6 +44,8 @@ VITE_API_BASE_URL=/api
 
 Vite proxies `/api` to `http://localhost:8787`. Set `VITE_API_BASE_URL=http://localhost:8787/api` only when the SPA and API are on different origins.
 
+Production is a Cloudflare Worker that serves the Vite app and `/api/*` on the same origin (`https://taamenn.com`). `npm run backend` remains the local Node API. See `docs/DEPLOYMENT.md`.
+
 ## Local development
 
 Frontend:

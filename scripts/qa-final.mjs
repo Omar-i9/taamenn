@@ -34,7 +34,9 @@ const relative = file => path.relative(root, file).replaceAll('\\', '/');
 
 const sourceFiles = walk(path.join(root, 'src'), file => /\.(ts|tsx|json)$/.test(file));
 const publicFiles = walk(path.join(root, 'public'), () => true);
-const distFiles = walk(path.join(root, 'dist'), file => /\.(js|css|html|json)$/.test(file));
+const distClient = path.join(root, 'dist/client');
+const distRoot = fs.existsSync(distClient) ? distClient : path.join(root, 'dist');
+const distFiles = walk(distRoot, file => /\.(js|css|html|json)$/.test(file));
 
 // ---------------------------------------------------------------------------
 // 1. Recognition codes must not exist in the client at all.
@@ -181,7 +183,7 @@ if (!fs.existsSync(logoPath)) {
 
 // ---------------------------------------------------------------------------
 if (!distFiles.length) {
-  notes.push('dist/ is absent: build output was not inspected. Run `npm run build` then re-run this check.');
+  notes.push(`${path.relative(root, distRoot) || 'dist/'} is absent: build output was not inspected. Run \`npm run build\` then re-run this check.`);
 }
 
 for (const note of notes) console.log(`note: ${note}`);

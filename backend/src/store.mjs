@@ -1,6 +1,4 @@
-import fs from 'node:fs/promises';
-import { config } from './config.mjs';
-import { createJsonFile } from './jsonFile.mjs';
+import { getDataStore } from './runtime.mjs';
 
 const SCHEMA_VERSION = 1;
 const COLLECTIONS = ['members', 'players', 'matches', 'notifications', 'performance', 'invitations', 'audit'];
@@ -44,34 +42,11 @@ export function validateData(input) {
   return data;
 }
 
-async function createFallback() {
-  const example = JSON.parse(await fs.readFile(config.exampleDataFile, 'utf8'));
-  console.warn('[taamen] data.json is missing; seeding from data.example.json (development fixtures).');
-  return example;
-}
-
-export const store = createJsonFile({
-  file: config.dataFile,
-  validate: validateData,
-  createFallback,
-});
-
-/**
- * Historical records live in the operator dataset only. They are seeded once from the
- * controlled legacy snapshot if present, and are never emitted into the frontend.
- */
-export async function seedLegacyMatchesIfEmpty() {
-  await store.update(async data => {
-    if (data.matches.length) return;
-    try {
-      const legacy = JSON.parse(await fs.readFile(config.legacyFile, 'utf8'));
-      if (!Array.isArray(legacy)) return;
-      data.matches = legacy.map(match => ({ ...match, visibility: 'PRIVATE' }));
-    } catch {
-      /* the legacy snapshot is optional */
-    }
-  });
-}
+export const store = {
+  load: () => getDataStore().load(),
+  read: reader => getDataStore().read(reader),
+  update: mutator => getDataStore().update(mutator),
+};
 
 export function findMemberById(data, memberId) {
   return data.members.find(member => member.id === memberId) || null;

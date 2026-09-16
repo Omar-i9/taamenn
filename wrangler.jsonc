@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "taamenn",
+  "compatibility_date": "2026-09-16",
+  "main": "./worker/index.js",
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "kv_namespaces": [
+    {
+      "binding": "TAAMEN_KV",
+      "id": "taamen-kv-replace-before-deploy",
+      "preview_id": "taamen-kv-local-preview"
+    }
+  ],
+  "vars": {
+    "EMAILJS_SERVICE_ID": "service_13mkb9h",
+    "EMAILJS_CONTACT_TEMPLATE_ID": "template_jsugxta",
+    "EMAILJS_AUTOREPLY_TEMPLATE_ID": "template_4pj4xlm",
+    "EMAILJS_PUBLIC_KEY": "7xyuge5ZLIgBevcbL",
+    "REQUIRE_HTTPS": "false",
+    "TRUST_PROXY": "true"
+  }
+}

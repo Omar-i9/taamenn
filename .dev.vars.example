@@ -1,0 +1,19 @@
+# Cloudflare Worker local runtime (vite preview / wrangler).
+# Copy to .dev.vars (never committed). Do not use VITE_* for these values.
+
+NODE_ENV=development
+REQUIRE_HTTPS=false
+TRUST_PROXY=true
+CORS_ORIGIN=
+
+# Session lifetime in milliseconds (minimum enforced: 15 minutes).
+SESSION_TTL_MS=28800000
+
+# Support contact. The recipient is server-side so the browser cannot choose it.
+TAAMEN_SUPPORT_RECIPIENT=
+EMAILJS_SERVICE_ID=service_13mkb9h
+EMAILJS_CONTACT_TEMPLATE_ID=template_jsugxta
+EMAILJS_AUTOREPLY_TEMPLATE_ID=template_4pj4xlm
+EMAILJS_PUBLIC_KEY=7xyuge5ZLIgBevcbL
+# Required only when EmailJS Account → Security has "Use Private Key" enabled.
+EMAILJS_PRIVATE_KEY=

@@ -11,6 +11,9 @@ process.env.SESSION_TTL_MS = '900000';
 const { hashPassword } = await import('../src/passwords.mjs');
 writeDataset(seedDataset(hashPassword));
 
+const { initNodeRuntime } = await import('../src/nodePersistence.mjs');
+initNodeRuntime();
+
 const { createSession, destroyMemberSessions, destroySession, readSession, sessionCount } = await import('../src/sessions.mjs');
 
 test('a session token is never stored in plain text', async () => {

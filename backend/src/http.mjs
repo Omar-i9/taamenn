@@ -8,8 +8,17 @@ const SECURITY_HEADERS = {
   'Cross-Origin-Resource-Policy': 'same-origin',
 };
 
-export function originHeaders(req) {
-  const origin = req.headers.origin;
+function headerValue(headers, name) {
+  if (!headers) return '';
+  if (typeof headers.get === 'function') return headers.get(name) || '';
+  const direct = headers[name];
+  if (typeof direct === 'string') return direct;
+  const lower = headers[name.toLowerCase()];
+  return typeof lower === 'string' ? lower : '';
+}
+
+export function originHeaders(request) {
+  const origin = headerValue(request.headers, 'origin');
   if (!origin) return {};
   if (!config.allowedOrigins.includes(origin)) return {};
   return {
@@ -21,24 +30,32 @@ export function originHeaders(req) {
   };
 }
 
-export function json(req, res, status, body, headers = {}) {
-  res.writeHead(status, {
+export function jsonHeaders(request, extra = {}) {
+  return {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store',
     ...SECURITY_HEADERS,
-    ...originHeaders(req),
-    ...headers,
+    ...originHeaders(request),
+    ...extra,
+  };
+}
+
+export function jsonResponse(request, status, body, extra = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: jsonHeaders(request, extra),
   });
-  res.end(JSON.stringify(body));
 }
 
-export function noContent(req, res, status, headers = {}) {
-  res.writeHead(status, { ...SECURITY_HEADERS, ...originHeaders(req), ...headers });
-  res.end();
+export function noContentResponse(request, status, extra = {}) {
+  return new Response(null, {
+    status,
+    headers: { ...SECURITY_HEADERS, ...originHeaders(request), ...extra },
+  });
 }
 
-export function parseCookies(req) {
-  const raw = req.headers.cookie || '';
+export function parseCookies(request) {
+  const raw = headerValue(request.headers, 'cookie');
   const out = {};
   for (const part of raw.split(';')) {
     if (!part) continue;
@@ -68,10 +85,15 @@ export function clearedSessionCookie(secure) {
   return sessionCookie('', 0, secure);
 }
 
-export function isSecureRequest(req) {
-  if (req.socket.encrypted) return true;
+export function isSecureRequest(request, platform = {}) {
+  if (platform.encrypted) return true;
+  try {
+    if (new URL(request.url).protocol === 'https:') return true;
+  } catch {
+    /* ignore malformed URLs; fall through to forwarded proto */
+  }
   if (!config.trustProxy) return false;
-  return String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https';
+  return headerValue(request.headers, 'x-forwarded-proto').split(',')[0].trim() === 'https';
 }
 
 export class HttpError extends Error {
@@ -83,46 +105,25 @@ export class HttpError extends Error {
   }
 }
 
-/**
- * Discard the rest of an abandoned request body without buffering it.
- *
- * Closing the socket immediately makes a client that is still uploading see a
- * connection reset instead of the 413 response, so the remainder is drained. The
- * drain is capped in bytes and time so this cannot be used to hold resources open.
- */
-export function drainRequest(req, { maxBytes = 4 * 1024 * 1024, timeoutMs = 2000 } = {}) {
-  if (req.readableEnded || req.destroyed) return;
-  let drained = 0;
-  const timer = setTimeout(() => req.destroy(), timeoutMs);
-  timer.unref?.();
-  req.on('data', chunk => {
-    drained += chunk.length;
-    if (drained > maxBytes) req.destroy();
-  });
-  req.on('end', () => clearTimeout(timer));
-  req.on('error', () => clearTimeout(timer));
-  req.resume();
-}
-
-/** Enforce the limit while streaming so an oversized body is never fully buffered. */
-export async function readJsonBody(req) {
-  const declared = Number(req.headers['content-length']);
+/** Enforce the limit while reading so an oversized body is never fully trusted. */
+export async function readJsonBody(request) {
+  const declared = Number(headerValue(request.headers, 'content-length'));
   if (Number.isFinite(declared) && declared > config.maxBodyBytes) {
-    throw new HttpError(413, 'Request body is too large.', { unreadBody: true });
+    throw new HttpError(413, 'Request body is too large.');
   }
-  const chunks = [];
-  let size = 0;
-  for await (const chunk of req) {
-    size += chunk.length;
-    if (size > config.maxBodyBytes) {
-      throw new HttpError(413, 'Request body is too large.', { unreadBody: true });
-    }
-    chunks.push(chunk);
+  let raw;
+  try {
+    raw = await request.arrayBuffer();
+  } catch {
+    throw new HttpError(400, 'Request body must be valid JSON.');
   }
-  if (!size) return {};
+  if (raw.byteLength > config.maxBodyBytes) {
+    throw new HttpError(413, 'Request body is too large.');
+  }
+  if (!raw.byteLength) return {};
   let parsed;
   try {
-    parsed = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+    parsed = JSON.parse(new TextDecoder().decode(raw));
   } catch {
     throw new HttpError(400, 'Request body must be valid JSON.');
   }
@@ -132,13 +133,16 @@ export async function readJsonBody(req) {
   return parsed;
 }
 
-export function clientIp(req) {
+export function clientIp(request, platform = {}) {
+  if (typeof platform.ip === 'string' && platform.ip) return platform.ip;
+  const cf = headerValue(request.headers, 'cf-connecting-ip').trim();
+  if (cf) return cf;
   if (config.trustProxy) {
-    const forwarded = req.headers['x-forwarded-for'];
-    if (typeof forwarded === 'string' && forwarded.length) {
+    const forwarded = headerValue(request.headers, 'x-forwarded-for');
+    if (forwarded) {
       const first = forwarded.split(',')[0].trim();
       if (first) return first;
     }
   }
-  return req.socket.remoteAddress || 'unknown';
+  return 'unknown';
 }

@@ -1,18 +1,27 @@
-import crypto from 'node:crypto';
 import { config } from './config.mjs';
-import { createJsonFile } from './jsonFile.mjs';
+import { getSessionStore } from './runtime.mjs';
 
 const AUTH_METHODS = new Set(['code', 'password']);
 
 /**
  * The browser holds the only copy of the raw token. The server stores its SHA-256
  * digest, so a leaked session file cannot be replayed as a set of live cookies.
+ *
+ * Web Crypto is used so Node and Cloudflare Workers share the same implementation.
  */
-function digest(token) {
-  return crypto.createHash('sha256').update(String(token)).digest('hex');
+async function digest(token) {
+  const bytes = new TextEncoder().encode(String(token));
+  const hash = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-function validateSessions(input) {
+function randomToken() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+export function validateSessions(input) {
   const raw = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
   const records = raw.records && typeof raw.records === 'object' && !Array.isArray(raw.records) ? raw.records : {};
   const now = Date.now();
@@ -34,12 +43,6 @@ function validateSessions(input) {
   return { records: clean };
 }
 
-const file = createJsonFile({
-  file: config.sessionFile,
-  validate: validateSessions,
-  createFallback: async () => ({ records: {} }),
-});
-
 function sweep(state) {
   const now = Date.now();
   let removed = 0;
@@ -52,17 +55,22 @@ function sweep(state) {
   return removed;
 }
 
+function file() {
+  return getSessionStore();
+}
+
 /**
  * Create a session. The authorization context is decided here, on the server,
  * from the verified member record — never from request input.
  */
 export async function createSession({ memberId, authMethod, role }) {
   if (!AUTH_METHODS.has(authMethod)) throw new Error(`unsupported authMethod: ${authMethod}`);
-  const token = crypto.randomBytes(32).toString('hex');
+  const token = randomToken();
   const expiresAt = Date.now() + config.sessionTtlMs;
-  await file.update(state => {
+  const key = await digest(token);
+  await file().update(state => {
     sweep(state);
-    state.records[digest(token)] = {
+    state.records[key] = {
       memberId,
       authMethod,
       role: role === 'OWNER' ? 'OWNER' : 'MEMBER',
@@ -76,8 +84,8 @@ export async function createSession({ memberId, authMethod, role }) {
 /** Returns the server-side authorization context, or null when absent/expired. */
 export async function readSession(token) {
   if (!token || typeof token !== 'string') return null;
-  const key = digest(token);
-  return file.update(state => {
+  const key = await digest(token);
+  return file().update(state => {
     sweep(state);
     const record = state.records[key];
     if (!record) return null;
@@ -91,8 +99,8 @@ export async function readSession(token) {
 
 export async function destroySession(token) {
   if (!token || typeof token !== 'string') return;
-  const key = digest(token);
-  await file.update(state => {
+  const key = await digest(token);
+  await file().update(state => {
     sweep(state);
     delete state.records[key];
   });
@@ -100,7 +108,7 @@ export async function destroySession(token) {
 
 /** Used by password reset and deactivation. */
 export async function destroyMemberSessions(memberId, { authMethod } = {}) {
-  await file.update(state => {
+  await file().update(state => {
     for (const [key, record] of Object.entries(state.records)) {
       if (record.memberId !== memberId) continue;
       if (authMethod && record.authMethod !== authMethod) continue;
@@ -110,7 +118,7 @@ export async function destroyMemberSessions(memberId, { authMethod } = {}) {
 }
 
 export async function sessionCount() {
-  return file.update(state => {
+  return file().update(state => {
     sweep(state);
     return Object.keys(state.records).length;
   });

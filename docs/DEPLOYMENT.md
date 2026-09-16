@@ -10,7 +10,8 @@ Choose one, then configure cookies and CORS to match it.
 |---|---|---|
 | Frontend dev server | `npm run dev` | `http://localhost:5173` |
 | Backend API | `npm run backend` | `http://localhost:8787` |
-| Production build | `npm run build` | static files in `dist/` |
+| Production build | `npm run build` | Vite SPA in `dist/client/` plus the Worker bundle |
+| Cloudflare local runtime | `npm run preview` | built Worker + assets (after `npm run build`) |
 
 The backend has no npm dependencies and no build step. It requires Node 20 or newer
 (`--env-file-if-exists`, `getSetCookie`, native `fetch`).
@@ -22,7 +23,8 @@ session cookie is first-party — the same conditions as a same-origin productio
 Override the target with `TAAMEN_BACKEND_ORIGIN` if the backend runs elsewhere.
 
 This proxy is a **development convenience**. It does not imply that production must serve
-`dist/` from the backend, and the backend deliberately does not serve static files.
+`dist/` from the Node backend, and the local Node server deliberately does not serve static
+files. Production on Cloudflare is same-origin: the Worker serves the SPA and `/api/*`.
 
 ## Choosing a production topology
 
@@ -30,8 +32,12 @@ Evaluate the real deployment against these three cases before configuring anythi
 
 ### 1. Same-origin (recommended)
 
-The app and the API answer on one origin, for example `https://taamen.example` serving the
-SPA and `https://taamen.example/api/*` reaching the backend through a reverse proxy.
+The production target is `https://taamenn.com` on a Cloudflare Worker: the Vite SPA and
+`/api/*` share one origin. Local development still uses `npm run backend` on
+`http://localhost:8787` and does not require Cloudflare.
+
+The app and the API answer on one origin, for example `https://taamenn.com` serving the
+SPA and `https://taamenn.com/api/*` reaching Worker application logic.
 
 - CORS: not needed. Set `CORS_ORIGIN=` (empty).
 - Cookie: `HttpOnly; SameSite=Lax; Path=/; Secure`.
@@ -82,6 +88,25 @@ meaning of each value.
 
 `TRUST_PROXY` must be `false` unless a proxy genuinely overwrites those headers. With it
 enabled behind nothing, any client can spoof its address and reset its rate-limit budget.
+
+## Cloudflare Workers
+
+`wrangler.jsonc` and `@cloudflare/vite-plugin` produce the production bundle. `npm run dev`
+does not start Miniflare. Use `npm run preview` after `npm run build` to exercise the
+Workers runtime locally.
+
+- Worker entry: `worker/index.js` — `/api/*` only (`assets.run_worker_first`).
+- Shared API logic: `backend/src/routes.mjs` `handleFetch`.
+- Node adapter: `backend/src/server.mjs` (unchanged command: `npm run backend`).
+- Persistence: local Node uses `backend/data.json` / `backend/sessions.json`; the Worker
+  uses the `TAAMEN_KV` KV namespace. Replace the placeholder KV ids before a real deploy.
+- Copy `.dev.vars.example` to `.dev.vars` for local Worker secrets. Never commit it.
+- `EMAILJS_PRIVATE_KEY` and `TAAMEN_SUPPORT_RECIPIENT` stay off the frontend and off
+  `VITE_*`. Public EmailJS identifiers may live in Wrangler `vars`; private values do not.
+- Do not put operator `data.json` in `dist/client/` or `public/`.
+
+This repository is prepared for Cloudflare deployment. Publishing to production and
+changing the Cloudflare dashboard are a later phase.
 
 ## Operator data
 

@@ -1,13 +1,32 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-
 const MINUTE = 60_000;
 
+const ENV_KEYS = [
+  'PORT',
+  'NODE_ENV',
+  'SESSION_TTL_MS',
+  'CORS_ORIGIN',
+  'REQUIRE_HTTPS',
+  'TRUST_PROXY',
+  'TAAMEN_SUPPORT_RECIPIENT',
+  'EMAILJS_SERVICE_ID',
+  'EMAILJS_CONTACT_TEMPLATE_ID',
+  'EMAILJS_AUTOREPLY_TEMPLATE_ID',
+  'EMAILJS_PUBLIC_KEY',
+  'EMAILJS_PRIVATE_KEY',
+  'TAAMEN_DATA_FILE',
+  'TAAMEN_EXAMPLE_DATA_FILE',
+  'TAAMEN_SESSION_FILE',
+  'TAAMEN_LEGACY_FILE',
+];
+
 function bool(value, fallback = false) {
-  if (value === undefined) return fallback;
+  if (value === undefined || value === '') return fallback;
   return value === 'true' || value === '1';
+}
+
+function read(source, key) {
+  const value = source?.[key];
+  return value === undefined || value === null ? undefined : String(value);
 }
 
 /**
@@ -15,55 +34,79 @@ function bool(value, fallback = false) {
  * consulted when the API is served from a different origin than the app; a
  * same-origin deployment needs no CORS at all.
  */
-export const config = {
-  port: Number(process.env.PORT || 8787),
-  nodeEnv: process.env.NODE_ENV || 'development',
-  isProduction: process.env.NODE_ENV === 'production',
+export function buildConfig(source = {}) {
+  const env = key => {
+    const fromSource = read(source, key);
+    if (fromSource !== undefined) return fromSource;
+    return read(process.env, key);
+  };
 
-  // File locations are overridable so tests can run against a temporary dataset.
-  dataFile: process.env.TAAMEN_DATA_FILE || path.join(ROOT, 'data.json'),
-  exampleDataFile: process.env.TAAMEN_EXAMPLE_DATA_FILE || path.join(ROOT, 'data.example.json'),
-  sessionFile: process.env.TAAMEN_SESSION_FILE || path.join(ROOT, 'sessions.json'),
-  legacyFile: process.env.TAAMEN_LEGACY_FILE || path.join(ROOT, 'legacy-private-matches.json'),
+  return {
+    port: Number(env('PORT') || 8787),
+    nodeEnv: env('NODE_ENV') || 'development',
+    isProduction: env('NODE_ENV') === 'production',
 
-  sessionTtlMs: Math.max(15 * MINUTE, Number(process.env.SESSION_TTL_MS || 8 * 60 * MINUTE)),
-  sessionCookieName: 'taamen_session',
+    // File locations are overridable so tests can run against a temporary dataset.
+    // Node fills empty defaults with paths under backend/; Workers ignore them.
+    dataFile: env('TAAMEN_DATA_FILE') || '',
+    exampleDataFile: env('TAAMEN_EXAMPLE_DATA_FILE') || '',
+    sessionFile: env('TAAMEN_SESSION_FILE') || '',
+    legacyFile: env('TAAMEN_LEGACY_FILE') || '',
 
-  /** Explicit allow-list. Empty means same-origin only. */
-  allowedOrigins: String(process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173')
-    .split(',')
-    .map(x => x.trim())
-    .filter(Boolean),
+    sessionTtlMs: Math.max(15 * MINUTE, Number(env('SESSION_TTL_MS') || 8 * 60 * MINUTE)),
+    sessionCookieName: 'taamen_session',
 
-  requireHttps: bool(process.env.REQUIRE_HTTPS),
+    /** Explicit allow-list. Empty means same-origin only. */
+    allowedOrigins: String(env('CORS_ORIGIN') || 'http://localhost:5173,http://127.0.0.1:5173')
+      .split(',')
+      .map(x => x.trim())
+      .filter(Boolean),
 
-  /**
-   * Only honour forwarded client-IP headers when the process genuinely sits
-   * behind a proxy that overwrites them. Otherwise any client could spoof one.
-   */
-  trustProxy: bool(process.env.TRUST_PROXY),
+    requireHttps: bool(env('REQUIRE_HTTPS')),
 
-  csrfHeader: 'x-taamen-requested',
+    /**
+     * Only honour forwarded client-IP headers when the process genuinely sits
+     * behind a proxy that overwrites them. Otherwise any client could spoof one.
+     */
+    trustProxy: bool(env('TRUST_PROXY')),
 
-  rateLimit: {
-    windowMs: MINUTE,
-    maxAttempts: 8,
-    cooldownMs: 5 * MINUTE,
-    maxEntries: 5000,
-  },
+    csrfHeader: 'x-taamen-requested',
 
-  contact: {
-    /** The browser can never choose the recipient. */
-    recipient: process.env.TAAMEN_SUPPORT_RECIPIENT || '',
-    emailjsServiceId: process.env.EMAILJS_SERVICE_ID || '',
-    emailjsContactTemplateId: process.env.EMAILJS_CONTACT_TEMPLATE_ID || '',
-    emailjsAutoReplyTemplateId: process.env.EMAILJS_AUTOREPLY_TEMPLATE_ID || '',
-    emailjsPublicKey: process.env.EMAILJS_PUBLIC_KEY || '',
-    emailjsPrivateKey: process.env.EMAILJS_PRIVATE_KEY || '',
-    maxMessageLength: 2000,
-    maxNameLength: 80,
-    maxEmailLength: 254,
-  },
+    rateLimit: {
+      windowMs: MINUTE,
+      maxAttempts: 8,
+      cooldownMs: 5 * MINUTE,
+      maxEntries: 5000,
+    },
 
-  maxBodyBytes: 64 * 1024,
-};
+    contact: {
+      /** The browser can never choose the recipient. */
+      recipient: env('TAAMEN_SUPPORT_RECIPIENT') || '',
+      emailjsServiceId: env('EMAILJS_SERVICE_ID') || '',
+      emailjsContactTemplateId: env('EMAILJS_CONTACT_TEMPLATE_ID') || '',
+      emailjsAutoReplyTemplateId: env('EMAILJS_AUTOREPLY_TEMPLATE_ID') || '',
+      emailjsPublicKey: env('EMAILJS_PUBLIC_KEY') || '',
+      emailjsPrivateKey: env('EMAILJS_PRIVATE_KEY') || '',
+      maxMessageLength: 2000,
+      maxNameLength: 80,
+      maxEmailLength: 254,
+    },
+
+    maxBodyBytes: 64 * 1024,
+  };
+}
+
+export const config = buildConfig(process.env);
+
+/** Overlay Worker bindings (or another env map) onto the shared config object. */
+export function applyEnv(source) {
+  const merged = { ...process.env };
+  if (source && typeof source === 'object') {
+    for (const key of ENV_KEYS) {
+      const value = source[key];
+      if (typeof value === 'string') merged[key] = value;
+    }
+  }
+  Object.assign(config, buildConfig(merged));
+  return config;
+}
