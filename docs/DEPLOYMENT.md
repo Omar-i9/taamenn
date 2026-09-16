@@ -161,7 +161,7 @@ Production values live in `wrangler.jsonc` `env.production` (`REQUIRE_HTTPS=true
 `taamenn.com` in this step.
 
 ```bash
-npm run build:production   # CLOUDFLARE_ENV=production vite build
+npm run build:production   # cross-env CLOUDFLARE_ENV=production vite build (Windows + Unix)
 npx wrangler deploy        # uses the flattened dist/taamenn/wrangler.json
 ```
 

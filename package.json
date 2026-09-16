@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:production": "tsc -b && CLOUDFLARE_ENV=production vite build",
+    "build:production": "tsc -b && cross-env CLOUDFLARE_ENV=production vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "backend": "npm --prefix backend run dev",
@@ -33,6 +33,7 @@
     "@types/node": "^26.5.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
+    "cross-env": "^10.1.0",
     "wrangler": "^4.118.0"
   }
 }
