@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "taamenn",
+  "compatibility_date": "2026-09-16",
+  "main": "./worker/index.js",
+  "assets": {
+    // Vite + @cloudflare/vite-plugin client outDir (see dist/client after npm run build).
+    // Required by wrangler CLI (`wrangler dev --remote`); the Vite plugin rewrites this
+    // to `../client` relative to dist/taamenn/ for vite preview / plugin deploy.
+    "directory": "dist/client",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  // Confirmed existing Cloudflare KV namespace. Do not create another one.
+  // Worker keys remain `data` (historical/operator document) and `sessions`.
+  "kv_namespaces": [
+    {
+      "binding": "TAAMEN_KV",
+      "id": "7698f62403814e81b6f2ca13a8eb9cbc"
+    }
+  ],
+  "vars": {
+    "EMAILJS_SERVICE_ID": "service_13mkb9h",
+    "EMAILJS_CONTACT_TEMPLATE_ID": "template_jsugxta",
+    "EMAILJS_AUTOREPLY_TEMPLATE_ID": "template_4pj4xlm",
+    "EMAILJS_PUBLIC_KEY": "7xyuge5ZLIgBevcbL",
+    "EMAILJS_ORIGIN": "https://taamenn.com",
+    "REQUIRE_HTTPS": "false",
+    "TRUST_PROXY": "true",
+    "CORS_ORIGIN": "",
+    "TAAMEN_SEED_EXAMPLE": "false"
+  }
+}

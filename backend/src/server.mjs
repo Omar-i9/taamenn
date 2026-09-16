@@ -2,28 +2,48 @@ import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.mjs';
-import { HttpError, drainRequest, json } from './http.mjs';
-import { handleRequest } from './routes.mjs';
+import { HttpError, jsonResponse } from './http.mjs';
+import { drainRequest, nodeClientIp, nodeEncrypted, nodeToFetchRequest, sendNodeResponse } from './nodeHttp.mjs';
+import { handleFetch } from './routes.mjs';
 import { contactConfigured } from './contact.mjs';
 import { syncFeaturedMembers } from './featuredMembers.mjs';
-import { seedLegacyMatchesIfEmpty, store } from './store.mjs';
+import { store } from './store.mjs';
+import { initNodeRuntime, seedLegacyMatchesIfEmpty } from './nodePersistence.mjs';
+
+initNodeRuntime();
 
 export function createServer() {
   return http.createServer(async (req, res) => {
     try {
-      await handleRequest(req, res);
+      const request = await nodeToFetchRequest(req);
+      const response = await handleFetch(request, {
+        ip: nodeClientIp(req),
+        encrypted: nodeEncrypted(req),
+      });
+      await sendNodeResponse(res, response);
     } catch (error) {
       if (error instanceof HttpError) {
+        const fallback = jsonResponse(
+          new Request(`http://${req.headers.host || 'localhost'}${req.url || '/'}`),
+          error.status,
+          { error: error.message },
+          error.unreadBody ? { Connection: 'close' } : {},
+        );
         if (!error.unreadBody) {
-          return json(req, res, error.status, { error: error.message });
+          return sendNodeResponse(res, fallback);
         }
         // Answer first, then discard what the client is still sending.
-        json(req, res, error.status, { error: error.message }, { Connection: 'close' });
+        await sendNodeResponse(res, fallback);
         return drainRequest(req);
       }
       // Log server-side, return nothing internal to the client.
       console.error('[taamen] unhandled request error:', error);
-      return json(req, res, 500, { error: 'Internal server error.' });
+      const fallback = jsonResponse(
+        new Request(`http://${req.headers.host || 'localhost'}${req.url || '/'}`),
+        500,
+        { error: 'Internal server error.' },
+      );
+      return sendNodeResponse(res, fallback);
     }
   });
 }

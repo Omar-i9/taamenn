@@ -34,7 +34,9 @@ const relative = file => path.relative(root, file).replaceAll('\\', '/');
 
 const sourceFiles = walk(path.join(root, 'src'), file => /\.(ts|tsx|json)$/.test(file));
 const publicFiles = walk(path.join(root, 'public'), () => true);
-const distFiles = walk(path.join(root, 'dist'), file => /\.(js|css|html|json)$/.test(file));
+const distClient = path.join(root, 'dist/client');
+const distRoot = fs.existsSync(distClient) ? distClient : path.join(root, 'dist');
+const distFiles = walk(distRoot, file => /\.(js|css|html|json)$/.test(file));
 
 // ---------------------------------------------------------------------------
 // 1. Recognition codes must not exist in the client at all.
@@ -76,15 +78,19 @@ const clientText = [...sourceFiles, ...publicFiles, ...distFiles]
 
 if (fs.existsSync(legacyPath)) {
   const legacy = JSON.parse(fs.readFileSync(legacyPath, 'utf8'));
-  const leaked = new Set();
-  for (const match of legacy) {
-    if (match.story && clientText.includes(match.story)) leaked.add(`story of ${match.id}`);
-    if (match.id && new RegExp(`["'\`]${match.id}["'\`]`).test(clientText)) leaked.add(`id ${match.id}`);
+  if (!Array.isArray(legacy)) {
+    fail('backend/legacy-private-matches.json must be a JSON array of historical matches');
+  } else {
+    const leaked = new Set();
+    for (const match of legacy) {
+      if (match.story && clientText.includes(match.story)) leaked.add(`story of ${match.id}`);
+      if (match.id && new RegExp(`["'\`]${match.id}["'\`]`).test(clientText)) leaked.add(`id ${match.id}`);
+    }
+    if (leaked.size) fail(`Private historical content reached the client: ${[...leaked].join(', ')}`);
+    else notes.push(`Cross-checked ${legacy.length} private historical records against the client: none present.`);
   }
-  if (leaked.size) fail(`Private historical content reached the client: ${[...leaked].join(', ')}`);
-  else notes.push(`Cross-checked ${legacy.length} private historical records against the client: none present.`);
 } else {
-  notes.push('backend/legacy-private-matches.json is absent (expected on a clean checkout).');
+  fail('backend/legacy-private-matches.json is missing; the canonical historical snapshot must be tracked.');
 }
 
 const dataPath = path.join(root, 'backend/data.json');
@@ -159,9 +165,37 @@ if (!fs.existsSync(swPath)) {
 const gitignore = fs.existsSync(path.join(root, '.gitignore'))
   ? fs.readFileSync(path.join(root, '.gitignore'), 'utf8')
   : '';
-for (const entry of ['backend/data.json', 'backend/sessions.json', 'backend/legacy-private-matches.json']) {
+for (const entry of ['backend/data.json', 'backend/sessions.json']) {
   if (!gitignore.split(/\r?\n/).some(line => line.trim() === entry)) {
     fail(`${entry} is not listed in .gitignore`);
+  }
+}
+if (gitignore.split(/\r?\n/).some(line => line.trim() === 'backend/legacy-private-matches.json')) {
+  fail('backend/legacy-private-matches.json is gitignored; the canonical historical snapshot must be tracked');
+}
+
+const wranglerPath = path.join(root, 'wrangler.jsonc');
+if (!fs.existsSync(wranglerPath)) {
+  fail('wrangler.jsonc is missing');
+} else {
+  const wrangler = fs.readFileSync(wranglerPath, 'utf8');
+  if (!/"directory"\s*:\s*"dist\/client"/.test(wrangler)) {
+    fail('wrangler.jsonc assets.directory must be dist/client (Vite client outDir)');
+  }
+  if (!/"not_found_handling"\s*:\s*"single-page-application"/.test(wrangler)) {
+    fail('wrangler.jsonc must keep SPA not_found_handling');
+  }
+  if (!/"run_worker_first"\s*:\s*\[\s*"\/api\/\*"\s*\]/.test(wrangler)) {
+    fail('wrangler.jsonc must keep run_worker_first ["/api/*"]');
+  }
+  if (!/"binding"\s*:\s*"TAAMEN_KV"/.test(wrangler)) {
+    fail('wrangler.jsonc must bind TAAMEN_KV');
+  }
+  if (!/"id"\s*:\s*"7698f62403814e81b6f2ca13a8eb9cbc"/.test(wrangler)) {
+    fail('wrangler.jsonc must use the confirmed TAAMEN_KV namespace id 7698f62403814e81b6f2ca13a8eb9cbc');
+  }
+  if (/taamen-kv-replace-before-deploy|taamen-kv-local-preview/.test(wrangler)) {
+    fail('wrangler.jsonc still contains a placeholder KV namespace id');
   }
 }
 
@@ -181,7 +215,7 @@ if (!fs.existsSync(logoPath)) {
 
 // ---------------------------------------------------------------------------
 if (!distFiles.length) {
-  notes.push('dist/ is absent: build output was not inspected. Run `npm run build` then re-run this check.');
+  notes.push(`${path.relative(root, distRoot) || 'dist/'} is absent: build output was not inspected. Run \`npm run build\` then re-run this check.`);
 }
 
 for (const note of notes) console.log(`note: ${note}`);

@@ -43,8 +43,7 @@ async function send(templateId, params) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Required while EmailJS Account → Security has non-browser API disabled.
-        Origin: 'http://localhost',
+        Origin: config.contact.emailjsOrigin || 'http://localhost',
       },
       body: JSON.stringify(payload),
     });

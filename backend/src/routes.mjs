@@ -1,6 +1,6 @@
 import { config } from './config.mjs';
 import {
-  HttpError, clearedSessionCookie, clientIp, isSecureRequest, json, noContent,
+  HttpError, clearedSessionCookie, clientIp, isSecureRequest, jsonResponse, noContentResponse,
   parseCookies, readJsonBody, sessionCookie,
 } from './http.mjs';
 import { findActiveMemberByCode, findMemberById, store } from './store.mjs';
@@ -16,8 +16,8 @@ const contactLimiter = createRateLimiter({ maxAttempts: 3, windowMs: 10 * 60_000
 /** Deliberately identical for unknown and wrong identifiers, to avoid enumeration. */
 const REJECTED_CODE = 'Invalid member ID.';
 
-function sessionToken(req) {
-  return parseCookies(req)[config.sessionCookieName] || '';
+function sessionToken(request) {
+  return parseCookies(request)[config.sessionCookieName] || '';
 }
 
 /**
@@ -25,8 +25,8 @@ function sessionToken(req) {
  * Request bodies never contribute to this.
  * Only Featured Member recognition (`code`) sessions remain a product surface.
  */
-async function currentActor(req) {
-  const token = sessionToken(req);
+async function currentActor(request) {
+  const token = sessionToken(request);
   if (!token) return null;
   const session = await readSession(token);
   if (!session) return null;
@@ -56,10 +56,9 @@ function requireRecognition(actor) {
   return actor;
 }
 
-function issueSession(req, res, { member, authMethod, token, expiresAt }) {
-  const secure = config.isProduction || isSecureRequest(req);
+function issueSession(request, { member, authMethod, token, expiresAt, secure }) {
   const maxAge = Math.floor(config.sessionTtlMs / 1000);
-  return json(req, res, 200, {
+  return jsonResponse(request, 200, {
     authenticated: true,
     authMethod,
     member: sessionMemberDto(member),
@@ -71,13 +70,13 @@ const routes = [
   {
     method: 'GET',
     path: '/',
-    handler: (req, res) => json(req, res, 200, { name: 'TAAMEN API', status: 'ok' }),
+    handler: ({ request }) => jsonResponse(request, 200, { name: 'TAAMEN API', status: 'ok' }),
   },
 
   {
     method: 'GET',
     path: '/api/health',
-    handler: (req, res) => json(req, res, 200, {
+    handler: ({ request }) => jsonResponse(request, 200, {
       ok: true,
       service: 'taamen-api',
       emailConfigured: contactConfigured(),
@@ -87,31 +86,30 @@ const routes = [
   {
     method: 'POST',
     path: '/api/featured/member',
-    handler: async (req, res) => {
-      const key = clientIp(req);
-      if (!recognitionLimiter.check(key)) {
+    handler: async ({ request, ip, secure }) => {
+      if (!recognitionLimiter.check(ip)) {
         throw new HttpError(429, 'Too many attempts. Try again later.');
       }
-      const body = await readJsonBody(req);
+      const body = await readJsonBody(request);
       const code = requiredString(body, 'memberCode', { max: 60 });
       const member = await store.read(data => findActiveMemberByCode(data, code));
       if (!member) throw new HttpError(401, REJECTED_CODE);
-      recognitionLimiter.reset(key);
+      recognitionLimiter.reset(ip);
       const { token, expiresAt } = await createSession({
         memberId: member.id,
         authMethod: 'code',
         role: member.role,
       });
-      return issueSession(req, res, { member, authMethod: 'code', token, expiresAt });
+      return issueSession(request, { member, authMethod: 'code', token, expiresAt, secure });
     },
   },
 
   {
     method: 'GET',
     path: '/api/auth/session',
-    handler: async (req, res, actor) => {
-      if (!actor) return json(req, res, 200, { authenticated: false });
-      return json(req, res, 200, {
+    handler: async ({ request, actor }) => {
+      if (!actor) return jsonResponse(request, 200, { authenticated: false });
+      return jsonResponse(request, 200, {
         authenticated: true,
         authMethod: actor.authMethod,
         member: sessionMemberDto(actor.member),
@@ -123,34 +121,32 @@ const routes = [
   {
     method: 'POST',
     path: '/api/auth/logout',
-    handler: async (req, res) => {
-      const token = sessionToken(req);
+    handler: async ({ request, secure }) => {
+      const token = sessionToken(request);
       if (token) await destroySession(token);
-      const secure = config.isProduction || isSecureRequest(req);
-      return json(req, res, 200, { ok: true }, { 'Set-Cookie': clearedSessionCookie(secure) });
+      return jsonResponse(request, 200, { ok: true }, { 'Set-Cookie': clearedSessionCookie(secure) });
     },
   },
 
   {
     method: 'GET',
     path: '/api/private/historical',
-    handler: async (req, res, actor) => {
+    handler: async ({ request, actor }) => {
       requireRecognition(actor);
       const items = await store.read(data => data.matches.map(historicalMatchDto));
       items.sort((a, b) => b.dateKey - a.dateKey);
-      return json(req, res, 200, { items });
+      return jsonResponse(request, 200, { items });
     },
   },
 
   {
     method: 'POST',
     path: '/api/public/contact',
-    handler: async (req, res) => {
-      const key = clientIp(req);
-      if (!contactLimiter.check(key)) {
+    handler: async ({ request, ip }) => {
+      if (!contactLimiter.check(ip)) {
         throw new HttpError(429, 'Too many messages. Try again later.');
       }
-      const body = await readJsonBody(req);
+      const body = await readJsonBody(request);
       const email = requiredEmail(body, 'email', { max: config.contact.maxEmailLength });
       const message = requiredString(body, 'message', { min: 3, max: config.contact.maxMessageLength });
       const name = typeof body.name === 'string' ? body.name.trim() : '';
@@ -162,7 +158,7 @@ const routes = [
       }
       const result = await sendContactMessage({ email, message, name });
       if (!result.contactSent) throw new HttpError(502, 'The message could not be delivered.');
-      return json(req, res, 200, {
+      return jsonResponse(request, 200, {
         ok: true,
         contactSent: true,
         autoReplySent: result.autoReplySent === true,
@@ -184,16 +180,29 @@ function matchRoute(pathname) {
   return candidates;
 }
 
-export async function handleRequest(req, res) {
-  const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  const pathname = url.pathname.replace(/\/+$/, '') || '/';
+function csrfHeader(request) {
+  if (typeof request.headers.get === 'function') {
+    return request.headers.get(config.csrfHeader);
+  }
+  return request.headers[config.csrfHeader];
+}
 
-  if (config.requireHttps && !isSecureRequest(req)) {
-    return json(req, res, 426, { error: 'HTTPS is required.' });
+/**
+ * Shared TAAMEN API. Both the local Node adapter and the Cloudflare Worker
+ * adapter call this with a Fetch Request.
+ */
+export async function handleFetch(request, platform = {}) {
+  const url = new URL(request.url, 'http://localhost');
+  const pathname = url.pathname.replace(/\/+$/, '') || '/';
+  const secure = isSecureRequest(request, platform);
+  const ip = clientIp(request, platform);
+
+  if (config.requireHttps && !secure) {
+    return jsonResponse(request, 426, { error: 'HTTPS is required.' });
   }
 
-  if (req.method === 'OPTIONS') {
-    return noContent(req, res, 204, {
+  if (request.method === 'OPTIONS') {
+    return noContentResponse(request, 204, {
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': `Content-Type, ${config.csrfHeader}`,
       'Access-Control-Max-Age': '600',
@@ -201,19 +210,33 @@ export async function handleRequest(req, res) {
   }
 
   const candidates = matchRoute(pathname);
-  if (!candidates.length) return json(req, res, 404, { error: 'Not found.' });
+  if (!candidates.length) return jsonResponse(request, 404, { error: 'Not found.' });
 
-  const chosen = candidates.find(candidate => candidate.route.method === req.method);
+  const chosen = candidates.find(candidate => candidate.route.method === request.method);
   if (!chosen) {
     const allowed = [...new Set(candidates.map(candidate => candidate.route.method))].join(', ');
-    return json(req, res, 405, { error: 'Method not allowed.' }, { Allow: allowed });
+    return jsonResponse(request, 405, { error: 'Method not allowed.' }, { Allow: allowed });
   }
 
-  const mutating = req.method !== 'GET' && req.method !== 'HEAD';
-  if (mutating && !req.headers[config.csrfHeader]) {
-    return json(req, res, 403, { error: 'Missing required request header.' });
+  const mutating = request.method !== 'GET' && request.method !== 'HEAD';
+  if (mutating && !csrfHeader(request)) {
+    return jsonResponse(request, 403, { error: 'Missing required request header.' });
   }
 
-  const actor = await currentActor(req);
-  return chosen.route.handler(req, res, actor, chosen.params);
+  try {
+    const actor = await currentActor(request);
+    return await chosen.route.handler({
+      request,
+      actor,
+      ip,
+      secure,
+      params: chosen.params,
+    });
+  } catch (error) {
+    if (error instanceof HttpError) {
+      return jsonResponse(request, error.status, { error: error.message });
+    }
+    console.error('[taamen] unhandled request error:', error);
+    return jsonResponse(request, 500, { error: 'Internal server error.' });
+  }
 }

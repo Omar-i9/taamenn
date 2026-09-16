@@ -8,6 +8,9 @@ const dir = prepareEnvironment('persistence');
 const { hashPassword } = await import('../src/passwords.mjs');
 writeDataset(seedDataset(hashPassword));
 
+const { initNodeRuntime } = await import('../src/nodePersistence.mjs');
+initNodeRuntime();
+
 const { createJsonFile } = await import('../src/jsonFile.mjs');
 const { store, validateData } = await import('../src/store.mjs');
 
