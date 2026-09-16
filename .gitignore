@@ -30,3 +30,12 @@ backend/sessions.json.corrupt-*
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
