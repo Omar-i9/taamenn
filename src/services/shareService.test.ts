@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Match } from '../data/footballData.ts';
-import { classifySharedImport, decodeMatchShare, encodeMatchShare, materializeSharedMatch, sharedMatchFingerprint } from './shareService.ts';
+import { classifySharedImport, decodeMatchShare, encodeMatchShare, materializeSharedMatch, requireShareSave, sharedMatchFingerprint } from './shareService.ts';
 
 const sample: Match = {
   id: 'LOCAL-1',
@@ -128,4 +128,20 @@ test('re-import classifies same origin as up-to-date, edited content as update, 
     'collision',
   );
   assert.equal(classifySharedImport(incoming, []).kind, 'new');
+});
+
+test('tampered or oversized match tokens fail closed', () => {
+  assert.equal(decodeMatchShare('%%%'), null);
+  assert.equal(decodeMatchShare('a'.repeat(20_000)), null);
+  assert.equal(decodeMatchShare(tokenFrom({ v: 4, team1: 'A', team2: 'B', dateKey: 99, visibility: 'PUBLIC' })), null);
+  assert.equal(decodeMatchShare(tokenFrom({ v: 4, team1: 'A', team2: 'B', dateKey: 20260101, visibility: 'PRIVATE' })), null);
+});
+
+test('view-only shares are refused by the application-level save gate', () => {
+  const payload = decodeMatchShare(encodeMatchShare(sample, { allowSave: false }));
+  assert.ok(payload);
+  assert.throws(() => requireShareSave(payload), /share-view-only/);
+  const writable = decodeMatchShare(encodeMatchShare(sample, { allowSave: true }));
+  assert.ok(writable);
+  assert.doesNotThrow(() => requireShareSave(writable));
 });

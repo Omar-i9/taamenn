@@ -1,8 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Mail, MessageCircle, Radio, Send, X } from 'lucide-react';
 import { WHATSAPP_CHANNEL_URL, WHATSAPP_URL } from '../config/support';
-import { api, ApiError } from '../services/apiClient';
+import { api, ApiError, type ContactResult } from '../services/apiClient';
 import { uiCopy } from '../i18n/translations';
+import { useFormEntrance } from '../motion/useFormEntrance';
+import { gsap } from '../motion/gsapRuntime';
+import { EASE, MOTION } from '../motion/tokens';
+import { prefersReducedMotion } from '../motion/prefersReduced';
 
 /**
  * The single contact surface in TAAMEN.
@@ -13,6 +17,10 @@ import { uiCopy } from '../i18n/translations';
 export default function Support({language,profile,onBack}:{language:'ar'|'en';profile:{firstName:string;email?:string};onBack?:()=>void}){
   const ar=language==='ar';
   const copy=uiCopy[language];
+  const pageRef=useFormEntrance<HTMLElement>();
+  const statusRef=useRef<HTMLDivElement>(null);
+  const lastSent=useRef('');
+  const inFlight=useRef(false);
   const profileEmail=profile.email?.trim()||'';
   const hasProfileEmail=profileEmail.includes('@');
   const [email,setEmail]=useState(hasProfileEmail?profileEmail:'');
@@ -24,24 +32,46 @@ export default function Support({language,profile,onBack}:{language:'ar'|'en';pr
 
   const replyEmail=useMemo(()=>hasProfileEmail?profileEmail:email.trim(),[hasProfileEmail,profileEmail,email]);
 
-  const submit=async()=>{
-    if(!replyEmail.includes('@')||message.trim().length<3){
+  const celebrateSuccess=()=>{
+    const el=statusRef.current;
+    if(!el||prefersReducedMotion())return;
+    gsap.fromTo(el,{opacity:0.35},{opacity:1,duration:MOTION.ui,ease:EASE.entrance});
+  };
+
+  const submit=async(event?:{preventDefault():void})=>{
+    event?.preventDefault();
+    if(inFlight.current||busy)return;
+    const trimmed=message.trim();
+    if(!replyEmail.includes('@')||trimmed.length<3){
       setFailed(true);
       setSent(false);
       setStatus(copy.contactInvalid);
       return;
     }
+    const fingerprint=`${replyEmail.toLowerCase()}\n${trimmed}`;
+    if(fingerprint===lastSent.current){
+      setFailed(false);
+      setSent(true);
+      setStatus(copy.contactDuplicate);
+      return;
+    }
+    inFlight.current=true;
     setBusy(true);setStatus(copy.contactSending);setFailed(false);setSent(false);
     try{
-      const result=await api.sendContactMessage({
+      const result:ContactResult=await api.sendContactMessage({
         email:replyEmail,
-        message:message.trim(),
+        message:trimmed,
         name:profile.firstName,
       });
+      if(!result.contactSent){
+        throw new ApiError(502, 'The message could not be delivered.');
+      }
+      lastSent.current=fingerprint;
       setSent(true);
-      setStatus(result.contactSent && result.autoReplySent===false ? copy.contactPartial : copy.contactSent);
+      setStatus(result.autoReplySent===false ? copy.contactPartial : copy.contactSent);
       if(!hasProfileEmail)setEmail('');
       setMessage('');
+      queueMicrotask(celebrateSuccess);
     }catch(error){
       setFailed(true);
       setSent(false);
@@ -53,13 +83,14 @@ export default function Support({language,profile,onBack}:{language:'ar'|'en';pr
       else if(statusCode>=500)setStatus(copy.contactEmailUnavailable);
       else setStatus(copy.contactFailed);
     }finally{
+      inFlight.current=false;
       setBusy(false);
     }
   };
 
-  return <section className="page-content support-page">
+  return <section className="page-content support-page" ref={pageRef}>
     <div className="page-heading"><div><p className="eyebrow">TAAMEN 2.0 / SUPPORT</p><h1>{ar?'الدعم':'Support'}</h1><p className="subtitle">{ar?'طرق مباشرة للوصول إلى دعم TAAMEN.':'Direct ways to reach TAAMEN support.'}</p></div>{onBack&&<button className="dark-action" onClick={onBack}><X size={15}/>{copy.closeViewer}</button>}</div>
-    {status&&<div className={`${failed?'error-banner':sent?'success-banner contact-sent':'contact-status'}`} role={failed?'alert':'status'} aria-live="polite">{status}</div>}
+    {status&&<div ref={statusRef} className={`${failed?'error-banner':sent?'success-banner contact-sent':'contact-status'}`} role={failed?'alert':'status'} aria-live="polite">{status}</div>}
     <div className="content-grid support-grid">
       {WHATSAPP_URL&&<section className="panel support-card">
         <MessageCircle size={22} aria-hidden="true"/>
@@ -79,13 +110,15 @@ export default function Support({language,profile,onBack}:{language:'ar'|'en';pr
       </section>
       <section className="panel support-card support-contact">
         <div className="panel-heading"><div><p className="eyebrow">CONTACT TAAMEN</p><h2>{copy.contactTitle}</h2></div><Mail size={18}/></div>
-        {hasProfileEmail
-          ? <p className="settings-note">{copy.contactUsingProfileEmail} <strong>{profileEmail}</strong></p>
-          : <label>{copy.contactEmailLabel}<input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="name@example.com" maxLength={254} autoComplete="email"/></label>}
-        <label>{copy.contactMessageLabel}<textarea rows={6} value={message} onChange={e=>setMessage(e.target.value)} placeholder={copy.contactMessagePlaceholder} maxLength={2000}/></label>
-        <button className="primary-action" disabled={busy} onClick={submit} aria-busy={busy}>
-          <Send size={15}/>{busy?copy.contactSending:failed?copy.contactRetry:copy.contactSend}
-        </button>
+        <form className="support-contact-form" onSubmit={submit} noValidate>
+          {hasProfileEmail
+            ? <p className="settings-note">{copy.contactUsingProfileEmail} <strong>{profileEmail}</strong></p>
+            : <label>{copy.contactEmailLabel}<input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="name@example.com" maxLength={254} autoComplete="email" disabled={busy}/></label>}
+          <label>{copy.contactMessageLabel}<textarea rows={6} value={message} onChange={e=>setMessage(e.target.value)} placeholder={copy.contactMessagePlaceholder} maxLength={2000} disabled={busy}/></label>
+          <button className="primary-action" type="submit" disabled={busy} aria-busy={busy}>
+            <Send size={15}/>{busy?copy.contactSending:failed?copy.contactRetry:copy.contactSend}
+          </button>
+        </form>
       </section>
     </div>
   </section>;

@@ -6,7 +6,7 @@ import type { Match } from '../data/footballData';
  *
  * Private Circle password sessions are no longer a product surface.
  */
-const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/+$/, '') || '/api';
+const API_BASE = (import.meta.env?.VITE_API_BASE_URL as string | undefined)?.replace(/\/+$/, '') || '/api';
 
 /** A cross-site form cannot set a custom header, so requiring one blocks CSRF. */
 const CSRF_HEADER = 'X-TAAMEN-Requested';
@@ -49,6 +49,63 @@ export const isForbidden = (error: unknown) => error instanceof ApiError && erro
 
 type RequestOptions = { method?: 'GET' | 'POST'; body?: unknown };
 
+function isJsonObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function payloadError(payload: unknown): string | undefined {
+  if (!isJsonObject(payload)) return undefined;
+  return typeof payload.error === 'string' && payload.error.trim() ? payload.error : undefined;
+}
+
+/**
+ * SPA fallbacks and proxy HTML pages must never be treated as API success.
+ * That was the Featured "nothing happens" / false session path.
+ */
+function readJsonPayload(response: Response, raw: unknown): Record<string, unknown> {
+  const contentType = response.headers.get('content-type') || '';
+  const looksJson = contentType.includes('application/json');
+  if (looksJson && isJsonObject(raw)) return raw;
+  if (!looksJson && isJsonObject(raw) && (typeof raw.error === 'string' || raw.ok === true || 'authenticated' in raw || 'contactSent' in raw)) {
+    return raw;
+  }
+  const status = response.ok ? 502 : response.status;
+  throw new ApiError(status, 'TAAMEN server returned an unexpected response.');
+}
+
+function asContactResult(payload: Record<string, unknown>): ContactResult {
+  if (payload.ok !== true || payload.contactSent !== true) {
+    throw new ApiError(502, 'The message could not be delivered.');
+  }
+  return {
+    ok: true,
+    contactSent: true,
+    autoReplySent: payload.autoReplySent === true,
+  };
+}
+
+export function asRecognitionSession(payload: unknown): Session {
+  if (!isJsonObject(payload) || payload.authMethod !== 'code' || !isJsonObject(payload.member)) {
+    throw new ApiError(502, 'TAAMEN server returned an unexpected response.');
+  }
+  const member = payload.member;
+  if (typeof member.id !== 'string' || !member.id || typeof member.displayName !== 'string') {
+    throw new ApiError(502, 'TAAMEN server returned an unexpected response.');
+  }
+  return {
+    authenticated: payload.authenticated === true,
+    authMethod: 'code',
+    member: {
+      id: member.id,
+      username: typeof member.username === 'string' ? member.username : undefined,
+      displayName: member.displayName,
+      arabicName: typeof member.arabicName === 'string' ? member.arabicName : '',
+      role: typeof member.role === 'string' ? member.role : 'FEATURED_MEMBER',
+    },
+    expiresAt: typeof payload.expiresAt === 'number' ? payload.expiresAt : 0,
+  };
+}
+
 async function request<T>(path: string, { method = 'GET', body }: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = {};
   if (body !== undefined) headers['Content-Type'] = 'application/json';
@@ -66,14 +123,11 @@ async function request<T>(path: string, { method = 'GET', body }: RequestOptions
     throw new ApiError(0, 'TAAMEN could not reach the server. Check your connection and try again.');
   }
 
-  const payload = await response.json().catch(() => ({}));
+  const raw = await response.json().catch(() => null);
   if (!response.ok) {
-    const message = typeof (payload as { error?: unknown }).error === 'string'
-      ? (payload as { error: string }).error
-      : 'The request could not be completed.';
-    throw new ApiError(response.status, message);
+    throw new ApiError(response.status, payloadError(raw) || 'The request could not be completed.');
   }
-  return payload as T;
+  return readJsonPayload(response, raw) as T;
 }
 
 function toMatch(record: Record<string, unknown>): Match {
@@ -102,21 +156,27 @@ function toMatch(record: Record<string, unknown>): Match {
 export const api = {
   async session(): Promise<Session | null> {
     try {
-      const value = await request<Session & { authenticated?: boolean; authMethod?: string }>('/auth/session');
-      if (value?.authenticated === false) return null;
-      if (value?.authMethod !== 'code') {
+      const value = await request<Record<string, unknown>>('/auth/session');
+      if (value.authenticated === false) return null;
+      if (value.authMethod !== 'code') {
         await request('/auth/logout', { method: 'POST' }).catch(() => undefined);
         return null;
       }
-      return value;
+      try {
+        return asRecognitionSession(value);
+      } catch {
+        await request('/auth/logout', { method: 'POST' }).catch(() => undefined);
+        return null;
+      }
     } catch (error) {
       if (isUnauthenticated(error)) return null;
       throw error;
     }
   },
 
-  recognizeMember(memberCode: string) {
-    return request<Session>('/featured/member', { method: 'POST', body: { memberCode } });
+  async recognizeMember(memberCode: string) {
+    const payload = await request<Record<string, unknown>>('/featured/member', { method: 'POST', body: { memberCode } });
+    return asRecognitionSession(payload);
   },
 
   logout() {
@@ -125,11 +185,13 @@ export const api = {
 
   async historicalMatches(): Promise<Match[]> {
     const { items } = await request<{ items: Record<string, unknown>[] }>('/private/historical');
+    if (!Array.isArray(items)) throw new ApiError(502, 'TAAMEN server returned an unexpected response.');
     return items.map(toMatch);
   },
 
   /** The support recipient is chosen by the server, never by this call. */
-  sendContactMessage(input: { email: string; message: string; name?: string }) {
-    return request<ContactResult>('/public/contact', { method: 'POST', body: input });
+  async sendContactMessage(input: { email: string; message: string; name?: string }) {
+    const payload = await request<Record<string, unknown>>('/public/contact', { method: 'POST', body: input });
+    return asContactResult(payload);
   },
 };

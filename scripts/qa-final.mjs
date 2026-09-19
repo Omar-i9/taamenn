@@ -155,8 +155,27 @@ if (!fs.existsSync(swPath)) {
   if (!/url\.pathname\.startsWith\('\/api\/'\)/.test(sw)) {
     fail('public/sw.js must bypass requests whose path starts with /api/');
   }
+  if (!/url\.pathname\.startsWith\('\/share\/'\)/.test(sw)) {
+    fail('public/sw.js must not cache unique /share/ token URLs');
+  }
+  if (!/taamen-shell-v7/.test(sw) && !/VERSION='v7'/.test(sw)) {
+    fail('public/sw.js cache version must be bumped when share/API bypass behaviour changes');
+  }
   const precache = sw.match(/const PRECACHE\s*=\s*\[(.*?)\]/s);
   if (precache && precache[1].includes('/api')) fail('public/sw.js precaches an /api path');
+}
+
+const spa404 = path.join(root, 'public/404.html');
+if (!fs.existsSync(spa404)) {
+  fail('public/404.html is missing');
+} else {
+  const html = fs.readFileSync(spa404, 'utf8');
+  if (html.includes('/src/main.tsx')) {
+    fail('public/404.html must not load Vite source /src/main.tsx in production');
+  }
+  if (!html.includes('taamen-spa-path')) {
+    fail('public/404.html must preserve the original path for share/acquisition routes');
+  }
 }
 
 // ---------------------------------------------------------------------------

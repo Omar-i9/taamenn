@@ -26,6 +26,7 @@ export default function Profile({
   const ar = language === 'ar';
   const [draft, setDraft] = useState(profile);
   const [status, setStatus] = useState('');
+  const [shareUrl, setShareUrl] = useState('');
   const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
@@ -135,9 +136,11 @@ export default function Profile({
 
   const share = async () => {
     try {
-      await shareProfile(draft);
+      const result = await shareProfile(draft);
+      if (result.method === 'cancelled') return;
       setFailed(false);
-      setStatus(copy.profileShareReady);
+      setShareUrl(result.url);
+      setStatus(result.method === 'copied' ? copy.profileShareCopied : result.method === 'shared' ? copy.profileShareReady : copy.profileShareLinkReady);
     } catch {
       setFailed(true);
       setStatus(copy.profileShareFailed);
@@ -177,6 +180,7 @@ export default function Profile({
         </div>
       </div>
       {status && <div className={failed ? 'error-banner' : 'success-banner'} role={failed ? 'alert' : undefined}>{status}</div>}
+      {shareUrl && !failed && <label className="share-link-field">{copy.profileShareLinkReady}<input readOnly value={shareUrl} onFocus={(event) => event.currentTarget.select()} /></label>}
       {dirty && <p className="profile-dirty-hint">{copy.unsavedChanges}</p>}
 
       <section className="panel profile-hero-card">

@@ -256,6 +256,10 @@ export function decodeMatchShare(payload: string): MatchSharePayload | null {
   }
 }
 
+export function requireShareSave(payload: MatchSharePayload) {
+  if (!payload.allowSave) throw new Error('share-view-only');
+}
+
 export function matchShareUrl(m: Match, options?: { includeContributions?: boolean; allowSave?: boolean }) {
   return `${location.origin}/share/match/${encodeMatchShare(m, options)}`;
 }
