@@ -38,9 +38,14 @@ test.describe('TAAMEN production path', () => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(String(error)));
     await completeSetup(page);
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
     await useEnglish(page);
+    await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await expect(page.getByRole('heading', { name: /Welcome Omar/ })).toBeVisible();
-    await expect(page.locator('.connectivity-status')).toBeVisible();
+    const connectivity = page.locator('.connectivity-status');
+    await expect(connectivity).toHaveCount(1);
+    await expect(connectivity).toHaveClass(/online|offline/);
     expect(errors, errors.join('\n')).toEqual([]);
   });
 
@@ -48,7 +53,7 @@ test.describe('TAAMEN production path', () => {
     await completeSetup(page, 'Lina');
     await useEnglish(page);
     await page.goto('/#profile');
-    await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Profile', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Public share' }).click();
     const shareField = page.locator('.share-link-field input');
     await expect(shareField).toHaveValue(/\/share\/profile\//);
@@ -74,7 +79,7 @@ test.describe('TAAMEN production path', () => {
     await completeSetup(page);
     await useEnglish(page);
     await page.goto('/#support');
-    await expect(page.getByRole('heading', { name: 'Support' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Support', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Send message' }).click();
     await expect(page.getByRole('alert')).toContainText(/check the entered information/i);
     await page.getByPlaceholder('name@example.com').fill('person@example.com');
