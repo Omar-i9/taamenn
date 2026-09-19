@@ -26,7 +26,7 @@ import PrivacyPolicyModal, { hasAcceptedConsent } from './components/PrivacyPoli
 import './styles/global.css';
 import './styles/taamen-ambient-background.css';
 
-const Home=lazy(()=>import('./pages/Home')); const Archive=lazy(()=>import('./pages/Archive')); const Matches=lazy(()=>import('./pages/Matches')); const HistoricalMatchCenter=lazy(()=>import('./pages/HistoricalMatchCenter')); const Tactical=lazy(()=>import('./pages/Tactical')); const Stadiums=lazy(()=>import('./pages/Stadiums')); const Profile=lazy(()=>import('./components/Profile')); const Settings=lazy(()=>import('./pages/Settings')); const Support=lazy(()=>import('./pages/Support'));
+const Home=lazy(()=>import('./pages/Home')); const Archive=lazy(()=>import('./pages/Archive')); const Matches=lazy(()=>import('./pages/Matches')); const HistoricalMatchCenter=lazy(()=>import('./pages/HistoricalMatchCenter')); const Tactical=lazy(()=>import('./pages/Tactical')); const Stadiums=lazy(()=>import('./pages/Stadiums')); const Profile=lazy(()=>import('./components/Profile')); const Settings=lazy(()=>import('./pages/Settings')); const Support=lazy(()=>import('./pages/Support')); const Acquisition=lazy(()=>import('./pages/Acquisition'));
 type Language='ar'|'en';
 
 /**
@@ -145,7 +145,9 @@ function MainShell(props:ShellProps){
 }
 
 export default function App(){
- const sharePath=window.location.pathname.match(/^\/share\/(match|profile)\/(.+)$/);
+ const pathName=(window.location.pathname.replace(/\/+$/, '')||'/');
+ const sharePath=pathName.match(/^\/share\/(match|profile)\/(.+)$/);
+ const isAcquisition=pathName==='/acquisition';
  const[language,setLanguage]=useState<Language>(()=>(localStorage.getItem('taamen-language') as Language)||'ar');
  const[profile,setProfile]=useState<LocalProfile>();
  const[boot,setBoot]=useState(true);
@@ -188,6 +190,7 @@ export default function App(){
   setLanguage('ar');
  },[]);
 
+ if(isAcquisition)return <ErrorBoundary language={language} label="acquisition"><Suspense fallback={<div className="loading-screen"><img src={TAAMEN_LOGO_SRC} alt={TAAMEN_LOGO_ALT}/><span>TAAMEN 2.0</span></div>}><Acquisition language={language} onLanguage={toggle}/></Suspense></ErrorBoundary>;
  if(sharePath)return <PublicSharePreview language={language} kind={sharePath[1] as 'match'|'profile'} token={decodeURIComponent(sharePath[2])}/>;
  if(boot)return <div className="loading-screen"><img src={TAAMEN_LOGO_SRC} alt={TAAMEN_LOGO_ALT}/><span>TAAMEN 2.0</span></div>;
  /* One persistent atmosphere host. Keeping it first in both branches means the

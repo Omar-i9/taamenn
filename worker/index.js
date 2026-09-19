@@ -15,11 +15,22 @@ export default {
     if (!url.pathname.startsWith('/api')) {
       return new Response(JSON.stringify({ error: 'Not found.' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
       });
     }
 
-    await initWorkerRuntime(env, exampleData);
+    try {
+      await initWorkerRuntime(env, exampleData);
+    } catch {
+      console.error('[taamen] worker init failed');
+      return new Response(JSON.stringify({ error: 'TAAMEN server is unavailable.' }), {
+        status: 503,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-store',
+        },
+      });
+    }
 
     const forwarded = String(request.headers.get('x-forwarded-for') || '').split(',')[0].trim();
     const ip = request.headers.get('CF-Connecting-IP')

@@ -39,6 +39,7 @@ export default function Tactical({language}:{language:'ar'|'en'}){
  const [players,setPlayers]=useState<TacticalPlayer[]>(()=>defaultPlayers(ar?'ar':'en'));
  const [selectedId,setSelectedId]=useState<string|null>(null);
  const [saved,setSaved]=useState(false);
+ const [planNote,setPlanNote]=useState<{kind:'ok'|'err';text:string}|null>(null);
  const [capturing,setCapturing]=useState(false);
  const [captureNote,setCaptureNote]=useState<{kind:'ok'|'warn'|'err';text:string}|null>(null);
  const [landscape,setLandscape]=useState(false);
@@ -198,6 +199,26 @@ export default function Tactical({language}:{language:'ar'|'en'}){
   persist(players,formationId,next);
  };
 
+ const sharePlan=async()=>{
+  const text=`${tactical.shareTitle}: ${formationCopy.name}`;
+  try{
+    if(navigator.share){
+      await navigator.share({title:tactical.shareTitle,text});
+      return;
+    }
+  }catch(error){
+    if(error instanceof DOMException && error.name==='AbortError')return;
+  }
+  try{
+    if(navigator.clipboard?.writeText){
+      await navigator.clipboard.writeText(text);
+      setPlanNote({kind:'ok',text:copy.tacticalShareCopied});
+      return;
+    }
+  }catch{/* fall through */}
+  setPlanNote({kind:'err',text:copy.tacticalShareFailed});
+ };
+
  const resetPlan=()=>{
   const fresh=defaultPlayers(ar?'ar':'en');
   setFormationId(defaultFormation.id);
@@ -237,10 +258,11 @@ export default function Tactical({language}:{language:'ar'|'en'}){
    <label>{tactical.role}<select value={selected.teamRole} onChange={e=>updateSelected({teamRole:e.target.value})}>{teamRoles.map(x=><option key={x} value={x}>{x?tactical.roles[x as keyof typeof tactical.roles]:'—'}</option>)}</select></label>
    <label>{tactical.instruction}<select value={selected.instruction} onChange={e=>updateSelected({instruction:e.target.value})}>{instructions.map(x=><option key={x} value={x}>{x?tactical.instructions[x as keyof typeof tactical.instructions]:'—'}</option>)}</select></label>
    <div className="setting-row"><span>{tactical.captain}</span><input type="checkbox" checked={selected.captain} onChange={e=>updateSelected({captain:e.target.checked})}/></div>
-   <div className="inspector-actions"><button className="dark-action" onClick={()=>persist(players,formationId,landscape)}><Save size={15}/>{tactical.savePlan}</button><button className="text-button" onClick={()=>navigator.share?.({title:tactical.shareTitle,text:formationCopy.name})}><Share2 size={14}/>{tactical.share}</button></div>
+   <div className="inspector-actions"><button className="dark-action" onClick={()=>persist(players,formationId,landscape)}><Save size={15}/>{tactical.savePlan}</button><button className="text-button" onClick={()=>void sharePlan()}><Share2 size={14}/>{tactical.share}</button></div>
   </div>:<div className="inspector-empty"><Move/><strong>{tactical.selectPlayer}</strong><span>{tactical.selectHelp}</span></div>}
   <button className="text-button" onClick={resetPlan}><RotateCcw size={14}/>{tactical.reset}</button>
   {saved&&<small className="save-flash">{tactical.saved}</small>}
+  {planNote&&<small className={`capture-note is-${planNote.kind}`} role={planNote.kind==='err'?'alert':'status'}>{planNote.text}</small>}
   {captureNote&&<small className={`capture-note is-${captureNote.kind}`} role={captureNote.kind==='err'?'alert':undefined}>{captureNote.text}</small>}
  </section></div></section>
 }

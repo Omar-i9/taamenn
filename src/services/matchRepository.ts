@@ -12,7 +12,7 @@ import {
   validScore,
 } from './matchLifecycle';
 import { dateISOToKey, formatMatchDate, PALESTINE_TIMEZONE } from '../shared/formatting/dateTime';
-import { classifySharedImport, materializeSharedMatch, type MatchSharePayload, type SharedImportDecision, type SharedImportKind } from './shareService';
+import { classifySharedImport, materializeSharedMatch, requireShareSave, type MatchSharePayload, type SharedImportDecision, type SharedImportKind } from './shareService';
 
 function announceChange(){
   if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('taamen-matches-changed'));
@@ -175,7 +175,7 @@ export async function importSharedMatch(
   options?:{replace?:boolean;saveAsNew?:boolean},
 ):Promise<SharedImportResult>{
   // Application-level gate only: a crafted token can flip this flag.
-  if(!payload.allowSave)throw new Error('share-view-only');
+  requireShareSave(payload);
   const incoming=materializeSharedMatch(payload);
   if(incoming.visibility==='PRIVATE'||incoming.source==='legacy')throw new Error('invalid-current-record');
   const locals=await listMatches();

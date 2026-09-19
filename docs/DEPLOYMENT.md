@@ -226,10 +226,20 @@ A restrictive CSP `default-src 'none'` suits the API but would break the SPA, wh
 `script-src 'self'`, `style-src 'self' 'unsafe-inline'` for inline SVG icon styling, and
 `img-src 'self' data:` for avatar and banner data URLs. See `docs/SECURITY.md`.
 
-`public/404.html` supports SPA hash routing on static hosts that fall back to it.
+`public/404.html` is a static-host fallback: it stores the original URL and
+redirects to `/` so the SPA can restore `/share/...` and `/acquisition`. Cloudflare
+Workers use `not_found_handling: single-page-application` (index.html) instead.
 
 ## Service worker
 
 `public/sw.js` never caches `/api/*`, so no authenticated response can be replayed to a
-different session. The cache version is `v6`; bump it whenever cached shell behaviour
+different session. The cache version is `v7`; bump it whenever cached shell behaviour
 changes, otherwise an installed worker can keep serving an obsolete bundle.
+
+Share routes (`/share/*`) and `/acquisition` are fetched network-first and are not
+written into the runtime cache. Offline they fall back to the cached `/` shell so
+React can still read the current pathname. `public/404.html` stores the original
+URL in `sessionStorage` (`taamen-spa-path`) and replaces to `/`; `src/main.tsx`
+restores that path before React boots. Cloudflare production uses SPA
+`not_found_handling` and serves `index.html` for those routes, so 404.html is the
+static-host fallback only.

@@ -1,4 +1,4 @@
-const VERSION='v6';
+const VERSION='v7';
 const SHELL=`taamen-shell-${VERSION}`;
 const RUNTIME=`taamen-runtime-${VERSION}`;
 const CORE=['/','/manifest.webmanifest','/assets/taamen-brand-mark.png'];
@@ -10,6 +10,18 @@ self.addEventListener('fetch',event=>{
   const url=new URL(event.request.url);
   // Never cache or serve API traffic: responses are per-session and private.
   if(url.origin!==location.origin || url.pathname.startsWith('/api/')) return;
+  // Share tokens are unique URLs. Do not fill Cache Storage with them.
+  // Network first, then the SPA shell so React can decode the still-current path.
+  if(url.pathname.startsWith('/share/') || url.pathname==='/acquisition'){
+    event.respondWith((async()=>{
+      try{
+        return await fetch(event.request);
+      }catch{
+        return await caches.match('/') || new Response('TAAMEN offline',{status:503,headers:{'Content-Type':'text/plain'}});
+      }
+    })());
+    return;
+  }
   event.respondWith((async()=>{
     const cached=await caches.match(event.request);
     try{

@@ -11,6 +11,7 @@ let ready = null;
 /**
  * Bind KV persistence and overlay Worker env onto shared config.
  * Safe to call on every request; initialization runs once per isolate.
+ * A failed boot is not sticky: the next request may retry.
  */
 export function initWorkerRuntime(env, exampleData) {
   if (ready) return ready;
@@ -41,5 +42,6 @@ export function initWorkerRuntime(env, exampleData) {
     await store.load();
     await store.update(data => { syncFeaturedMembers(data); });
   })();
+  ready.catch(() => { ready = null; });
   return ready;
 }
